@@ -1,0 +1,43 @@
+/* Remove the border and set a height for the container */
+#hp .unity-progress-bar__background {
+    background-color: #331919;
+    border-width: 0;
+    border: none;
+}
+
+/* Set height and margin for the progress fill to avoid overflow */
+#hp .unity-progress-bar__progress {
+    background-color: #FF4C4C; /* Red progress bar color */
+    margin: 0.5px;
+}
+
+#mp .unity-progress-bar__progress {
+    background-color: #4CFFDB; /* Green progress bar color */
+    margin: 0.5px;
+}
+
+#mp .unity-progress-bar__background {
+    background-color: #19332F;
+    border-width: 0;
+    border: none;
+}
+
+#boss-hp .unity-progress-bar__background {
+    background-color: #331919;
+    border-width: 0;
+    border: none;
+}
+
+#boss-hp .unity-progress-bar__progress {
+    background-color: #FF4C4C; /* Red progress bar color */
+    margin: 0.5px;
+}
+
+#skill-item {
+    background-color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+#skill-item:hover {
+    background-color: rgba(0, 0, 0, 1.0);
+}

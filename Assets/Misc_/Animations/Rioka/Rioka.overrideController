@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Rioka
+  m_Controller: {fileID: 9100000, guid: d6da29a89a56ebe4489799e396873d3e, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: e09234a954e40374d9d87dba3b1aac50, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 415d04ae37dec0048a6f8dcdbe986b72, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 8a1435dfd1a5fc149acf2109b889f489, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 11d2dd484c6ca2d40a0c89cde219b233, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: ec84fe5c1b757d44086435839625ee46, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 804d866e49a3f4a46af961e5b828daf7, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 82e5e2266b6243e40ab06da0d48f9386, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 46ae697c3b2b07b40ada07e7c6b60740, type: 2}
