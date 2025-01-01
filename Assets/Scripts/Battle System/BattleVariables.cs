@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum BattleState
@@ -13,8 +14,8 @@ public enum BattleState
 public class BattleVariables
 {
     public BattleState battleState;
-    public GameObject target;
     public GameObject attacker;
+    public Dictionary<string, GameObject> targets;
     public Ability currAbility;
 
     public GameObject currAoe;

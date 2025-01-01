@@ -34,7 +34,6 @@ public class GlobalDamageHelper
         float damageValue = baseValue + (attackValue * multiplier);
         float damageOffset = damageValue * 0.20f;
         float randomDamage = Random.Range(damageValue - damageOffset, damageValue + damageOffset);
-        Debug.Log("testing" + randomDamage);
         return randomDamage;
     }
 
@@ -79,7 +78,7 @@ public class GlobalDamageHelper
         }
         else if (info.skill.damageType == DamageType.REVIVE)
         {
-            return 1f;
+            return IndividualSkillHealCalculation(info.skill, info.target, info.attacker);
         }
 
         return 1f;

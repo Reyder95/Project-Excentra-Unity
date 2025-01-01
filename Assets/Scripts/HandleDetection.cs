@@ -17,7 +17,20 @@ public class HandleDetection : MonoBehaviour
         {
             if (defenderStats.isPlayer == attackerStats.isPlayer)
             {
-                return true;
+
+                if (ability.damageType == DamageType.REVIVE)
+                {
+                    if (defenderStats.currentHP <= 0)
+                        return true;
+
+                    return false;
+                }
+                else
+                {
+                    if (defenderStats.currentHP > 0)
+                        return true;
+                }
+
             }
         }
         else if (ability.entityType == EntityType.ENEMY)

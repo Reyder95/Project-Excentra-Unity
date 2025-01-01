@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor;
@@ -116,8 +117,6 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
-        
-
         if (stats.isPlayer)
         {
             input.enabled = true;
@@ -127,8 +126,11 @@ public class BattleManager
         }
         else
         {
-            int randChar = Random.Range(0, playerCharacters.Count);
-            currTurn.GetComponent<EntityController>().MoveTowards(playerCharacters[randChar]);
+            Debug.Log("HELLO!");
+            var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+            Debug.Log(possibleChars.Count);
+            int randChar = Random.Range(0, possibleChars.Count);
+            currTurn.GetComponent<EntityController>().MoveTowards(possibleChars[randChar]);
             ChangeState(BattleState.AWAIT_ENEMY);
         }
         
@@ -138,8 +140,12 @@ public class BattleManager
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
-        
+
         battleVariables.attacker = null;
+        battleVariables.targets = null;
+        battleVariables.isAttacking = false;
+        battleVariables.currAbility = null;
+
         ChangeState(BattleState.TURN_TRANSITION);
         input.enabled = false;
     }
@@ -149,12 +155,40 @@ public class BattleManager
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats stats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
+        bool isRevive = false;
+
+        if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.REVIVE)
+        {
+            isRevive = true;
+        }
+
+        if (battleVariables.targets != null)
+        {
+            foreach (var entity in battleVariables.targets)
+            {
+                EntityStats entityStats = entity.Value.GetComponent<EntityStats>();
+                if (!isRevive)
+                {
+                    if (entityStats.currentHP <= 0)
+                    {
+                        turnManager.KillEntity(entity.Value);
+                        entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");
+                    }
+                }
+                else
+                {
+                    turnManager.ReviveEntity(entity.Value);
+                    entity.Value.GetComponent<EntityController>().animator.SetTrigger("Revive");
+                }
+
+            }
+        }
+
 
         if (stats.isPlayer)
         {
             controller.basicActive = false;
-            battleVariables.isAttacking = false;
-            battleVariables.currAbility = null;
+
             specialPanel.style.visibility = Visibility.Hidden;
 
             controller.lineRenderer.positionCount = 0;
@@ -203,7 +237,9 @@ public class BattleManager
 
                 if (battleVariables.battleState == BattleState.PLAYER_BASIC && information != null)
                 {
-                    battleVariables.target = information.target;
+                    Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
+                    targetList.Add(information.target.GetComponent<EntityStats>().entityName, information.target);
+                    battleVariables.targets = targetList;
                     battleVariables.attacker = currTurn;
                     battleVariables.isAttacking = true;
                     currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
@@ -214,6 +250,7 @@ public class BattleManager
                     {
                         battleVariables.currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
                         battleVariables.currAbility = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<ConeAoe>().ability;
+                        battleVariables.targets = battleVariables.currAoe.GetComponent<ConeAoe>().aoeData.TargetList;
                         battleVariables.attacker = currTurn;
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
@@ -222,7 +259,9 @@ public class BattleManager
             }
             else
             {
-                battleVariables.target = information.target;
+                Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
+                targetList.Add(information.target.GetComponent<EntityStats>().entityName, information.target);
+                battleVariables.targets = targetList;
                 battleVariables.attacker = turnManager.GetCurrentTurn();
                 currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
             }
@@ -230,108 +269,28 @@ public class BattleManager
 
     }
 
-    public List<GameObject> BuildTargetList()
-    {
-        List<GameObject> targetList = new List<GameObject>();
-
-        if (battleVariables.currAoe == null)
-        {
-            targetList.Add(battleVariables.target);
-        }
-        else
-        {
-            AoeData aoeData = battleVariables.currAoe.GetComponent<ConeAoe>().aoeData;
-            foreach (var entity in aoeData.TargetList)
-            {
-                targetList.Add(entity.Value);
-            }
-        }
-
-        return targetList;
-    }
-
     public void OnHit()
     {
-        List<GameObject> targetList = BuildTargetList();
+        Dictionary<string, GameObject> targetList = battleVariables.targets;
 
         foreach (var entity in targetList)
         {
-            EntityController entityController = entity.GetComponent<EntityController>();
-            EntityStats entityStats = entity.GetComponent<EntityStats>();
+            EntityController entityController = entity.Value.GetComponent<EntityController>();
+            EntityStats entityStats = entity.Value.GetComponent<EntityStats>();
 
-            int entityDamage = (int)GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity, battleVariables.attacker, battleVariables.currAbility));
-
+            int entityDamage = (int)GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, battleVariables.currAbility));
 
             if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
             {
-                if (entityController.animator.GetCurrentAnimatorStateInfo(0).IsName("Damage"))
-                {
-                    entityController.animator.Play("Damage", -1, 0f);
-                }
-                else
-                {
-                    entityController.animator.SetTrigger("Damage");
-                }
+                entityController.animator.Play("Damage", -1, 0f);
             }
 
-            ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs(entityDamage));
-            Debug.Log(entityDamage);
+            ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity.Value, Mathf.Abs(entityDamage));
             entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
             if (entityStats.currentHP > entityStats.maximumHP)
                 entityStats.currentHP = entityStats.maximumHP;
             hpDictionary[entityStats.entityName].value = entityStats.CalculateHPPercentage();
         }
-
-        //EntityStats targetStats = null;
-        //if (battleVariables.target)
-        //{
-        //    targetStats = battleVariables.target.GetComponent<EntityStats>();
-        //}
-
-        //EntityStats attackerStats = battleVariables.attacker.GetComponent<EntityStats>();
-
-        //if (GetState() == BattleState.PLAYER_BASIC)
-        //{
-        //    if (targetStats != null)
-        //    {
-        //        EntityController controller = battleVariables.target.GetComponent<EntityController>();
-
-        //        if (controller.animator.GetCurrentAnimatorStateInfo(0).IsName("Damage"))
-        //        {
-        //            controller.animator.Play("Damage", -1, 0f);
-        //        }
-        //        else
-        //        {
-        //            controller.animator.SetTrigger("Damage");
-        //        }
-
-        //        ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(battleVariables.target);
-        //        targetStats.currentHP -= (int)GlobalDamageHelper.HandleActionCalculation(new ActionInformation(battleVariables.target, battleVariables.attacker));
-        //        bossHP.value = targetStats.CalculateHPPercentage();
-        //    }
-
-        //} else if (GetState() == BattleState.PLAYER_SPECIAL)
-        //{
-        //    ConeAoe aoePrefabData = battleVariables.currAoe.GetComponent<ConeAoe>();
-        //    AoeData internalAoeData = aoePrefabData.aoeData;
-
-        //    foreach (var entity in internalAoeData.TargetList)
-        //    {
-        //        float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, aoePrefabData.ability, internalAoeData));
-        //        Debug.Log(entityDamage);
-        //        EntityStats stats = entity.Value.GetComponent<EntityStats>();
-        //        EntityController controller = entity.Value.GetComponent<EntityController>();
-        //        controller.animator.SetTrigger("Damage");
-        //        stats.currentHP -= (int)entityDamage;
-        //        hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
-        //    }
-        //} else if (GetState() == BattleState.AWAIT_ENEMY)
-        //{
-        //    EntityController controller = battleVariables.target.GetComponent<EntityController>();
-        //    controller.animator.SetTrigger("Damage");
-        //    targetStats.currentHP -= Mathf.Max(((int)(attackerStats.attack * 6) - (targetStats.armour / 2)) / attackerStats.basicAttackCount, 1);
-        //    charPanel.Q<VisualElement>(targetStats.entityName.ToLower()).Q<ProgressBar>("hp").value = targetStats.CalculateHPPercentage();
-        //}
 
     }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -6,6 +7,7 @@ using UnityEngine.UIElements;
 public class TurnManager
 {
     List<GameObject> turnOrder = new List<GameObject>();
+    Dictionary<string, GameObject> deadUnits = new Dictionary<string, GameObject>();
     VisualTreeAsset turnElement;
     VisualElement turnOrderUI;
 
@@ -35,6 +37,23 @@ public class TurnManager
         });
     }
 
+    public bool InsertUnitIntoTurn(GameObject entity)
+    {
+        EntityStats entityStats = entity.GetComponent<EntityStats>();
+        for (int i = 0; i < turnOrder.Count; i++)
+        {
+            EntityStats turnStats = turnOrder[i].GetComponent<EntityStats>();
+
+            if (turnStats.delay > entityStats.delay)
+            {
+                turnOrder.Insert(i, entity);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void ReferenceUIElements()
     {
         turnElement = ExcentraDatabase.TryGetSubDocument("turn-element");
@@ -56,6 +75,30 @@ public class TurnManager
         }
     }
 
+    // TODO: Might need optimization
+    public void KillEntity(GameObject entity)
+    {
+        turnOrder.Remove(entity);
+
+        EntityStats entityStats = entity.GetComponent<EntityStats>();
+        deadUnits.Add(entityStats.entityName, entity);
+    }
+
+    public void ReviveEntity(GameObject entity)
+    {
+        deadUnits.Remove(entity.GetComponent<EntityStats>().entityName);
+
+        EntityStats entityStats = entity.GetComponent<EntityStats>();
+        entityStats.CalculateDelay();
+
+        bool added = InsertUnitIntoTurn(entity);
+
+        if (!added)
+        {
+            turnOrder.Add(entity);
+        }
+    }
+
     public void CalculateAllDelay()
     {
         foreach (var character in turnOrder)
@@ -69,22 +112,10 @@ public class TurnManager
         GameObject currTurn = PopCurrentTurn();
         EntityStats currTurnStats = currTurn.GetComponent<EntityStats>();
         currTurnStats.CalculateDelay();
-
-        bool added = false;
-
+        
         CalculateAllDelay();
 
-        for (int i = 0; i < turnOrder.Count; i++)
-        {
-            EntityStats turnStats = turnOrder[i].GetComponent<EntityStats>();
-
-            if (turnStats.delay > currTurnStats.delay)
-            {
-                added = true;
-                turnOrder.Insert(i, currTurn);
-                break;
-            }
-        }
+        bool added = InsertUnitIntoTurn(currTurn);
 
         if (currTurnStats.isPlayer)
         {
