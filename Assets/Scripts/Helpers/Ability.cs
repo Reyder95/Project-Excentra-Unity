@@ -27,6 +27,14 @@ public enum Scaler
     SPIRIT
 }
 
+public enum DamageType
+{
+    HEAL,
+    STATUS,
+    DAMAGE,
+    REVIVE
+}
+
 [Serializable]
 public class Ability
 {
@@ -41,7 +49,8 @@ public class Ability
     public int baseAether;
     public float scaleMult;
     public int delayAdditive;
-    public bool revive;
+    public int attackCount = 1;
+    public DamageType damageType;
 }
 
 [Serializable]

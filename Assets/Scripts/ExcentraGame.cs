@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,11 +16,19 @@ public class ExcentraGame : MonoBehaviour
     [SerializeField]
     List<AbilityKey> abilities = new List<AbilityKey>();
 
+    public DamageNumberHandler damageNumberHandlerScript;
+
+    public static ExcentraGame Instance { get; private set; }
+
     public static BattleManager battleManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
         ExcentraDatabase.LoadEntities(entityPrefabs);
         ExcentraDatabase.LoadDocuments(uiDocs);
         ExcentraDatabase.LoadUIAssets(uiSubDocs);
@@ -40,6 +49,17 @@ public class ExcentraGame : MonoBehaviour
 
 
         DontDestroyOnLoad(this.gameObject);
+    }
+
+    public void WaitCoroutine(float waitTime, System.Action callback)
+    {
+        StartCoroutine(WaitAndExecute(waitTime, callback));
+    }
+
+    public static IEnumerator WaitAndExecute(float waitTime, System.Action callback)
+    {
+        yield return new WaitForSeconds(waitTime);
+        callback?.Invoke();
     }
 
     public static void DestroyAoe(GameObject aoe)
