@@ -262,7 +262,7 @@ public class BattleManager
             int entityDamage = (int)GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity, battleVariables.attacker, battleVariables.currAbility));
 
 
-            if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE)
+            if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
             {
                 if (entityController.animator.GetCurrentAnimatorStateInfo(0).IsName("Damage"))
                 {
