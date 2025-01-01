@@ -20,7 +20,7 @@ public class EntityStats : MonoBehaviour
 
     public int maximumAether;
     [NonSerialized]
-    private int currentAether;
+    public int currentAether;
 
     [Header("Offensive Stats")]
     public int attack;
@@ -72,7 +72,7 @@ public class EntityStats : MonoBehaviour
 
     public float CalculateMPPercentage()
     {
-        return (currentAether / maximumAether) * 100;
+        return ((float)currentAether / (float)maximumAether) * 100;
     }
 
     public float CalculateMovementRadius()

@@ -138,6 +138,8 @@ public class BattleManager
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
+        
+        battleVariables.attacker = null;
         ChangeState(BattleState.TURN_TRANSITION);
         input.enabled = false;
     }
@@ -433,13 +435,17 @@ public class BattleManager
 
                 newSkill.RegisterCallback<ClickEvent>(e =>
                 {
+                    EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
                     VisualElement element = (e.currentTarget as VisualElement);
+                    if ((element.userData as Ability).baseAether > stats.currentAether)
+                        return;
 
                     ChangeState(BattleState.PLAYER_SPECIAL);
                     GameObject aoe = ActivateAbilityTelegraph(element);
                     int aoeIndex = aoeArenadata.AddAoe(aoe);
 
-                    EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
+
+
                     stats.arenaAoeIndex = aoeIndex;
                 });
 
@@ -528,6 +534,9 @@ public class BattleManager
         {
             info.mousePosition = aoeInit.frozenPosition;
         }
+
+        stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.ability.baseAether, 0);
+        mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
         
         HandleEntityAction(info);
         //Dictionary<string, GameObject> targetList = aoeInit.aoeData.TargetList;
