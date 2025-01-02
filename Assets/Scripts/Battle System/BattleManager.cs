@@ -480,6 +480,14 @@ public class BattleManager
         
     }
 
+    public bool IsAlive(GameObject entity)
+    {
+        EntityStats stats = entity.GetComponent<EntityStats>();
+        if (stats.currentHP > 0)
+            return true;
+        return false;
+    }
+
     public bool WithinBasicRange(GameObject entity)
     {
         GameObject currTurn = turnManager.GetCurrentTurn();

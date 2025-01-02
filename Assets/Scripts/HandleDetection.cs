@@ -11,35 +11,39 @@ public class HandleDetection : MonoBehaviour
     }
 
     public bool IsAttackable(ConeAoe aoe, EntityStats attackerStats, EntityStats defenderStats) {
-        Ability ability = aoe.ability;
-
-        if (ability.entityType == EntityType.ALLY)
+        if (ExcentraGame.battleManager.IsAlive(defenderStats.gameObject))
         {
-            if (defenderStats.isPlayer == attackerStats.isPlayer)
+            Ability ability = aoe.ability;
+
+            if (ability.entityType == EntityType.ALLY)
             {
-
-                if (ability.damageType == DamageType.REVIVE)
+                if (defenderStats.isPlayer == attackerStats.isPlayer)
                 {
-                    if (defenderStats.currentHP <= 0)
-                        return true;
 
-                    return false;
+                    if (ability.damageType == DamageType.REVIVE)
+                    {
+                        if (defenderStats.currentHP <= 0)
+                            return true;
+
+                        return false;
+                    }
+                    else
+                    {
+                        if (defenderStats.currentHP > 0)
+                            return true;
+                    }
+
                 }
-                else
+            }
+            else if (ability.entityType == EntityType.ENEMY)
+            {
+                if (defenderStats.isPlayer != attackerStats.isPlayer)
                 {
-                    if (defenderStats.currentHP > 0)
-                        return true;
+                    return true;
                 }
-
             }
         }
-        else if (ability.entityType == EntityType.ENEMY)
-        {
-            if (defenderStats.isPlayer != attackerStats.isPlayer)
-            {
-                return true;
-            }
-        }
+
 
         return false;
     }
