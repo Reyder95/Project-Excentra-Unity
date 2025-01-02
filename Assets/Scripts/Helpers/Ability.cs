@@ -48,6 +48,7 @@ public class Ability
     public int baseValue;
     public int baseAether;
     public float scaleMult;
+    public float range;
     public int delayAdditive;
     public int attackCount = 1;
     public DamageType damageType;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -19,7 +20,7 @@ public class BattleManager
 
     private TurnManager turnManager = new TurnManager();
     private BattleVariables battleVariables = new BattleVariables();
-    private AoeArenaData aoeArenadata = new AoeArenaData();
+    public AoeArenaData aoeArenadata = new AoeArenaData();
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
 
@@ -95,8 +96,8 @@ public class BattleManager
     {
         foreach (var character in playerCharacters) 
         {
-            float x = Random.Range(-17, 0);
-            float y = Random.Range(0, 8);
+            float x = UnityEngine.Random.Range(-17, 0);
+            float y = UnityEngine.Random.Range(0, 8);
             GameObject instantiatedCharacter = _instantiateFunction(character, new Vector2(x, y));
             instantiatedCharacter.GetComponent<EntityStats>().InitializeCurrentStats();
             this.playerCharacters.Add(instantiatedCharacter);
@@ -126,10 +127,8 @@ public class BattleManager
         }
         else
         {
-            Debug.Log("HELLO!");
             var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
-            Debug.Log(possibleChars.Count);
-            int randChar = Random.Range(0, possibleChars.Count);
+            int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
             currTurn.GetComponent<EntityController>().MoveTowards(possibleChars[randChar]);
             ChangeState(BattleState.AWAIT_ENEMY);
         }
@@ -330,6 +329,41 @@ public class BattleManager
         return battleVariables.battleState;
     }
 
+    public Ability GetCurrentAbility()
+    {
+        if (GetState() == BattleState.PLAYER_SPECIAL)
+        {
+            return battleVariables.currAbility;
+        }
+
+        return null;
+    }
+
+    public GameObject GetCurrentAttacker()
+    {
+        return turnManager.GetCurrentTurn();
+    }
+
+    public void SetCurrentAoe(GameObject aoe)
+    {
+        battleVariables.currAoe = aoe;
+    }
+
+    public GameObject GetCurrentAoe()
+    {
+        return battleVariables.currAoe;
+    }
+
+    public bool IsEntityAttacking()
+    {
+        return battleVariables.isAttacking;
+    }
+
+    public void DeleteCurrentAoe()
+    {
+        battleVariables.currAoe = null;
+    }
+
     public void OnEnableBasic()
     {
         ChangeState(BattleState.PLAYER_BASIC);
@@ -395,17 +429,28 @@ public class BattleManager
                 newSkill.RegisterCallback<ClickEvent>(e =>
                 {
                     EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
+                    EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
                     VisualElement element = (e.currentTarget as VisualElement);
                     if ((element.userData as Ability).baseAether > stats.currentAether)
                         return;
 
+                    battleVariables.currAbility = element.userData as Ability;
                     ChangeState(BattleState.PLAYER_SPECIAL);
                     GameObject aoe = ActivateAbilityTelegraph(element);
-                    int aoeIndex = aoeArenadata.AddAoe(aoe);
 
+                    if ((element.userData as Ability).targetMode != TargetMode.SELECT)
+                    {
+                        if ((element.userData as Ability).targetMode == TargetMode.FREE && (element.userData as Ability).shape == Shape.CIRCLE)
+                            controller.specialActive = true;
+                        int aoeIndex = aoeArenadata.AddAoe(aoe);
+                        stats.arenaAoeIndex = aoeIndex;
+                    }
+                    else
+                    {
+                        if ((element.userData as Ability).shape == Shape.CIRCLE)
+                            controller.specialActive = true;
+                    }
 
-
-                    stats.arenaAoeIndex = aoeIndex;
                 });
 
                 skillScroller.Add(newSkill);
@@ -468,7 +513,10 @@ public class BattleManager
         if (GetState() == BattleState.PLAYER_SPECIAL)
         {
             EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
+            EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
             GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
+            battleVariables.currAbility = null;
+            controller.specialActive = false;
             ExcentraGame.DestroyAoe(aoe);
             stats.arenaAoeIndex = -1;
             ChangeState(BattleState.PLAYER_CHOICE);
@@ -479,31 +527,40 @@ public class BattleManager
     
     public void OnAbilityShot()
     {
-        GameObject currEntity = turnManager.GetCurrentTurn();
-        EntityStats stats = currEntity.GetComponent<EntityStats>();
-        GameObject currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
-        ConeAoe aoeInit = currAoe.GetComponent<ConeAoe>();
-        aoeInit.FreezeAoe();
-        BattleClickInfo info = new BattleClickInfo();
-        if (aoeInit.ability.shape == Shape.CONE)
+        try
         {
-            info.mousePosition = aoeInit.frozenDestination;
-        }
-        else if (aoeInit.ability.shape == Shape.CIRCLE)
+            GameObject currEntity = turnManager.GetCurrentTurn();
+            EntityStats stats = currEntity.GetComponent<EntityStats>();
+            EntityController controller = currEntity.GetComponent<EntityController>();
+            GameObject currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
+            ConeAoe aoeInit = currAoe.GetComponent<ConeAoe>();
+
+            if (aoeInit.ability.shape == Shape.CIRCLE && aoeInit.ability.targetMode == TargetMode.SELECT)
+            {
+                if (Vector2.Distance(currEntity.transform.position, currAoe.transform.position) > aoeInit.ability.range / 2)
+                    return;
+            }
+
+            aoeInit.FreezeAoe();
+            BattleClickInfo info = new BattleClickInfo();
+            if (aoeInit.ability.shape == Shape.CONE || aoeInit.ability.shape == Shape.LINE)
+            {
+                info.mousePosition = aoeInit.frozenDestination;
+            }
+            else if (aoeInit.ability.shape == Shape.CIRCLE)
+            {
+                info.mousePosition = aoeInit.frozenPosition;
+            }
+
+            stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.ability.baseAether, 0);
+            mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            controller.specialActive = false;
+
+            HandleEntityAction(info);
+        } catch (NullReferenceException ex)
         {
-            info.mousePosition = aoeInit.frozenPosition;
+            Debug.Log("There's an error " + ex);
         }
-
-        stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.ability.baseAether, 0);
-        mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
-        
-        HandleEntityAction(info);
-        //Dictionary<string, GameObject> targetList = aoeInit.aoeData.TargetList;
-
-        //foreach (var target in targetList)
-        //{
-        //    Debug.Log("Hitting " + target.Value.ToString());
-        //}
     }
 
     public GameObject ActivateAbilityTelegraph(VisualElement element)

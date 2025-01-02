@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1674674124327472493}
   - component: {fileID: 8068224055348419154}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -12064145
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -98,8 +98,8 @@ GameObject:
   - component: {fileID: 6690793548753305562}
   - component: {fileID: 4655605540605123237}
   - component: {fileID: 7017684708506871901}
-  - component: {fileID: 2727158795659417907}
-  m_Layer: 0
+  - component: {fileID: 3619014839576919002}
+  m_Layer: 2
   m_Name: Circle
   m_TagString: aoe
   m_Icon: {fileID: 0}
@@ -181,21 +181,29 @@ MonoBehaviour:
     baseValue: 0
     baseAether: 0
     scaleMult: 0
+    range: 0
     delayAdditive: 0
-    revive: 0
+    attackCount: 1
+    damageType: 0
   arenaAoeIndex: -1
   originObject: {fileID: 0}
   attackerObject: {fileID: 0}
+  freezeAoe: 0
   destination: {x: 0, y: 0}
   width: 4
+  distance: 0
   triangle: {fileID: 0}
   circle: {fileID: 0}
+  line: {fileID: 0}
   scaleX: 1
-  scaleY: 1
+  frozenScale: {x: 0, y: 0}
+  frozenRotation: {x: 0, y: 0, z: 0, w: 0}
+  frozenDestination: {x: 0, y: 0}
   radius: 2
   circleAoe: {fileID: 6201414465274245443}
   circlePosition: {x: 0, y: 0}
---- !u!50 &2727158795659417907
+  frozenPosition: {x: 0, y: 0}
+--- !u!50 &3619014839576919002
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0

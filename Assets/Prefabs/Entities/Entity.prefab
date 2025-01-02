@@ -140,9 +140,13 @@ MonoBehaviour:
   entityStats: {fileID: 0}
   playerInput: {fileID: 0}
   turnStartPos: {x: 0, y: 0, z: 0}
+  basicActive: 0
   coneAoe: {fileID: 4484690648970835890, guid: 515721e2f00070e4a8c43cb86842d808, type: 3}
   circleAoe: {fileID: 8181824542807740559, guid: 38e46b65abaa63446bb78d1d346be5fc, type: 3}
+  lineAoe: {fileID: 6765610906363701024, guid: 308ee99daa0efd84196078c8386bd8d9, type: 3}
   circleRange: {fileID: 8390718592877475064, guid: 47a241d8a4ab7354cb163eff501e4142, type: 3}
+  circleBasicRangeInstance: {fileID: 0}
+  circleBasicRangeRenderer: {fileID: 0}
   charGround: {fileID: 5462995217107779432}
 --- !u!212 &138672604131897943
 SpriteRenderer:
