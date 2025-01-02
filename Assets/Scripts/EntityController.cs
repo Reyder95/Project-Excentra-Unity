@@ -103,6 +103,11 @@ public class EntityController : MonoBehaviour
                 aoe = Instantiate(circleAoe, new Vector2(1000, 1000), Quaternion.identity);
                 aoe.GetComponent<ConeAoe>().InitializeCircle(this.gameObject, this.gameObject, ability);
             }
+            else if (ability.targetMode == TargetMode.SELF)
+            {
+                aoe = Instantiate(circleAoe, new Vector2(1000, 1000), Quaternion.identity);
+                aoe.GetComponent<ConeAoe>().InitializeCircle(this.gameObject, this.gameObject, ability);
+            }
 
         } else if (ability.shape == Shape.LINE)
         {
