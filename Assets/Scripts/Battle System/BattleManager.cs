@@ -127,9 +127,7 @@ public class BattleManager
         }
         else
         {
-            Debug.Log("HELLO!");
             var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
-            Debug.Log(possibleChars.Count);
             int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
             currTurn.GetComponent<EntityController>().MoveTowards(possibleChars[randChar]);
             ChangeState(BattleState.AWAIT_ENEMY);
@@ -433,11 +431,13 @@ public class BattleManager
                     battleVariables.currAbility = element.userData as Ability;
                     ChangeState(BattleState.PLAYER_SPECIAL);
                     GameObject aoe = ActivateAbilityTelegraph(element);
-                    int aoeIndex = aoeArenadata.AddAoe(aoe);
 
+                    if ((element.userData as Ability).targetMode != TargetMode.SELECT)
+                    {
+                        int aoeIndex = aoeArenadata.AddAoe(aoe);
+                        stats.arenaAoeIndex = aoeIndex;
+                    }
 
-
-                    stats.arenaAoeIndex = aoeIndex;
                 });
 
                 skillScroller.Add(newSkill);
