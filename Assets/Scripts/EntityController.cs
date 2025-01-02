@@ -23,6 +23,7 @@ public class EntityController : MonoBehaviour
     private GameObject target;
     private bool autoMove = false;
     public bool basicActive = false;
+    public bool specialActive = false;
 
     public GameObject coneAoe;
     public GameObject circleAoe;
@@ -58,7 +59,7 @@ public class EntityController : MonoBehaviour
         int sortingLayer = (int)Mathf.Floor(charGround.transform.position.y * 100 / -1);
         spriteRenderer.sortingOrder = sortingLayer;
 
-        circleBasicRangeRenderer.enabled = basicActive;
+        circleBasicRangeRenderer.enabled = basicActive || specialActive;
 
         DrawBasicRangeCircle();
 
@@ -121,7 +122,15 @@ public class EntityController : MonoBehaviour
     public void DrawBasicRangeCircle()
     {
         circleBasicRangeInstance.transform.position = transform.position;
-        circleBasicRangeInstance.transform.localScale = new Vector2(entityStats.CalculateBasicRangeRadius(), entityStats.CalculateBasicRangeRadius());
+
+        if (basicActive)
+            circleBasicRangeInstance.transform.localScale = new Vector2(entityStats.CalculateBasicRangeRadius(), entityStats.CalculateBasicRangeRadius());
+        else if (specialActive)
+        {
+            float range = ExcentraGame.battleManager.GetCurrentAbility().range;
+            circleBasicRangeInstance.transform.localScale = new Vector2(range, range);
+        }
+            
     }
 
     public void DrawMovementCircle()
@@ -316,7 +325,7 @@ public class EntityController : MonoBehaviour
 
         if (currAbility != null)
         {
-            if (currAbility.targetMode == TargetMode.SELECT)
+            if (currAbility.targetMode == TargetMode.SELECT && !ExcentraGame.battleManager.IsEntityAttacking())
             {
                 bool canTarget = false;
                 GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();

@@ -8,7 +8,10 @@ public class AoeArenaData
 
     public GameObject GetAoe(int index)
     {
-        return aoes[index];
+        if (index < aoes.Count && index != -1)
+            return aoes[index];
+
+        return null;
     }
 
     public int AddAoe(GameObject aoe)

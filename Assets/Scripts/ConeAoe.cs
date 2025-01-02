@@ -128,7 +128,8 @@ public class ConeAoe : MonoBehaviour
         // Set the z-value to 0 if you are working in 2D (to ignore depth)
         mouseWorldPosition.z = 0;
 
-        circlePosition = mouseWorldPosition;
+        if (Vector2.Distance(this.attackerObject.transform.position, mouseWorldPosition) < ability.range)
+            circlePosition = mouseWorldPosition;
 
         if (!freezeAoe)
         {
@@ -195,7 +196,14 @@ public class ConeAoe : MonoBehaviour
 
             if (ability.targetMode == TargetMode.FREE)
             {
-                circlePosition = mouseWorldPosition;
+                if (Vector2.Distance(this.attackerObject.transform.position, mouseWorldPosition) < ability.range / 2f)
+                    circlePosition = mouseWorldPosition;
+                else
+                {
+                    Vector2 direction = mouseWorldPosition - this.attackerObject.transform.position;
+                    direction = direction.normalized * (ability.range / 2);
+                    circlePosition = (Vector2)this.attackerObject.transform.position + direction;
+                }
             }
             else if (ability.targetMode == TargetMode.SELF)
             {
