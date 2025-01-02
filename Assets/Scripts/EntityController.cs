@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -25,6 +26,7 @@ public class EntityController : MonoBehaviour
 
     public GameObject coneAoe;
     public GameObject circleAoe;
+    public GameObject lineAoe;
     public GameObject circleRange;
 
     public GameObject circleBasicRangeInstance;
@@ -96,8 +98,16 @@ public class EntityController : MonoBehaviour
         }
         else if (ability.shape == Shape.CIRCLE)
         {
-            aoe = Instantiate(circleAoe, new Vector2(1000, 1000), Quaternion.identity);
-            aoe.GetComponent<ConeAoe>().InitializeCircle(this.gameObject, this.gameObject, ability);
+            if (ability.targetMode == TargetMode.FREE)
+            {
+                aoe = Instantiate(circleAoe, new Vector2(1000, 1000), Quaternion.identity);
+                aoe.GetComponent<ConeAoe>().InitializeCircle(this.gameObject, this.gameObject, ability);
+            }
+
+        } else if (ability.shape == Shape.LINE)
+        {
+            aoe = Instantiate(lineAoe, transform.position, Quaternion.identity);
+            aoe.GetComponent<ConeAoe>().InitializeLine(this.gameObject, this.gameObject, ability);
         }
 
         return aoe;
@@ -250,6 +260,30 @@ public class EntityController : MonoBehaviour
         EntityStats stats = GetComponent<EntityStats>();
         if (ExcentraGame.battleManager.BasicShouldBeHighlighted(stats))
             EnableOutline();
+
+        Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
+
+        if (currAbility != null && currAbility.targetMode == TargetMode.SELECT)
+        {
+            bool canTarget = false;
+            GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
+            EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
+
+            if (currAbility.entityType == EntityType.ALLY)
+                canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
+            else if (currAbility.entityType == EntityType.ENEMY)
+                canTarget = currAttackerStats.isPlayer != entityStats.isPlayer;
+
+            if (canTarget)
+            {
+                GameObject aoe = Instantiate(circleAoe, transform.position, Quaternion.identity);
+                aoe.GetComponent<ConeAoe>().InitializeCircle(this.gameObject, currAttacker, currAbility);
+                int index = ExcentraGame.battleManager.aoeArenadata.AddAoe(aoe);
+                currAttackerStats.arenaAoeIndex = index;
+                ExcentraGame.battleManager.SetCurrentAoe(aoe);
+            }
+
+        }
     }
 
     public void OnMouseDown()
@@ -272,6 +306,31 @@ public class EntityController : MonoBehaviour
         {
             DisableOutline();
         }
+
+        Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
+
+        if (currAbility != null)
+        {
+            if (currAbility.targetMode == TargetMode.SELECT)
+            {
+                bool canTarget = false;
+                GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
+                EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
+
+                if (currAbility.entityType == EntityType.ALLY)
+                    canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
+                else if (currAbility.entityType == EntityType.ENEMY)
+                    canTarget = currAttackerStats.isPlayer != entityStats.isPlayer;
+
+                if (canTarget)
+                {
+                    Destroy(ExcentraGame.battleManager.GetCurrentAoe());
+                    ExcentraGame.battleManager.aoeArenadata.PopAoe(currAttackerStats.arenaAoeIndex);
+                    ExcentraGame.battleManager.DeleteCurrentAoe();
+                }
+            }    
+        }
+          
         
     }
 }

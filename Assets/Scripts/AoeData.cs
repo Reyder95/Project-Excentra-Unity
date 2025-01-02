@@ -5,6 +5,8 @@ using UnityEngine;
 public class AoeData
 {
     private Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
+    public GameObject sourceTarget;
+    public GameObject attacker;
 
     public void AddTarget(GameObject target)
     {

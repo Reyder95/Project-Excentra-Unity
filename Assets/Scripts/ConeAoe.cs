@@ -16,13 +16,15 @@ public class ConeAoe : MonoBehaviour
 
     public bool freezeAoe = false;
 
-    [Header("Cone")]
+    [Header("Cone and Line")]
     public Vector2 destination;
     
 
     public float width = 4f;
+    public float distance = 0f;
     public GameObject triangle;
     public GameObject circle;
+    public GameObject line;
     public bool scaleX = true;      // Scale along the X-axis (default)
     Vector3 newScale;
     
@@ -51,6 +53,9 @@ public class ConeAoe : MonoBehaviour
         SpriteRenderer triangleRenderer = triangle.GetComponent<SpriteRenderer>();
         SpriteRenderer circleRenderer = circle.GetComponent<SpriteRenderer>();
 
+        width = ability.radius;
+        distance = ability.range;
+
         triangleRenderer.color = newColor;
         Color colorWithAlpha = triangleRenderer.color;
         colorWithAlpha.a = 0.5f;
@@ -59,6 +64,34 @@ public class ConeAoe : MonoBehaviour
         colorWithAlpha = circleRenderer.color;
         colorWithAlpha.a = 0.5f;
         circleRenderer.color = colorWithAlpha;
+
+        this.originObject = originObject;
+
+        // Get the direction vector from the origin to the destination
+        Vector2 direction = destination - (Vector2)originObject.transform.position;
+
+        // Calculate the angle in radians and convert to degrees
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Set the rotation of the sprite (Z-axis for 2D rotation)
+        transform.rotation = Quaternion.Euler(0, 0, angle);
+    }
+
+    public void InitializeLine(GameObject originObject, GameObject attackerObject, Ability ability = null)
+    {
+        this.ability = ability;
+        this.attackerObject = attackerObject;
+
+        Color newColor = Color.red;
+        SpriteRenderer lineRenderer = line.GetComponent<SpriteRenderer>();
+
+        width = ability.radius;
+        distance = ability.range;
+
+        lineRenderer.color = newColor;
+        Color colorWithAlpha = lineRenderer.color;
+        colorWithAlpha.a = 0.5f;
+        lineRenderer.color = colorWithAlpha;
 
         this.originObject = originObject;
 
@@ -122,21 +155,18 @@ public class ConeAoe : MonoBehaviour
         // Set the z-value to 0 if you are working in 2D (to ignore depth)
         mouseWorldPosition.z = 0;
 
-        if (ability != null && ability.shape == Shape.CONE)
+        if (ability != null && (ability.shape == Shape.CONE || ability.shape == Shape.LINE) )
         {
             destination = mouseWorldPosition;
 
             transform.position = originObject.transform.position;
             // Calculate the distance between origin and destination
-            float distance = Vector2.Distance(originObject.transform.position, destination);
 
             // Adjust the scale of the sprite
             newScale = transform.localScale;
 
             if (scaleX) newScale.x = distance;  // Scale along X-axis
-            newScale.y = distance / 2;
-
-            
+            newScale.y = width;
 
             // Optional: Rotate the sprite to face the destination
             Vector2 direction = (destination - (Vector2)originObject.transform.position).normalized;
@@ -155,16 +185,26 @@ public class ConeAoe : MonoBehaviour
         }
         else if (ability != null && ability.shape == Shape.CIRCLE)
         {
-            circlePosition = mouseWorldPosition;
-
             radius = ability.radius;
-
             Vector3 newScale = transform.localScale;
 
             newScale.y = radius;
             newScale.x = radius;
 
             transform.localScale = newScale;
+
+            if (ability.targetMode == TargetMode.FREE)
+            {
+                circlePosition = mouseWorldPosition;
+            }
+            else if (ability.targetMode == TargetMode.SELF)
+            {
+                circlePosition = originObject.transform.position;
+            }
+            else if (ability.targetMode == TargetMode.SELECT)
+            {
+                circlePosition = originObject.transform.position;
+            }
 
             if (!freezeAoe)
             {
@@ -174,7 +214,8 @@ public class ConeAoe : MonoBehaviour
             {
                 transform.position = frozenPosition;
             }
-            
+
+
         }
 
     }
@@ -188,7 +229,7 @@ public class ConeAoe : MonoBehaviour
             {
                 frozenPosition = transform.position;
             }
-            else if (ability.shape == Shape.CONE)
+            else if (ability.shape == Shape.CONE || ability.shape == Shape.LINE)
             {
                 frozenScale = transform.localScale;
                 frozenRotation = transform.rotation;
