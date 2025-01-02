@@ -11,7 +11,7 @@ public class HandleDetection : MonoBehaviour
     }
 
     public bool IsAttackable(ConeAoe aoe, EntityStats attackerStats, EntityStats defenderStats) {
-        if (ExcentraGame.battleManager.IsAlive(defenderStats.gameObject))
+        if (ExcentraGame.battleManager.GetCurrentAbility().damageType == DamageType.REVIVE || ExcentraGame.battleManager.IsAlive(defenderStats.gameObject))
         {
             Ability ability = aoe.ability;
 

@@ -242,6 +242,25 @@ public class EntityController : MonoBehaviour
         DisableOutline();
     }
 
+    public bool CheckIfDistanceOutsideBase()
+    {
+        if (entityStats.moveDouble)
+        {
+            if (Vector2.Distance(transform.position, turnStartPos) > (((entityStats.CalculateMovementRadius() / 1.4f) / 2f)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = turnStartPos;
+    }
+
     public void OnSpecialAttack(InputAction.CallbackContext context)
     {
         if (ExcentraGame.battleManager.GetState() == BattleState.PLAYER_SPECIAL)

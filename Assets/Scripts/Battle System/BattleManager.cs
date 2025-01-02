@@ -138,7 +138,10 @@ public class BattleManager
     public void CleanupTurn()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
+        EntityStats currStats = currTurn.GetComponent<EntityStats>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
+
+        currStats.moveDouble = false;
 
         battleVariables.attacker = null;
         battleVariables.targets = null;
@@ -384,6 +387,12 @@ public class BattleManager
 
     public void OnBasicClicked()
     {
+        GameObject currTurn = turnManager.GetCurrentTurn();
+        EntityStats currStats = currTurn.GetComponent<EntityStats>();
+
+        if (currStats.moveDouble)
+            return;
+
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
             OnDisableBasic();
@@ -397,9 +406,14 @@ public class BattleManager
 
     public void OnSpecialClicked()
     {
+
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityController controller = currTurn.GetComponent<EntityController>();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
+
+        if (currStats.moveDouble)
+            return;
+
         //GameObject cone = _instantiateFunction(controller.coneAoe, currTurn.transform.position);
 
         VisualTreeAsset itemAsset = ExcentraDatabase.TryGetSubDocument("skill-item"); 
@@ -461,13 +475,20 @@ public class BattleManager
 
     public void OnMoveClicked()
     {
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats stats = currTurn.GetComponent<EntityStats>();
-        EntityController entityController = currTurn.GetComponent<EntityController>();
+        if (GetState() == BattleState.PLAYER_CHOICE)
+        {
+            GameObject currTurn = turnManager.GetCurrentTurn();
+            EntityStats stats = currTurn.GetComponent<EntityStats>();
+            EntityController entityController = currTurn.GetComponent<EntityController>();
 
-        stats.moveDouble = true;
+            if (entityController.CheckIfDistanceOutsideBase())
+                entityController.ResetPosition();
 
-        entityController.DrawMovementCircle();
+            stats.moveDouble = !stats.moveDouble;
+
+            entityController.DrawMovementCircle();
+        }
+
         
     }
 
