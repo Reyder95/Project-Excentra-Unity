@@ -27,4 +27,14 @@ public class StatusEffectHandler
 
         return null;
     }
+
+    public StatusBattle GetEffectByKey(string key)
+    {
+        if (effects.ContainsKey(key))
+        {
+            return effects[key];
+        }
+
+        return null;
+    }
 }

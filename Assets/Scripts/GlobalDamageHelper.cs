@@ -55,9 +55,9 @@ public class GlobalDamageHelper
         GameObject targetObject = info.target;
         EntityStats targetStats = targetObject.GetComponent<EntityStats>();
 
-        float initialDamageCalculation = InitialDamageCalculation(attackerStats.attack, 0, 0);
+        float initialDamageCalculation = InitialDamageCalculation(attackerStats.CalculateAttack(), 0, 0);
 
-        float damageCalculation = DamageCalculationPhysical(initialDamageCalculation, targetStats.armour, attackerStats.basicAttackCount);
+        float damageCalculation = DamageCalculationPhysical(initialDamageCalculation, targetStats.CalculateArmour(), attackerStats.basicAttackCount);
 
         return damageCalculation;
     }
@@ -92,15 +92,15 @@ public class GlobalDamageHelper
         
         if (info.scaler == Scaler.ATTACK)
         {
-            float damageValue = InitialDamageCalculation(info.baseValue, attackerStats.attack, info.scaleMult);
+            float damageValue = InitialDamageCalculation(info.baseValue, attackerStats.CalculateAttack(), info.scaleMult);
 
-            return DamageCalculationPhysical(damageValue, targetStats.armour, info.attackCount);
+            return DamageCalculationPhysical(damageValue, targetStats.CalculateArmour(), info.attackCount);
         }
         else if (info.scaler == Scaler.SPIRIT)
         {
-            float damageValue = InitialDamageCalculation(info.baseValue, attackerStats.spirit, info.scaleMult);
+            float damageValue = InitialDamageCalculation(info.baseValue, attackerStats.CalculateSpirit(), info.scaleMult);
 
-            return DamageCalculationMagical(damageValue, targetStats.aegis, info.attackCount);
+            return DamageCalculationMagical(damageValue, targetStats.CalculateAegis(), info.attackCount);
         }
 
         return 1f;
@@ -109,7 +109,7 @@ public class GlobalDamageHelper
     private static float IndividualSkillHealCalculation(Ability info, GameObject target, GameObject healer)
     {
         EntityStats healerStats = healer.GetComponent<EntityStats>();
-        float healValue = InitialDamageCalculation(info.baseValue, healerStats.spirit, info.scaleMult);
+        float healValue = InitialDamageCalculation(info.baseValue, healerStats.CalculateSpirit(), info.scaleMult);
         return -healValue;
     }
 }

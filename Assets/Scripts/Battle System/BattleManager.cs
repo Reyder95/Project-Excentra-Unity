@@ -121,16 +121,15 @@ public class BattleManager
         foreach (var status in stats.effectHandler.effects)
         {
             float damageToDeal = StatusCalculatorHelper.CalculateDamage(currTurn, status.Value);
-
             if (damageToDeal != 0f)
             {
                 DealDamage(currTurn, damageToDeal);
-                status.Value.turnsRemaining -= 1;
-
-                if (status.Value.turnsRemaining == 0)
-                    effectsToRemove.Add(status.Value.effect);
             }
 
+            status.Value.turnsRemaining -= 1;
+
+            if (status.Value.turnsRemaining == 0)
+                effectsToRemove.Add(status.Value.effect);
         }
 
         foreach (var effect in effectsToRemove)

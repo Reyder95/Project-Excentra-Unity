@@ -10,6 +10,12 @@ public static class ExcentraDatabase
     private static Dictionary<string, Ability> abilityDictionary = new Dictionary<string, Ability>();
     private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
 
+    private static Dictionary<string, List<string>> statStatusNames = new()
+    {
+        { "attack", new List<string> { "Physical Damage Down", "Physical Damage Up" } },
+        { "aegis", new List<string> { "Aegis Down", "Aegis Up" } },
+    };
+
     public static void LoadEntities(List<EntityPrefab> entities)
     {
         for (int i = 0; i < entities.Count; i++)
@@ -88,5 +94,13 @@ public static class ExcentraDatabase
             return statusDictionary[key];
 
         return null;
+    }
+
+    public static List<string> TryGetStatusNames(string key)
+    {
+        if (statStatusNames.ContainsKey(key))
+            return statStatusNames[key];
+
+        return new List<string>();
     }
 }
