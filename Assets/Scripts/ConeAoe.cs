@@ -17,7 +17,8 @@ public class ConeAoe : MonoBehaviour
     public bool freezeAoe = false;
 
     [Header("Cone and Line")]
-    public Vector2 destination;
+    public Vector2 frozenDestination;
+    public Vector2 frozenPosition;
     
 
     public float width = 4f;
