@@ -1,13 +1,119 @@
-<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <engine:VisualElement name="skill-item" style="flex-grow: 1; white-space: nowrap; height: 100px; flex-direction: row; width: 100%;">
-        <engine:VisualElement style="flex-grow: 0.3;">
-            <engine:VisualElement name="image" style="flex-grow: 1; background-color: rgba(255, 255, 255, 0); position: absolute; width: 50px; height: 50px; justify-content: flex-start; align-self: center; top: 25%;" />
+<!-- 
+  UXML for a single skill item.
+  Enhancements & Ideas:
+  1. Improved sizing & alignment so the icon and labels scale better with the container.
+  2. Added an optional "cooldown" bar or label to show skill recharge times.
+  3. Introduced placeholders for skill descriptions or tiers.
+  4. Positioned the icon in a simpler, more consistent manner (removed absolute where possible).
+  5. Comments suggest further expansions such as tooltips or clickable interactions. 
+-->
+
+<engine:UXML 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xmlns:editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="False">
+
+    <!-- Main container for the skill item row -->
+    <engine:VisualElement 
+        name="skill-item" 
+        style="flex-direction: row; 
+               width: 100%; 
+               height: 100px; 
+               flex-grow: 1; 
+               white-space: nowrap; 
+               align-items: center; 
+               justify-content: flex-start; 
+               background-color: rgba(0, 0, 0, 0.2); 
+               margin-bottom: 5px;">
+        
+        <!-- Icon area -->
+        <engine:VisualElement 
+            name="skill-icon-container" 
+            style="flex-grow: 0; 
+                   width: 80px; 
+                   align-items: center; 
+                   justify-content: center; 
+                   display: flex;">
+            
+            <!-- The icon or thumbnail for the skill -->
+            <engine:VisualElement 
+                name="skill-icon"
+                style="width: 50px; 
+                       height: 50px; 
+                       background-color: rgba(255, 255, 255, 0); 
+                       background-image: url('project://database/Assets/Icons/skill-icon.png'); 
+                       background-size: cover; 
+                       background-repeat: no-repeat; 
+                       background-position: center;" />
         </engine:VisualElement>
-        <engine:VisualElement style="flex-grow: 1;">
-            <engine:Label text="Some Skill Name" name="skill-name" style="width: 100%; height: 100%; -unity-text-align: middle-center; color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 20px;" />
+
+        <!-- Skill name and description container -->
+        <engine:VisualElement 
+            name="skill-info-container" 
+            style="flex-direction: column; 
+                   flex-grow: 2; 
+                   margin-left: 10px;">
+            
+            <!-- Skill Name -->
+            <engine:Label 
+                name="skill-name" 
+                text="Some Skill Name" 
+                style="width: 100%; 
+                       -unity-font-style: bold; 
+                       font-size: 20px; 
+                       color: rgb(255, 255, 255);" />
+
+            <!-- An optional skill tier or short description (e.g., 'LV2 - Fire Damage') -->
+            <engine:Label 
+                name="skill-tier" 
+                text="Tier: 2 | Type: Fire" 
+                style="width: 100%; 
+                       font-size: 14px; 
+                       color: rgba(255, 255, 255, 0.8); 
+                       margin-top: 4px;" />
+
+            <!-- A brief skill description or flavor text (if desired) -->
+            <engine:Label 
+                name="skill-description" 
+                text="Deals moderate fire damage to a single enemy." 
+                style="width: 100%; 
+                       font-size: 12px; 
+                       color: rgba(255, 255, 255, 0.7); 
+                       margin-top: 2px;" />
         </engine:VisualElement>
-        <engine:VisualElement style="flex-grow: 0.5;">
-            <engine:Label text="26 Aether" name="skill-cost" style="width: 99%; height: 100%; -unity-text-align: middle-center; color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 20px;" />
+
+        <!-- Skill cost container -->
+        <engine:VisualElement 
+            name="skill-cost-container"
+            style="flex-grow: 0; 
+                   width: 100px; 
+                   align-items: center; 
+                   justify-content: center; 
+                   display: flex;">
+            <engine:Label 
+                name="skill-cost" 
+                text="26 Aether" 
+                style="-unity-font-style: bold; 
+                       font-size: 18px; 
+                       color: rgb(255, 255, 255);" />
+        </engine:VisualElement>
+
+        <!-- (Optional) Cooldown or status label/element -->
+        <engine:VisualElement 
+            name="cooldown-container"
+            style="flex-grow: 0; 
+                   width: 80px; 
+                   align-items: center; 
+                   justify-content: center; 
+                   display: flex;">
+            <engine:Label 
+                name="cooldown-label" 
+                text="CD: 2" 
+                style="font-size: 14px; 
+                       color: rgb(255, 255, 255);" />
+            <!-- Alternatively, you could use a ProgressBar here for a visual cooldown. -->
         </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>
