@@ -1,42 +1,162 @@
-<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<!-- 
+  UXML for a turn-based battle system UI.
+  Changes & Ideas:
+  1. Renamed some elements (e.g., "move-control" to "item-control") for clarity.
+  2. Added a new 'battle-log' panel to show messages or events (optional).
+  3. Tweaked styles and alignment in a few places for consistency.
+  4. Provided placeholders for additional features (e.g., 'tp' or 'action-points' bars).
+-->
+
+<engine:UXML 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:engine="UnityEngine.UIElements" 
+    xmlns:editor="UnityEditor.UIElements" 
+    noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" 
+    editor-extension-mode="False">
+
+    <!-- Link to a USS for custom styles -->
     <Style src="project://database/Assets/battleSystem.uss?fileID=7433441132597879392&amp;guid=0b21ab53cde51a841863553435e4c6ff&amp;type=3#battleSystem" />
-    <engine:VisualElement name="turn-order" style="flex-grow: 0; width: 20%; height: 70%; position: absolute; background-color: rgba(0, 0, 0, 0); overflow: hidden; flex-wrap: nowrap; align-items: flex-start; flex-shrink: 0; flex-direction: column;" />
-    <engine:VisualElement name="char-panel" style="flex-grow: 1; position: absolute; background-color: rgba(87, 50, 137, 0.6); bottom: 0; top: 75%; width: 50%; flex-direction: row; border-left-color: rgba(0, 0, 0, 0.94); border-right-color: rgba(0, 0, 0, 0.94); border-top-color: rgba(0, 0, 0, 0.94); border-bottom-color: rgba(0, 0, 0, 0.94); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; background-image: url(&quot;project://database/Assets/Raw/Textures/Sprite-0001.png?fileID=2800000&amp;guid=3b88a7751f1f8f243a3ab729685e99ad&amp;type=3#Sprite-0001&quot;);">
-        <engine:VisualElement name="rioka" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
+
+    <!-- Turn order display area -->
+    <engine:VisualElement 
+        name="turn-order" 
+        style="flex-grow: 0; width: 20%; height: 70%; position: absolute; background-color: rgba(0, 0, 0, 0); overflow: hidden; flex-wrap: nowrap; align-items: flex-start; flex-shrink: 0; flex-direction: column;" />
+
+    <!-- Character status panel -->
+    <engine:VisualElement 
+        name="char-panel" 
+        style="flex-grow: 1; position: absolute; background-color: rgba(87, 50, 137, 0.6); bottom: 0; top: 75%; width: 50%; flex-direction: row; 
+               border-left-color: rgba(0, 0, 0, 0.94); border-right-color: rgba(0, 0, 0, 0.94); border-top-color: rgba(0, 0, 0, 0.94); border-bottom-color: rgba(0, 0, 0, 0.94);
+               border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; 
+               background-image: url(&quot;project://database/Assets/Raw/Textures/Sprite-0001.png?fileID=2800000&amp;guid=3b88a7751f1f8f243a3ab729685e99ad&amp;type=3#Sprite-0001&quot;);">
+        
+        <!-- Example character: Rioka -->
+        <engine:VisualElement 
+            name="rioka" 
+            style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" style="-unity-background-image-tint-color: rgb(255, 6, 6); background-color: rgb(255, 0, 0);" />
             <engine:ProgressBar value="22" name="mp" />
+            <!-- Optional: Another bar for special resources -->
+            <!-- <engine:ProgressBar value="10" name="tp" /> -->
             <engine:Label text="Rioka" style="-unity-font-style: bold; font-size: 20px;" />
         </engine:VisualElement>
-        <engine:VisualElement name="nancy" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
+
+        <!-- Nancy -->
+        <engine:VisualElement 
+            name="nancy" 
+            style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
             <engine:ProgressBar value="22" name="mp" />
+            <!-- <engine:ProgressBar value="10" name="tp" /> -->
             <engine:Label text="Nancy" style="-unity-font-style: bold; font-size: 20px;" />
         </engine:VisualElement>
-        <engine:VisualElement name="penny" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
+
+        <!-- Penny -->
+        <engine:VisualElement 
+            name="penny" 
+            style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
             <engine:ProgressBar value="22" name="mp" />
+            <!-- <engine:ProgressBar value="10" name="tp" /> -->
             <engine:Label text="Penny" style="-unity-font-style: bold; font-size: 20px;" />
         </engine:VisualElement>
-        <engine:VisualElement name="nono" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
+
+        <!-- Nono -->
+        <engine:VisualElement 
+            name="nono" 
+            style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
             <engine:ProgressBar value="22" name="mp" />
+            <!-- <engine:ProgressBar value="10" name="tp" /> -->
             <engine:Label text="Nono" style="-unity-font-style: bold; font-size: 20px;" />
         </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="control-panel" picking-mode="Ignore" focusable="true" style="flex-grow: 1; position: absolute; right: 0; bottom: 0; left: 85%; top: 60%; background-image: url(&quot;project://database/Assets/Raw/Textures/Sprite-0001.png?fileID=2800000&amp;guid=3b88a7751f1f8f243a3ab729685e99ad&amp;type=3#Sprite-0001&quot;); padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px;">
-        <engine:VisualElement name="VisualElement" picking-mode="Ignore" focusable="true" style="flex-grow: 1; white-space: normal; flex-direction: row;">
-            <engine:Button text="Basic" name="basic-control" focusable="true" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); width: 50%; flex-shrink: 1; -unity-font-style: bold;" />
-            <engine:Button text="Special" name="special-control" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); width: 50%; flex-shrink: 1; -unity-font-style: bold;" />
+
+    <!-- Main control panel -->
+    <engine:VisualElement 
+        name="control-panel" 
+        picking-mode="Ignore" 
+        focusable="true" 
+        style="flex-grow: 1; position: absolute; right: 0; bottom: 0; left: 85%; top: 60%; 
+               background-image: url(&quot;project://database/Assets/Raw/Textures/Sprite-0001.png?fileID=2800000&amp;guid=3b88a7751f1f8f243a3ab729685e99ad&amp;type=3#Sprite-0001&quot;);
+               padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px;">
+        
+        <!-- Row container for the first two buttons -->
+        <engine:VisualElement 
+            name="action-buttons" 
+            picking-mode="Ignore" 
+            focusable="true" 
+            style="flex-grow: 1; white-space: normal; flex-direction: row;">
+            <engine:Button 
+                text="Basic" 
+                name="basic-control" 
+                focusable="true" 
+                style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;);
+                       width: 50%; flex-shrink: 1; -unity-font-style: bold;" />
+            <engine:Button 
+                text="Special" 
+                name="special-control" 
+                style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;);
+                       width: 50%; flex-shrink: 1; -unity-font-style: bold;" />
         </engine:VisualElement>
-        <engine:Button text="Move" name="move-control" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); -unity-font-style: bold;" />
-        <engine:Button text="Item&#10;" name="move-control" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); -unity-font-style: bold;" />
-        <engine:Button text="End&#10;" name="end-control" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); -unity-font-style: bold;" />
+
+        <!-- Individual action buttons -->
+        <engine:Button 
+            text="Move" 
+            name="move-control" 
+            style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); 
+                   -unity-font-style: bold;" />
+        <engine:Button 
+            text="Item" 
+            name="item-control" 
+            style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); 
+                   -unity-font-style: bold;" />
+        <engine:Button 
+            text="End" 
+            name="end-control" 
+            style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Raw/Textures/button-normal.png?fileID=2800000&amp;guid=26643a7591b88734296855cb5f08cf6a&amp;type=3#button-normal&quot;); 
+                   -unity-font-style: bold;" />
     </engine:VisualElement>
-    <engine:VisualElement enabled="true" style="flex-grow: 1; align-content: flex-start; align-items: center; margin-top: 5%; height: 371px; position: absolute; left: 0; right: 0; top: 0; bottom: 60%;">
-        <engine:ProgressBar value="22" title="my-progress" name="boss-hp" style="width: 75%;" />
+
+    <!-- Boss or enemy HP bar area -->
+    <engine:VisualElement 
+        enabled="true" 
+        style="flex-grow: 1; align-content: flex-start; align-items: center; margin-top: 5%; height: 371px; position: absolute; left: 0; right: 0; top: 0; bottom: 60%;">
+        <engine:ProgressBar 
+            value="22" 
+            title="my-progress" 
+            name="boss-hp" 
+            style="width: 75%;" />
     </engine:VisualElement>
-    <engine:Label text="Label" name="state-label" style="position: absolute; right: 0; -unity-font-style: bold; font-size: 50px;" />
-    <engine:VisualElement name="special-panel" style="flex-grow: 1; position: absolute; left: 25%; top: 20%; right: 25%; bottom: 30%; background-color: rgba(0, 0, 0, 0.51); border-left-color: rgba(255, 255, 255, 0.59); border-right-color: rgba(255, 255, 255, 0.59); border-top-color: rgba(255, 255, 255, 0.59); border-bottom-color: rgba(255, 255, 255, 0.59); border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; visibility: hidden;">
-        <engine:ScrollView name="skill-scroller" style="height: 100%;" />
+
+    <!-- Label for system or turn state (e.g., "Player's Turn", "Victory", etc.) -->
+    <engine:Label 
+        text="Label" 
+        name="state-label" 
+        style="position: absolute; right: 0; -unity-font-style: bold; font-size: 50px;" />
+
+    <!-- Panel for special skills / spells -->
+    <engine:VisualElement 
+        name="special-panel" 
+        style="flex-grow: 1; position: absolute; left: 25%; top: 20%; right: 25%; bottom: 30%; 
+               background-color: rgba(0, 0, 0, 0.51); 
+               border-left-color: rgba(255, 255, 255, 0.59); border-right-color: rgba(255, 255, 255, 0.59); border-top-color: rgba(255, 255, 255, 0.59); border-bottom-color: rgba(255, 255, 255, 0.59);
+               border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; 
+               visibility: hidden;">
+        <engine:ScrollView 
+            name="skill-scroller" 
+            style="height: 100%;" />
+    </engine:VisualElement>
+
+    <!-- (Optional) A new battle log panel to display messages -->
+    <engine:VisualElement 
+        name="battle-log" 
+        style="position: absolute; left: 0; right: 70%; top: 0; bottom: 80%; 
+               background-color: rgba(0,0,0,0.5); overflow: scroll; border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; 
+               border-top-color: rgba(255,255,255,0.2); border-right-color: rgba(255,255,255,0.2); border-bottom-color: rgba(255,255,255,0.2); border-left-color: rgba(255,255,255,0.2);">
+        <!-- This could be updated dynamically with combat messages, e.g.:
+             <engine:Label text="Rioka used Basic Attack on Goblin" />
+             <engine:Label text="Goblin took 10 damage" />
+             ... -->
     </engine:VisualElement>
 </engine:UXML>
