@@ -111,12 +111,42 @@ public class BattleManager
         this.boss = bossInstantiation;
     }
 
+    public void HandleTurnStatuses()
+    {
+        GameObject currTurn = turnManager.GetCurrentTurn();
+        EntityStats stats = currTurn.GetComponent<EntityStats>();
+
+        List<StatusEffect> effectsToRemove = new List<StatusEffect>();
+
+        foreach (var status in stats.effectHandler.effects)
+        {
+            float damageToDeal = StatusCalculatorHelper.CalculateDamage(currTurn, status.Value);
+
+            if (damageToDeal != 0f)
+            {
+                DealDamage(currTurn, damageToDeal);
+                status.Value.turnsRemaining -= 1;
+
+                if (status.Value.turnsRemaining == 0)
+                    effectsToRemove.Add(status.Value.effect);
+            }
+
+        }
+
+        foreach (var effect in effectsToRemove)
+        {
+            stats.effectHandler.RemoveEffect(effect);
+        }
+    }
+
     public void StartTurn()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats stats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
+
+        HandleTurnStatuses();
 
         if (stats.isPlayer)
         {
@@ -277,23 +307,40 @@ public class BattleManager
 
         foreach (var entity in targetList)
         {
-            EntityController entityController = entity.Value.GetComponent<EntityController>();
-            EntityStats entityStats = entity.Value.GetComponent<EntityStats>();
-
-            int entityDamage = (int)GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, battleVariables.currAbility));
-
-            if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
-            {
-                entityController.animator.Play("Damage", -1, 0f);
-            }
-
-            ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity.Value, Mathf.Abs(entityDamage));
-            entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
-            if (entityStats.currentHP > entityStats.maximumHP)
-                entityStats.currentHP = entityStats.maximumHP;
-            hpDictionary[entityStats.entityName].value = entityStats.CalculateHPPercentage();
+            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, battleVariables.currAbility));
+            DealDamage(entity.Value, entityDamage);
         }
 
+    }
+
+    public void DealDamage(GameObject entity, float entityDamage)
+    {
+        EntityController entityController = entity.GetComponent<EntityController>();
+        EntityStats entityStats = entity.GetComponent<EntityStats>();
+
+        
+
+        if (battleVariables.currAbility != null)
+        {
+            foreach (var status in battleVariables.currAbility.statusEffect)
+            {
+                entityStats.effectHandler.AddEffect(ExcentraDatabase.TryGetStatus(status), turnManager.GetCurrentTurn());
+            }
+        }
+
+        Debug.Log(entityStats.effectHandler.effects.Count);
+
+
+        if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
+        {
+            entityController.animator.Play("Damage", -1, 0f);
+        }
+
+        ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
+        entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
+        if (entityStats.currentHP > entityStats.maximumHP)
+            entityStats.currentHP = entityStats.maximumHP;
+        hpDictionary[entityStats.entityName].value = entityStats.CalculateHPPercentage();
     }
 
     public void ChangeState(BattleState newState)

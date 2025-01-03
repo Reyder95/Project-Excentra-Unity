@@ -585,6 +585,39 @@ MonoBehaviour:
       delayAdditive: 225
       attackCount: 1
       damageType: 2
+  statusEffects:
+  - key: aegis_down
+    effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}
+  - key: aegis_up
+    effect: {fileID: 11400000, guid: 8eaad2a75a37f5c459af226d498a8abf, type: 2}
+  - key: aggression_down
+    effect: {fileID: 11400000, guid: 167e73a5a3773eb438db2b1a7d288e54, type: 2}
+  - key: aggression_up
+    effect: {fileID: 11400000, guid: c55f6be0bbfed4747838e459e1f2c726, type: 2}
+  - key: aggression_turn_up
+    effect: {fileID: 11400000, guid: 455dcee7d42a06640824214a46ad4524, type: 2}
+  - key: armour_down
+    effect: {fileID: 11400000, guid: 191f1754e055a894793c84ecf1695a0e, type: 2}
+  - key: armour_up
+    effect: {fileID: 11400000, guid: 16ba61f97663d82408e05be74652d490, type: 2}
+  - key: poison
+    effect: {fileID: 11400000, guid: 75244c625cfa1ea42825d341d59969db, type: 2}
+  - key: evasion_down
+    effect: {fileID: 11400000, guid: d4b99421b33f0904fbf7647cfe711c5d, type: 2}
+  - key: evasion_up
+    effect: {fileID: 11400000, guid: 3e7deef409655ea4fba09403f20cb2b3, type: 2}
+  - key: magic_damage_down
+    effect: {fileID: 11400000, guid: 3b0bd48d00c0d3e47824cf2bf6ad318d, type: 2}
+  - key: magic_damage_up
+    effect: {fileID: 11400000, guid: 04eebaecbdb26674b957af7563e72132, type: 2}
+  - key: physical_damage_down
+    effect: {fileID: 11400000, guid: 418a6fbd10188fa478c29430e4a64aa5, type: 2}
+  - key: physical_damage_up
+    effect: {fileID: 11400000, guid: 6d1f8ad39a433c54bae3493169a9951f, type: 2}
+  - key: spirit_acclimation_blue
+    effect: {fileID: 11400000, guid: 1035596bfc7409747a540d80e5cd727b, type: 2}
+  - key: spirit_acclimation_red
+    effect: {fileID: 11400000, guid: 6d6960cc87bef904cb67869040e96abd, type: 2}
   damageNumberHandlerScript: {fileID: 1049321076}
 --- !u!4 &1272877064
 Transform:

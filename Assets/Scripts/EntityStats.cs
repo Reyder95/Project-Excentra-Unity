@@ -14,37 +14,45 @@ public class EntityStats : MonoBehaviour
     public bool isPlayer;
 
     [Header("Character Resources")]
-    public int maximumHP;
+    public float maximumHP;
     [NonSerialized]
-    public int currentHP;
+    public float currentHP;
 
-    public int maximumAether;
+    public float maximumAether;
     [NonSerialized]
-    public int currentAether;
+    public float currentAether;
 
     [Header("Offensive Stats")]
-    public int attack;
-    public int spirit;
+    public float attack;
+    public float spirit;
 
     [Header("Defensive Stats")]
-    public int armour;
-    public int evasion;
-    public int aegis;
+    public float armour;
+    public float evasion;
+    public float aegis;
 
     [Header("Utility")]
-    public int speed;
-    public int move;
-    public int basicRange;
+    public float speed;
+    public float move;
+    public float basicRange;
     [NonSerialized]
-    public int delay;
+    public float delay;
 
-    [Header("Utility")]
+    [Header("Aggression")]
+    public float aggressionGen;
+    public float aggressionDropoff;
+    public float aggressionTurns;
+
+    [Header("Misc.")]
     public int basicAttackCount = 1;
 
     // Additional useful information
     [NonSerialized]
     public int arenaAoeIndex = -1;
+    [NonSerialized]
     public bool moveDouble = false;
+    [NonSerialized]
+    public StatusEffectHandler effectHandler = new StatusEffectHandler();
 
     public void CalculateDelay(bool turn = false)
     {

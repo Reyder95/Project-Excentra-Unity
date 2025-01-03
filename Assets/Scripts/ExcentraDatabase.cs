@@ -8,6 +8,7 @@ public static class ExcentraDatabase
     private static Dictionary<string, UIDocument> documentDictionary = new Dictionary<string, UIDocument>();
     private static Dictionary<string, VisualTreeAsset> uiAssetDictionary = new Dictionary<string, VisualTreeAsset>();
     private static Dictionary<string, Ability> abilityDictionary = new Dictionary<string, Ability>();
+    private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
 
     public static void LoadEntities(List<EntityPrefab> entities)
     {
@@ -41,6 +42,14 @@ public static class ExcentraDatabase
         }
     }
 
+    public static void LoadStatuses(List<StatusEntry> statusEffects)
+    {
+        foreach (var status in statusEffects)
+        {
+            statusDictionary.Add(status.key, status.effect);
+        }
+    }
+
     public static GameObject TryGetEntity(string key)
     {
         if (entityDictionary.ContainsKey(key))
@@ -69,6 +78,14 @@ public static class ExcentraDatabase
     {
         if (abilityDictionary.ContainsKey(key))
             return abilityDictionary[key];
+
+        return null;
+    }
+
+    public static StatusEffect TryGetStatus(string key)
+    {
+        if (statusDictionary.ContainsKey(key))
+            return statusDictionary[key];
 
         return null;
     }

@@ -33,7 +33,7 @@ public class TurnManager
 
         turnOrder.Sort((a, b) =>
         {
-            return a.GetComponent<EntityStats>().delay - b.GetComponent<EntityStats>().delay;
+            return (int)a.GetComponent<EntityStats>().delay - (int)b.GetComponent<EntityStats>().delay;
         });
     }
 
