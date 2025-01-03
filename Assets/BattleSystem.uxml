@@ -6,21 +6,33 @@
             <engine:ProgressBar value="22" name="hp" style="-unity-background-image-tint-color: rgb(255, 6, 6); background-color: rgb(255, 0, 0);" />
             <engine:ProgressBar value="22" name="mp" />
             <engine:Label text="Rioka" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+                <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
+            </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="nancy" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
             <engine:ProgressBar value="22" name="mp" />
             <engine:Label text="Nancy" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+                <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
+            </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="penny" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
             <engine:ProgressBar value="22" name="mp" />
             <engine:Label text="Penny" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+                <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
+            </engine:VisualElement>
         </engine:VisualElement>
         <engine:VisualElement name="nono" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
             <engine:ProgressBar value="22" name="mp" />
             <engine:Label text="Nono" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+                <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
+            </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>
     <engine:VisualElement name="control-panel" picking-mode="Ignore" focusable="true" style="flex-grow: 1; position: absolute; right: 0; bottom: 0; left: 85%; top: 60%; background-image: url(&quot;project://database/Assets/Raw/Textures/Sprite-0001.png?fileID=2800000&amp;guid=3b88a7751f1f8f243a3ab729685e99ad&amp;type=3#Sprite-0001&quot;); padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px;">

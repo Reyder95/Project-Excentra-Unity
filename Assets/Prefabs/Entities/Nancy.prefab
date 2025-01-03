@@ -82,15 +82,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: abilityKeys.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'abilityKeys.Array.data[0]'
       value: spinslash
-      objectReference: {fileID: 0}
-    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
-      propertyPath: 'abilityKeys.Array.data[1]'
-      value: poison-blade
       objectReference: {fileID: 0}
     - target: {fileID: 5393262343277882581, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Enabled

@@ -504,6 +504,8 @@ MonoBehaviour:
     document: {fileID: 9197481963319205126, guid: 6dc8e4af386443240ace5e3d572e08b0, type: 3}
   - key: skill-item
     document: {fileID: 9197481963319205126, guid: 62d71ae4005f3b142a4ee96cb9df27b5, type: 3}
+  - key: status-effect
+    document: {fileID: 9197481963319205126, guid: ccda335b62ff46840836bc4b9e588635, type: 3}
   abilities:
   - key: fireball
     ability:
@@ -521,6 +523,7 @@ MonoBehaviour:
       delayAdditive: 300
       attackCount: 1
       damageType: 2
+      statusEffect: []
   - key: multiheal
     ability:
       abilityName: Multi-Heal
@@ -537,6 +540,7 @@ MonoBehaviour:
       delayAdditive: 125
       attackCount: 1
       damageType: 0
+      statusEffect: []
   - key: soul-levia
     ability:
       abilityName: Soul-Levia
@@ -553,6 +557,7 @@ MonoBehaviour:
       delayAdditive: 125
       attackCount: 1
       damageType: 3
+      statusEffect: []
   - key: spinslash
     ability:
       abilityName: Spin Slash
@@ -569,6 +574,7 @@ MonoBehaviour:
       delayAdditive: 100
       attackCount: 1
       damageType: 2
+      statusEffect: []
   - key: firearrow
     ability:
       abilityName: Fire Arrow
@@ -585,6 +591,7 @@ MonoBehaviour:
       delayAdditive: 225
       attackCount: 1
       damageType: 2
+      statusEffect: []
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}

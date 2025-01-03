@@ -23,6 +23,7 @@ public class BattleManager
     public AoeArenaData aoeArenadata = new AoeArenaData();
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
+    private Dictionary<string, VisualElement> debuffScrollers = new Dictionary<string, VisualElement>();
 
     VisualElement charPanel;
     VisualElement controlPanel;
@@ -55,6 +56,7 @@ public class BattleManager
         stateLabel = battleDoc.Q<Label>("state-label");
         bossHP = battleDoc.Q<ProgressBar>("boss-hp");
         specialPanel = battleDoc.Q<VisualElement>("special-panel");
+        
         ExcentraGame.Instance.damageNumberHandlerScript.battleUIRoot = battleDoc;
 
         foreach (var character in playerCharacters)
@@ -62,6 +64,8 @@ public class BattleManager
             EntityStats stats = character.GetComponent<EntityStats>();
             hpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("hp"));
             mpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("mp"));
+
+            debuffScrollers.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<VisualElement>("debuff"));
         }
         EntityStats bossStats = boss.GetComponent<EntityStats>();
         hpDictionary.Add(bossStats.entityName, bossHP);
@@ -312,13 +316,36 @@ public class BattleManager
 
     }
 
-    public void DealDamage(GameObject entity, float entityDamage)
+    public void DisplayStatuses(EntityStats entityStats)
     {
-        EntityController entityController = entity.GetComponent<EntityController>();
-        EntityStats entityStats = entity.GetComponent<EntityStats>();
+        try
+        {
+            VisualElement scroller = debuffScrollers[entityStats.entityName];
+            VisualTreeAsset statusTemplate = ExcentraDatabase.TryGetSubDocument("status-effect");
 
-        
 
+            scroller.Clear();
+
+            Debug.Log("Effects" + entityStats.effectHandler.effects.Count);
+            foreach (var status in entityStats.effectHandler.effects)
+            {
+                VisualElement statusInstance = statusTemplate.CloneTree();
+                statusInstance.style.flexShrink = 0;
+                statusInstance.style.width = new StyleLength(Length.Percent(25f));
+                statusInstance.Q<VisualElement>("image").style.backgroundImage = status.Value.effect.icon;
+
+                scroller.Add(statusInstance);
+            }
+        } catch (KeyNotFoundException ex)
+        {
+
+        }
+
+
+    }
+
+    public void AddStatusToEnemy(EntityStats entityStats)
+    {
         if (battleVariables.currAbility != null)
         {
             foreach (var status in battleVariables.currAbility.statusEffect)
@@ -326,6 +353,20 @@ public class BattleManager
                 entityStats.effectHandler.AddEffect(ExcentraDatabase.TryGetStatus(status), turnManager.GetCurrentTurn());
             }
         }
+
+        DisplayStatuses(entityStats);
+    }
+
+    public void DealDamage(GameObject entity, float entityDamage)
+    {
+        EntityController entityController = entity.GetComponent<EntityController>();
+        EntityStats entityStats = entity.GetComponent<EntityStats>();
+
+        Debug.Log("hi");
+
+
+        AddStatusToEnemy(entityStats);
+
 
         Debug.Log(entityStats.effectHandler.effects.Count);
 
