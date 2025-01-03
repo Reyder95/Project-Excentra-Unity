@@ -485,14 +485,15 @@ public class BattleManager
                 entityController.ResetPosition();
 
             stats.moveDouble = !stats.moveDouble;
-
-            entityController.DrawMovementCircle();
-        }
-
-        
-    }
-
-    public void OnEndClicked()
+if (aoeInit.ability.shape == Shape.CONE || aoeInit.ability.shape == Shape.LINE)
+{
+    info.mousePosition = aoeInit.frozenDestination;
+}
+else if (aoeInit.ability.shape == Shape.CIRCLE)
+{
+    info.mousePosition = aoeInit.frozenPosition;
+}
+nEndClicked()
     {
         if (battleVariables.battleState == BattleState.PLAYER_CHOICE)
         {
