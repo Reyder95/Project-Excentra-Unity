@@ -69,6 +69,7 @@ public class BattleManager
         }
         EntityStats bossStats = boss.GetComponent<EntityStats>();
         hpDictionary.Add(bossStats.entityName, bossHP);
+        debuffScrollers.Add(bossStats.entityName, bossHP.Q<VisualElement>("debuff"));
 
         stateLabel.style.visibility = Visibility.Hidden;
 
@@ -115,7 +116,7 @@ public class BattleManager
         this.boss = bossInstantiation;
     }
 
-    public void HandleTurnStatuses()
+    public bool HandleTurnStatuses()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats stats = currTurn.GetComponent<EntityStats>();
@@ -128,6 +129,14 @@ public class BattleManager
             if (damageToDeal != 0f)
             {
                 DealDamage(currTurn, damageToDeal);
+
+                if (stats.currentHP <= 0)
+                {
+                    battleVariables.targets = new Dictionary<string, GameObject>() { { stats.entityName, currTurn } };
+                    return true;
+                }
+                    
+
             }
 
             status.Value.turnsRemaining -= 1;
@@ -140,6 +149,8 @@ public class BattleManager
         {
             stats.effectHandler.RemoveEffect(effect);
         }
+
+        return false;
     }
 
     public void StartTurn()
@@ -149,7 +160,11 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
-        HandleTurnStatuses();
+        if (HandleTurnStatuses())
+        {
+            EndTurn();
+            return;
+        }
 
         if (stats.isPlayer)
         {
@@ -325,13 +340,20 @@ public class BattleManager
 
 
             scroller.Clear();
-
-            Debug.Log("Effects" + entityStats.effectHandler.effects.Count);
             foreach (var status in entityStats.effectHandler.effects)
             {
                 VisualElement statusInstance = statusTemplate.CloneTree();
-                statusInstance.style.flexShrink = 0;
-                statusInstance.style.width = new StyleLength(Length.Percent(25f));
+
+                if (entityStats.isPlayer)
+                {
+                    statusInstance.style.flexShrink = 0;
+                    statusInstance.style.width = new StyleLength(Length.Percent(25f));
+                }
+                else
+                {
+                    statusInstance.style.marginRight = 5f;
+                }
+
                 statusInstance.Q<VisualElement>("image").style.backgroundImage = status.Value.effect.icon;
 
                 scroller.Add(statusInstance);

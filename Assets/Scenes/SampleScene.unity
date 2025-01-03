@@ -592,6 +592,24 @@ MonoBehaviour:
       attackCount: 1
       damageType: 2
       statusEffect: []
+  - key: poison-slash
+    ability:
+      abilityName: Poison Slash
+      icon: {fileID: 2800000, guid: 92fd3434aad752f4aa14a92c60daa5b3, type: 3}
+      targetMode: 0
+      shape: 0
+      entityType: 1
+      radius: 7
+      scaler: 0
+      baseValue: 130
+      baseAether: 40
+      scaleMult: 1.8
+      range: 10
+      delayAdditive: 225
+      attackCount: 1
+      damageType: 2
+      statusEffect:
+      - poison
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}
