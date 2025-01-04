@@ -2,6 +2,12 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
+public enum AreaStyle
+{
+    SINGLE,
+    AREA
+}
+
 public enum TargetMode
 {
     SELECT,
@@ -41,6 +47,7 @@ public class Ability
 {
     public string abilityName;
     public Texture2D icon;
+    public AreaStyle areaStyle;
     public TargetMode targetMode;
     public Shape shape;
     public EntityType entityType;
