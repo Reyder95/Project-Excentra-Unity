@@ -9,12 +9,23 @@ public enum StatusDirection
 
 public static class StatusCalculatorHelper
 {
+    // Use Stat Types instead! (soontm)
     private static Dictionary<string, System.Func<float, StatusBattle, float>> statusStatFuncDict = new Dictionary<string, System.Func<float, StatusBattle, float>>()
     {
-        { "Aegis Down", (float stat, StatusBattle effect) => AegisCalc(stat, effect, StatusDirection.DOWN)},
-        { "Aegis Up", (float stat, StatusBattle effect) => AegisCalc(stat, effect, StatusDirection.UP)},
-        { "Physical Damage Up", (float stat, StatusBattle effect) => PhysicalDamageCalc(stat, effect, StatusDirection.UP)},
-        { "Physical Damage Down", (float stat, StatusBattle effect) => PhysicalDamageCalc(stat, effect, StatusDirection.DOWN)}
+        { "Aegis Down", (float stat, StatusBattle effect) => AegisCalc(stat, effect)},
+        { "Aegis Up", (float stat, StatusBattle effect) => AegisCalc(stat, effect)},
+        { "Physical Damage Up", (float stat, StatusBattle effect) => PhysicalDamageCalc(stat, effect)},
+        { "Physical Damage Down", (float stat, StatusBattle effect) => PhysicalDamageCalc(stat, effect)},
+        { "Aggression Up", (float stat, StatusBattle effect) => AggressionGenCalc(stat, effect)},
+        { "Aggression Down", (float stat, StatusBattle effect) => AggressionGenCalc(stat, effect)},
+        { "Aggression Turn Up", (float stat, StatusBattle effect) => AggressionTurnCalc(stat, effect)},
+        { "Armour Up", (float stat, StatusBattle effect) => ArmourCalc(stat, effect)},
+        { "Armour Down", (float stat, StatusBattle effect) => ArmourCalc(stat, effect)},
+        { "Evasion Up", (float stat, StatusBattle effect) => EvasionCalc(stat, effect)},
+        { "Evasion Down", (float stat, StatusBattle effect) => EvasionCalc(stat, effect)},
+        { "Magic Damage Up", (float stat, StatusBattle effect) => MagicalDamageCalc(stat, effect)},
+        { "Magic Damage Down", (float stat, StatusBattle effect) => MagicalDamageCalc(stat, effect)},
+
     };
 
     private static Dictionary<string, System.Func<GameObject, StatusBattle, float>> statusDamageFuncDict = new Dictionary<string, System.Func<GameObject, StatusBattle, float>>()
@@ -39,28 +50,93 @@ public static class StatusCalculatorHelper
         return 0f;
     }
 
-    private static float AegisCalc(float stat, StatusBattle effect, StatusDirection dir)
+    private static float AegisCalc(float stat, StatusBattle effect)
     {
         StatusEffect statusEffect = effect.effect;
 
         float calc = (stat * 0.40f) * statusEffect.effectMagnitude;
 
-        if (dir == StatusDirection.UP)
+        if (statusEffect.effectType == EffectType.STAT_UP)
             return stat + calc;
-        else
+        else if (statusEffect.effectType == EffectType.STAT_DOWN)
             return stat - calc;
+
+        return stat;
     }
 
-    private static float PhysicalDamageCalc(float stat, StatusBattle effect, StatusDirection dir)
+    private static float PhysicalDamageCalc(float stat, StatusBattle effect)
     {
         StatusEffect statusEffect = effect.effect;
 
         float calc = (stat * 0.25f) * statusEffect.effectMagnitude;
 
-        if (dir == StatusDirection.UP)
+        if (statusEffect.effectType == EffectType.STAT_UP)
             return stat + calc;
-        else
+        else if (statusEffect.effectType == EffectType.STAT_DOWN)
             return stat - calc;
+
+        return stat;
+    }
+
+    private static float AggressionGenCalc(float stat, StatusBattle effect)
+    {
+        StatusEffect statusEffect = effect.effect;
+
+        float calc = (stat * 0.25f) * statusEffect.effectMagnitude;
+
+        if (statusEffect.effectType == EffectType.STAT_UP)
+            return stat + calc;
+        else if (statusEffect.effectType == EffectType.STAT_DOWN)
+            return stat - calc;
+
+        return stat;
+    }
+
+    private static float AggressionTurnCalc(float stat, StatusBattle effect)
+    {
+        return stat + 1;
+    }
+
+    private static float ArmourCalc(float stat, StatusBattle effect)
+    {
+        StatusEffect statusEffect = effect.effect;
+
+        float calc = (stat * 0.40f) * statusEffect.effectMagnitude;
+
+        if (statusEffect.effectType == EffectType.STAT_UP)
+            return stat + calc;
+        else if (statusEffect.effectType == EffectType.STAT_DOWN)
+            return stat - calc;
+
+        return stat;
+    }
+
+    private static float EvasionCalc(float stat, StatusBattle effect)
+    {
+        StatusEffect statusEffect = effect.effect;
+
+        float calc = (stat * 0.40f) * statusEffect.effectMagnitude;
+
+        if (statusEffect.effectType == EffectType.STAT_UP)
+            return stat + calc;
+        else if (statusEffect.effectType == EffectType.STAT_DOWN)
+            return stat - calc;
+
+        return stat;
+    }
+
+    private static float MagicalDamageCalc(float stat, StatusBattle effect)
+    {
+        StatusEffect statusEffect = effect.effect;
+
+        float calc = (stat * 0.25f) * statusEffect.effectMagnitude;
+
+        if (statusEffect.effectType == EffectType.STAT_UP)
+            return stat + calc;
+        else if (statusEffect.effectType == EffectType.STAT_DOWN)
+            return stat - calc;
+
+        return stat;
     }
 
     private static float PoisonCalc(GameObject target, StatusBattle effect)

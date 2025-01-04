@@ -96,52 +96,56 @@ public class EntityStats : MonoBehaviour
         return basicRange / 5f;
     }
 
-    // Stat Calculations (use these for all damage calcs)
-    public float CalculateAttack()
+    public float Calculation(string stat, float statValue)
     {
-        float finalAttack = attack;
-        List<string> statusNames = ExcentraDatabase.TryGetStatusNames("attack");
+        float finalStat = statValue;
+
+        List<string> statusNames = ExcentraDatabase.TryGetStatusNames(stat);
 
         foreach (var statusName in statusNames)
         {
             StatusBattle statusBattle = effectHandler.GetEffectByKey(statusName);
 
             if (statusBattle != null)
-                finalAttack = StatusCalculatorHelper.CalculateNewStat(finalAttack, statusBattle);
+                finalStat = StatusCalculatorHelper.CalculateNewStat(finalStat, statusBattle);
         }
 
-        Debug.Log(finalAttack);
-        
-        return finalAttack;
+        return finalStat;
+    }
+
+    // Stat Calculations (use these for all damage calcs)
+    public float CalculateAttack()
+    {
+        return Calculation("attack", attack);
     }
 
     public float CalculateSpirit()
     {
-        return spirit;
+        return Calculation("spirit", spirit);
     }
 
     public float CalculateArmour()
     {
-        return armour;
+        return Calculation("armour", armour);
     }
 
     public float CalculateEvasion()
     {
-        return evasion;
+        return Calculation("evasion", evasion);
     }
 
     public float CalculateAegis()
     {
-        return aegis;
+        return Calculation("aegis", aegis);
     }
 
     public float CalculateSpeed()
     {
-        return speed;
+        return Calculation("speed", speed);
     }
 
     public float CalculateMove()
     {
-        return move;
+        return Calculation("move", move);
     }
 }

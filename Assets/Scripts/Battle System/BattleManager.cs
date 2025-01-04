@@ -150,6 +150,8 @@ public class BattleManager
             stats.effectHandler.RemoveEffect(effect);
         }
 
+        DisplayStatuses(currTurn.GetComponent<EntityStats>());
+
         return false;
     }
 
@@ -222,6 +224,8 @@ public class BattleManager
                     if (entityStats.currentHP <= 0)
                     {
                         turnManager.KillEntity(entity.Value);
+                        entityStats.effectHandler.effects.Clear();
+                        DisplayStatuses(entityStats);
                         entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");
                     }
                 }
@@ -344,6 +348,8 @@ public class BattleManager
             {
                 VisualElement statusInstance = statusTemplate.CloneTree();
 
+                statusInstance.Q<Label>("turn-count").text = status.Value.turnsRemaining.ToString();
+
                 if (entityStats.isPlayer)
                 {
                     statusInstance.style.flexShrink = 0;
@@ -358,10 +364,8 @@ public class BattleManager
 
                 scroller.Add(statusInstance);
             }
-        } catch (KeyNotFoundException ex)
-        {
-
         }
+        catch (KeyNotFoundException) { }
 
 
     }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EVA_UP
   m_EditorClassIdentifier: 
   effectName: Evasion Up
-  icon: {fileID: 0}
+  icon: {fileID: 2800000, guid: aceb95da284858a40a04bfd491f7a42c, type: 3}
   description: Increases the chance of dodging an opponent's attack
   effectType: 1
   effectMagnitude: 1

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SPIRIT_A_RED
   m_EditorClassIdentifier: 
   effectName: 'Spirit Acclimation: Red'
-  icon: {fileID: 0}
+  icon: {fileID: 2800000, guid: 00cffd87bfdf3c74a8ddf853b7e926eb, type: 3}
   description: Be hit by the opposite color attack to switch this
   effectType: 10
   effectMagnitude: 0

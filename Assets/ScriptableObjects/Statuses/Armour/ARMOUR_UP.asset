@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ARMOUR_UP
   m_EditorClassIdentifier: 
   effectName: Armour Up
-  icon: {fileID: 0}
+  icon: {fileID: 2800000, guid: d906b481645a6684eae799cdf42cf813, type: 3}
   description: Reduces incoming physical damage
   effectType: 1
   effectMagnitude: 1

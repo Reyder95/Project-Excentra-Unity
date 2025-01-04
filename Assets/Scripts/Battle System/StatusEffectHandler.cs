@@ -7,10 +7,10 @@ public class StatusEffectHandler
 
     public void AddEffect(StatusEffect effect, GameObject owner)
     {
-        if (!effects.ContainsKey(effect.name))
+        if (!effects.ContainsKey(effect.effectName))
             effects.Add(effect.effectName, new StatusBattle(effect, owner, effect.baseTurns));
         else
-            effects[effect.name].turnsRemaining = effect.baseTurns;
+            effects[effect.effectName].turnsRemaining = effect.baseTurns;
     }
 
     public void RemoveEffect(StatusEffect effect)

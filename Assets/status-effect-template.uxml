@@ -1,5 +1,7 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <engine:VisualElement style="flex-grow: 0; flex-direction: row; flex-shrink: 0; height: 100%; width: 100%; justify-content: center; align-items: center;">
-        <engine:VisualElement name="image" style="flex-grow: 0; flex-shrink: 0; height: 50px; width: 50px; flex-direction: column; background-color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/Raw/Textures/Status%20Icons/status-icon-aegis-up.png?fileID=2800000&amp;guid=1e70c433aee0e1f4b9087cc3707a2a3c&amp;type=3#status-icon-aegis-up&quot;);" />
+        <engine:VisualElement name="image" style="flex-grow: 0; flex-shrink: 0; height: 50px; width: 50px; flex-direction: column; background-color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/Raw/Textures/Status%20Icons/status-icon-aegis-up.png?fileID=2800000&amp;guid=1e70c433aee0e1f4b9087cc3707a2a3c&amp;type=3#status-icon-aegis-up&quot;);">
+            <engine:Label text="3" double-click-selects-word="false" name="turn-count" style="position: absolute; color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 20px; right: -20%; bottom: -15px;" />
+        </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>
