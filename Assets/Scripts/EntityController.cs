@@ -364,6 +364,7 @@ public class EntityController : MonoBehaviour
                         Destroy(ExcentraGame.battleManager.GetCurrentAoe());
                         ExcentraGame.battleManager.aoeArenadata.PopAoe(currAttackerStats.arenaAoeIndex);
                         ExcentraGame.battleManager.DeleteCurrentAoe();
+                        currAttackerStats.arenaAoeIndex = -1;
                     }
                 }
             }

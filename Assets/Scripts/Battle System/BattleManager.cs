@@ -9,6 +9,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
+using static UnityEditor.Rendering.FilterWindow;
 using static UnityEngine.EventSystems.EventTrigger;
 
 public class BattleManager
@@ -567,6 +568,7 @@ public class BattleManager
 
                     battleVariables.currAbility = element.userData as Ability;
                     ChangeState(BattleState.PLAYER_SPECIAL);
+
                     GameObject aoe = ActivateAbilityTelegraph(element);
 
                     if ((element.userData as Ability).targetMode != TargetMode.SELECT)
@@ -587,6 +589,11 @@ public class BattleManager
                 skillScroller.Add(newSkill);
             }
         }
+    }
+
+    private void HandleSkillAoe(VisualElement element)
+    {
+        GameObject aoe = ActivateAbilityTelegraph(element);
 
     }
 
@@ -662,6 +669,7 @@ public class BattleManager
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
             if (stats.arenaAoeIndex >= 0)
             {
+                Debug.Log(stats.arenaAoeIndex);
                 GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
                 ExcentraGame.DestroyAoe(aoe);
             }
