@@ -23,6 +23,7 @@ public class BattleManager
     public AoeArenaData aoeArenadata = new AoeArenaData();
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
+    private Dictionary<string, VisualElement> debuffScrollers = new Dictionary<string, VisualElement>();
 
     VisualElement charPanel;
     VisualElement controlPanel;
@@ -55,6 +56,7 @@ public class BattleManager
         stateLabel = battleDoc.Q<Label>("state-label");
         bossHP = battleDoc.Q<ProgressBar>("boss-hp");
         specialPanel = battleDoc.Q<VisualElement>("special-panel");
+        
         ExcentraGame.Instance.damageNumberHandlerScript.battleUIRoot = battleDoc;
 
         foreach (var character in playerCharacters)
@@ -62,9 +64,12 @@ public class BattleManager
             EntityStats stats = character.GetComponent<EntityStats>();
             hpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("hp"));
             mpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("mp"));
+
+            debuffScrollers.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<VisualElement>("debuff"));
         }
         EntityStats bossStats = boss.GetComponent<EntityStats>();
         hpDictionary.Add(bossStats.entityName, bossHP);
+        debuffScrollers.Add(bossStats.entityName, bossHP.Q<VisualElement>("debuff"));
 
         stateLabel.style.visibility = Visibility.Hidden;
 
@@ -111,12 +116,57 @@ public class BattleManager
         this.boss = bossInstantiation;
     }
 
+    public bool HandleTurnStatuses()
+    {
+        GameObject currTurn = turnManager.GetCurrentTurn();
+        EntityStats stats = currTurn.GetComponent<EntityStats>();
+
+        List<StatusEffect> effectsToRemove = new List<StatusEffect>();
+
+        foreach (var status in stats.effectHandler.effects)
+        {
+            float damageToDeal = StatusCalculatorHelper.CalculateDamage(currTurn, status.Value);
+            if (damageToDeal != 0f)
+            {
+                DealDamage(currTurn, damageToDeal);
+
+                if (stats.currentHP <= 0)
+                {
+                    battleVariables.targets = new Dictionary<string, GameObject>() { { stats.entityName, currTurn } };
+                    return true;
+                }
+                    
+
+            }
+
+            status.Value.turnsRemaining -= 1;
+
+            if (status.Value.turnsRemaining == 0)
+                effectsToRemove.Add(status.Value.effect);
+        }
+
+        foreach (var effect in effectsToRemove)
+        {
+            stats.effectHandler.RemoveEffect(effect);
+        }
+
+        DisplayStatuses(currTurn.GetComponent<EntityStats>());
+
+        return false;
+    }
+
     public void StartTurn()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats stats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
+
+        if (HandleTurnStatuses())
+        {
+            EndTurn();
+            return;
+        }
 
         if (stats.isPlayer)
         {
@@ -174,6 +224,8 @@ public class BattleManager
                     if (entityStats.currentHP <= 0)
                     {
                         turnManager.KillEntity(entity.Value);
+                        entityStats.effectHandler.effects.Clear();
+                        DisplayStatuses(entityStats);
                         entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");
                     }
                 }
@@ -277,23 +329,88 @@ public class BattleManager
 
         foreach (var entity in targetList)
         {
-            EntityController entityController = entity.Value.GetComponent<EntityController>();
-            EntityStats entityStats = entity.Value.GetComponent<EntityStats>();
-
-            int entityDamage = (int)GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, battleVariables.currAbility));
-
-            if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
-            {
-                entityController.animator.Play("Damage", -1, 0f);
-            }
-
-            ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity.Value, Mathf.Abs(entityDamage));
-            entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
-            if (entityStats.currentHP > entityStats.maximumHP)
-                entityStats.currentHP = entityStats.maximumHP;
-            hpDictionary[entityStats.entityName].value = entityStats.CalculateHPPercentage();
+            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, battleVariables.currAbility));
+            DealDamage(entity.Value, entityDamage);
         }
 
+    }
+
+    public void DisplayStatuses(EntityStats entityStats)
+    {
+        try
+        {
+            VisualElement scroller = debuffScrollers[entityStats.entityName];
+            VisualTreeAsset statusTemplate = ExcentraDatabase.TryGetSubDocument("status-effect");
+
+
+            scroller.Clear();
+            foreach (var status in entityStats.effectHandler.effects)
+            {
+                VisualElement statusInstance = statusTemplate.CloneTree();
+
+                statusInstance.Q<Label>("turn-count").text = status.Value.turnsRemaining.ToString();
+
+                if (entityStats.isPlayer)
+                {
+                    statusInstance.style.flexShrink = 0;
+                    statusInstance.style.width = new StyleLength(Length.Percent(25f));
+                }
+                else
+                {
+                    statusInstance.style.marginRight = 5f;
+                }
+
+                statusInstance.Q<VisualElement>("image").style.backgroundImage = status.Value.effect.icon;
+
+                scroller.Add(statusInstance);
+            }
+        }
+        catch (KeyNotFoundException) { }
+
+
+    }
+
+    public void AddStatusToEnemy(EntityStats entityStats)
+    {
+        if (battleVariables.currAbility != null)
+        {
+            foreach (var status in battleVariables.currAbility.statusEffect)
+            {
+                float statusChance = status.chance;
+                float randomNum = UnityEngine.Random.Range(0, 100);
+
+                if (randomNum <= statusChance)
+                    entityStats.effectHandler.AddEffect(ExcentraDatabase.TryGetStatus(status.key), turnManager.GetCurrentTurn());
+            }
+        }
+
+        DisplayStatuses(entityStats);
+    }
+
+    public void DealDamage(GameObject entity, float entityDamage)
+    {
+        EntityController entityController = entity.GetComponent<EntityController>();
+        EntityStats entityStats = entity.GetComponent<EntityStats>();
+
+        Debug.Log("hi");
+
+
+        AddStatusToEnemy(entityStats);
+
+
+        Debug.Log(entityStats.effectHandler.effects.Count);
+
+
+        if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
+        {
+            entityController.animator.Play("Damage", -1, 0f);
+        }
+
+        ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
+        entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
+        if (entityStats.currentHP > entityStats.maximumHP)
+            entityStats.currentHP = entityStats.maximumHP;
+        hpDictionary[entityStats.entityName].value = entityStats.CalculateHPPercentage();
     }
 
     public void ChangeState(BattleState newState)
@@ -543,10 +660,13 @@ public class BattleManager
         {
             EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
-            GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
+            if (stats.arenaAoeIndex >= 0)
+            {
+                GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
+                ExcentraGame.DestroyAoe(aoe);
+            }
             battleVariables.currAbility = null;
             controller.specialActive = false;
-            ExcentraGame.DestroyAoe(aoe);
             stats.arenaAoeIndex = -1;
             ChangeState(BattleState.PLAYER_CHOICE);
             

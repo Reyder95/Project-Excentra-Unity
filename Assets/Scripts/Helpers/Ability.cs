@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public enum TargetMode
 {
@@ -52,6 +53,7 @@ public class Ability
     public int delayAdditive;
     public int attackCount = 1;
     public DamageType damageType;
+    public List<StatusEffectChance> statusEffect;
 }
 
 [Serializable]

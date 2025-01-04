@@ -16,6 +16,9 @@ public class ExcentraGame : MonoBehaviour
     [SerializeField]
     List<AbilityKey> abilities = new List<AbilityKey>();
 
+    [SerializeField]
+    List<StatusEntry> statusEffects = new List<StatusEntry>();
+
     public DamageNumberHandler damageNumberHandlerScript;
 
     public static ExcentraGame Instance { get; private set; }
@@ -33,6 +36,7 @@ public class ExcentraGame : MonoBehaviour
         ExcentraDatabase.LoadDocuments(uiDocs);
         ExcentraDatabase.LoadUIAssets(uiSubDocs);
         ExcentraDatabase.LoadAbilities(abilities);
+        ExcentraDatabase.LoadStatuses(statusEffects);
 
         battleManager = new BattleManager((prefab, position) => Instantiate(prefab, position, Quaternion.identity));
 

@@ -8,6 +8,20 @@ public static class ExcentraDatabase
     private static Dictionary<string, UIDocument> documentDictionary = new Dictionary<string, UIDocument>();
     private static Dictionary<string, VisualTreeAsset> uiAssetDictionary = new Dictionary<string, VisualTreeAsset>();
     private static Dictionary<string, Ability> abilityDictionary = new Dictionary<string, Ability>();
+    private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
+
+    // Potentially a poor way of doing this. Should this be in the status damage helper class? 
+    // Potential future solution: In status helper, use status "effect type" in a dictionary, pointing it to various functions.
+    private static Dictionary<string, List<string>> statStatusNames = new()
+    {
+        { "attack", new List<string> { "Physical Damage Down", "Physical Damage Up" } },
+        { "aegis", new List<string> { "Aegis Down", "Aegis Up" } },
+        { "aggressionGen", new List<string>() { "Aggression Up", "Aggression Down" } },
+        { "aggressionTurns", new List<string>() { "Agression Turn Up" } },
+        { "armour", new List<string>() { "Armour Down", "Armour Up" } },
+        { "evasion", new List<string>() { "Evasion Down", "Evasion Up" } },
+        { "spirit", new List<string>() { "Magic Damage Down", "Magic Damage Up" } }
+    };
 
     public static void LoadEntities(List<EntityPrefab> entities)
     {
@@ -41,6 +55,14 @@ public static class ExcentraDatabase
         }
     }
 
+    public static void LoadStatuses(List<StatusEntry> statusEffects)
+    {
+        foreach (var status in statusEffects)
+        {
+            statusDictionary.Add(status.key, status.effect);
+        }
+    }
+
     public static GameObject TryGetEntity(string key)
     {
         if (entityDictionary.ContainsKey(key))
@@ -71,5 +93,21 @@ public static class ExcentraDatabase
             return abilityDictionary[key];
 
         return null;
+    }
+
+    public static StatusEffect TryGetStatus(string key)
+    {
+        if (statusDictionary.ContainsKey(key))
+            return statusDictionary[key];
+
+        return null;
+    }
+
+    public static List<string> TryGetStatusNames(string key)
+    {
+        if (statStatusNames.ContainsKey(key))
+            return statStatusNames[key];
+
+        return new List<string>();
     }
 }
