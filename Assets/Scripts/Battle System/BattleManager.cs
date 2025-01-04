@@ -660,10 +660,9 @@ public class BattleManager
         {
             EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
-            GameObject aoe = null;
             if (stats.arenaAoeIndex >= 0)
             {
-                aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
+                GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
                 ExcentraGame.DestroyAoe(aoe);
             }
             battleVariables.currAbility = null;
