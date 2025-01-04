@@ -541,9 +541,12 @@ MonoBehaviour:
       attackCount: 1
       damageType: 0
       statusEffect:
-      - armour_up
-      - aggression_up
-      - magic_damage_up
+      - key: 
+        chance: 0
+      - key: 
+        chance: 0
+      - key: 
+        chance: 0
   - key: soul-levia
     ability:
       abilityName: Soul-Levia
@@ -612,7 +615,8 @@ MonoBehaviour:
       attackCount: 1
       damageType: 2
       statusEffect:
-      - poison
+      - key: poison
+        chance: 50.4
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}

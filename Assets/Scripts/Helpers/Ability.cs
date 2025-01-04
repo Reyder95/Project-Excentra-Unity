@@ -53,7 +53,7 @@ public class Ability
     public int delayAdditive;
     public int attackCount = 1;
     public DamageType damageType;
-    public List<string> statusEffect;
+    public List<StatusEffectChance> statusEffect;
 }
 
 [Serializable]

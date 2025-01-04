@@ -376,7 +376,11 @@ public class BattleManager
         {
             foreach (var status in battleVariables.currAbility.statusEffect)
             {
-                entityStats.effectHandler.AddEffect(ExcentraDatabase.TryGetStatus(status), turnManager.GetCurrentTurn());
+                float statusChance = status.chance;
+                float randomNum = UnityEngine.Random.Range(0, 100);
+
+                if (randomNum <= statusChance)
+                    entityStats.effectHandler.AddEffect(ExcentraDatabase.TryGetStatus(status.key), turnManager.GetCurrentTurn());
             }
         }
 
@@ -656,10 +660,14 @@ public class BattleManager
         {
             EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
-            GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
+            GameObject aoe = null;
+            if (stats.arenaAoeIndex >= 0)
+            {
+                aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
+                ExcentraGame.DestroyAoe(aoe);
+            }
             battleVariables.currAbility = null;
             controller.specialActive = false;
-            ExcentraGame.DestroyAoe(aoe);
             stats.arenaAoeIndex = -1;
             ChangeState(BattleState.PLAYER_CHOICE);
             
