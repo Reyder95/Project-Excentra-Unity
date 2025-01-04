@@ -74,7 +74,7 @@ public class GlobalDamageHelper
         }
         else if (info.skill.damageType == DamageType.STATUS)
         {
-            return 1f;
+            return 0f;
         }
         else if (info.skill.damageType == DamageType.REVIVE)
         {

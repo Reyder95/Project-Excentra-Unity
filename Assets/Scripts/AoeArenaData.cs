@@ -16,7 +16,6 @@ public class AoeArenaData
 
     public int AddAoe(GameObject aoe)
     {
-        Debug.Log("Test!");
         aoes.Add(aoe);
 
         return aoes.Count - 1;
@@ -24,7 +23,6 @@ public class AoeArenaData
 
     public GameObject PopAoe(int index)
     {
-        Debug.Log("Index: " + index);
         GameObject aoe = aoes[index];
         aoes.RemoveAt(index);
         return aoe;

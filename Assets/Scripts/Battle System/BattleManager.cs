@@ -190,6 +190,7 @@ public class BattleManager
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
+        EntityController controller = currTurn.GetComponent<EntityController>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
         currStats.moveDouble = false;
@@ -198,6 +199,9 @@ public class BattleManager
         battleVariables.targets = null;
         battleVariables.isAttacking = false;
         battleVariables.currAbility = null;
+
+        controller.specialActive = false;
+        
 
         ChangeState(BattleState.TURN_TRANSITION);
         input.enabled = false;
@@ -310,6 +314,14 @@ public class BattleManager
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
                     }
+                    else
+                    {
+                        battleVariables.currAbility = information.singleAbility;
+                        battleVariables.targets = new Dictionary<string, GameObject>() { { information.target.GetComponent<EntityStats>().entityName, information.target } };
+                        battleVariables.attacker = currTurn;
+                        battleVariables.isAttacking = true;
+                        currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
+                    }
                 }
             }
             else
@@ -393,13 +405,7 @@ public class BattleManager
         EntityController entityController = entity.GetComponent<EntityController>();
         EntityStats entityStats = entity.GetComponent<EntityStats>();
 
-        Debug.Log("hi");
-
-
         AddStatusToEnemy(entityStats);
-
-
-        Debug.Log(entityStats.effectHandler.effects.Count);
 
 
         if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
@@ -407,7 +413,8 @@ public class BattleManager
             entityController.animator.Play("Damage", -1, 0f);
         }
 
-        ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
+        if (entityDamage > 0f)  
+            ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
         entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
         if (entityStats.currentHP > entityStats.maximumHP)
             entityStats.currentHP = entityStats.maximumHP;
@@ -569,20 +576,14 @@ public class BattleManager
                     battleVariables.currAbility = element.userData as Ability;
                     ChangeState(BattleState.PLAYER_SPECIAL);
 
-                    GameObject aoe = ActivateAbilityTelegraph(element);
+                    if ((element.userData as Ability).areaStyle == AreaStyle.SINGLE || ((element.userData as Ability).targetMode == TargetMode.FREE && (element.userData as Ability).shape == Shape.CIRCLE))
+                        controller.specialActive = true;
 
-                    if ((element.userData as Ability).targetMode != TargetMode.SELECT)
-                    {
-                        if ((element.userData as Ability).targetMode == TargetMode.FREE && (element.userData as Ability).shape == Shape.CIRCLE)
-                            controller.specialActive = true;
-                        int aoeIndex = aoeArenadata.AddAoe(aoe);
-                        stats.arenaAoeIndex = aoeIndex;
-                    }
-                    else
-                    {
-                        if ((element.userData as Ability).shape == Shape.CIRCLE)
-                            controller.specialActive = true;
-                    }
+                    if (specialPanel.style.visibility == Visibility.Visible)
+                        specialPanel.style.visibility = Visibility.Hidden;
+
+                    if ((element.userData as Ability).areaStyle == AreaStyle.AREA)
+                        HandleSkillAoe(element, controller, stats);
 
                 });
 
@@ -591,10 +592,20 @@ public class BattleManager
         }
     }
 
-    private void HandleSkillAoe(VisualElement element)
+    private void HandleSkillAoe(VisualElement element, EntityController controller, EntityStats stats)
     {
         GameObject aoe = ActivateAbilityTelegraph(element);
 
+        if ((element.userData as Ability).targetMode != TargetMode.SELECT)
+        {
+            int aoeIndex = aoeArenadata.AddAoe(aoe);
+            stats.arenaAoeIndex = aoeIndex;
+        }
+        else
+        {
+            if ((element.userData as Ability).shape == Shape.CIRCLE)
+                controller.specialActive = true;
+        }
     }
 
     public void OnMoveClicked()
@@ -669,7 +680,6 @@ public class BattleManager
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
             if (stats.arenaAoeIndex >= 0)
             {
-                Debug.Log(stats.arenaAoeIndex);
                 GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
                 ExcentraGame.DestroyAoe(aoe);
             }
@@ -714,16 +724,11 @@ public class BattleManager
             controller.specialActive = false;
 
             HandleEntityAction(info);
-        } catch (NullReferenceException ex)
-        {
-            Debug.Log("There's an error " + ex);
-        }
+        } catch (NullReferenceException) { }
     }
 
     public GameObject ActivateAbilityTelegraph(VisualElement element)
     {
-        if (specialPanel.style.visibility == Visibility.Visible)
-            specialPanel.style.visibility = Visibility.Hidden;
 
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityController controller = currTurn.GetComponent<EntityController>();

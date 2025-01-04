@@ -297,11 +297,12 @@ public class EntityController : MonoBehaviour
 
             Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
 
-            if (currAbility != null && currAbility.targetMode == TargetMode.SELECT)
+            GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
+            EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
+
+            if (currAbility != null && currAbility.targetMode == TargetMode.SELECT && currAbility.areaStyle == AreaStyle.AREA)
             {
                 bool canTarget = false;
-                GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
-                EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
 
                 if (currAbility.entityType == EntityType.ALLY)
                     canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
@@ -318,6 +319,20 @@ public class EntityController : MonoBehaviour
                 }
 
             }
+            else if (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE)
+            {
+                bool canTarget = false;
+
+                if (currAbility.entityType == EntityType.ALLY)
+                    canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
+                else if (currAbility.entityType == EntityType.ENEMY)
+                    canTarget = currAttackerStats.isPlayer != entityStats.isPlayer;
+
+                if (canTarget)
+                {
+                    EnableOutline();
+                }
+            }
         }
     }
 
@@ -332,21 +347,38 @@ public class EntityController : MonoBehaviour
             ExcentraGame.battleManager.HandleEntityAction(info);
         }
 
+        Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
+        GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
+
+        // Need to tidy this up (please)
+        if (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE)
+        {
+            if (Vector2.Distance(currAttacker.transform.position, this.gameObject.transform.position) < currAbility.range / 2f)
+            {
+                DisableOutline();
+                BattleClickInfo info = new BattleClickInfo();
+                info.target = this.gameObject;
+                info.isSingleSkill = true;
+                info.singleAbility = currAbility;
+                ExcentraGame.battleManager.HandleEntityAction(info);
+            }
+        }
+
     }
 
     public void OnMouseExit()
     {
         if (ExcentraGame.battleManager.IsAlive(this.gameObject))
         {
+            Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
             EntityStats stats = GetComponent<EntityStats>();
-            if (ExcentraGame.battleManager.BasicShouldBeHighlighted(stats))
+            if (ExcentraGame.battleManager.BasicShouldBeHighlighted(stats) || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
             {
                 DisableOutline();
             }
 
-            Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
 
-            if (currAbility != null)
+            if (currAbility != null && currAbility.areaStyle == AreaStyle.AREA)
             {
                 if (currAbility.targetMode == TargetMode.SELECT && !ExcentraGame.battleManager.IsEntityAttacking())
                 {
