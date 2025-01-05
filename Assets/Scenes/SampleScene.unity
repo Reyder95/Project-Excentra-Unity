@@ -542,13 +542,7 @@ MonoBehaviour:
       delayAdditive: 125
       attackCount: 1
       damageType: 0
-      statusEffect:
-      - key: armour_up
-        chance: 100
-      - key: 
-        chance: 0
-      - key: 
-        chance: 0
+      statusEffect: []
   - key: soul-levia
     ability:
       abilityName: Soul-Levia
@@ -613,9 +607,9 @@ MonoBehaviour:
       entityType: 1
       radius: 7
       scaler: 0
-      baseValue: 130
+      baseValue: 100
       baseAether: 40
-      scaleMult: 1.8
+      scaleMult: 0.5
       range: 10
       delayAdditive: 225
       attackCount: 1
