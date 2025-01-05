@@ -289,13 +289,14 @@ public class EntityController : MonoBehaviour
 
     public void OnMouseEnter()
     {
-        if (ExcentraGame.battleManager.IsAlive(this.gameObject))
+        Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
+        if ((currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE) || ExcentraGame.battleManager.IsAlive(this.gameObject))
         {
             EntityStats stats = GetComponent<EntityStats>();
             if (ExcentraGame.battleManager.BasicShouldBeHighlighted(stats))
                 EnableOutline();
 
-            Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
+            
 
             GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
             EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
@@ -324,12 +325,27 @@ public class EntityController : MonoBehaviour
                 bool canTarget = false;
 
                 if (currAbility.entityType == EntityType.ALLY)
+                {
                     canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
+
+                    if (currAbility.damageType == DamageType.REVIVE)
+                    {
+                        if (stats.currentHP > 0)
+                        {
+                            canTarget = false;
+                            Debug.Log("Test!!");
+                        }
+                    }
+                        
+                }
                 else if (currAbility.entityType == EntityType.ENEMY)
                     canTarget = currAttackerStats.isPlayer != entityStats.isPlayer;
 
+                
+
                 if (canTarget)
                 {
+                    Debug.Log("Test!");
                     EnableOutline();
                 }
             }
@@ -368,9 +384,10 @@ public class EntityController : MonoBehaviour
 
     public void OnMouseExit()
     {
-        if (ExcentraGame.battleManager.IsAlive(this.gameObject))
+        Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
+        if ((currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE) || ExcentraGame.battleManager.IsAlive(this.gameObject))
         {
-            Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
+            
             EntityStats stats = GetComponent<EntityStats>();
             if (ExcentraGame.battleManager.BasicShouldBeHighlighted(stats) || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
             {
