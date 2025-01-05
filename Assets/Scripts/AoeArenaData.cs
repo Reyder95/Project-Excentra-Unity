@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AoeArenaData
 {
-    private List<GameObject> aoes = new List<GameObject>();
+    public List<GameObject> aoes = new List<GameObject>();
 
     public GameObject GetAoe(int index)
     {

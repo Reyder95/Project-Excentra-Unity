@@ -1,16 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
-using static UnityEditor.Rendering.FilterWindow;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class BattleManager
 {
@@ -29,8 +22,13 @@ public class BattleManager
     VisualElement charPanel;
     VisualElement controlPanel;
     VisualElement specialPanel;
+    VisualElement endScreen;
     ProgressBar bossHP;
     Label stateLabel;
+
+    // For Restarting
+    private List<GameObject> tempCharacterPrefabs = new List<GameObject>();
+    private GameObject tempBossPrefab = null;
 
     public BattleManager(System.Func<GameObject, Vector2, GameObject> instantiateFunction)
     {
@@ -38,18 +36,18 @@ public class BattleManager
     }
 
     // Start initializing the battle with specific characters
-    public void InitializeBattle(List<GameObject> playerCharacters, GameObject boss)
+    public void InitializeBattle(List<GameObject> playerCharacters, GameObject boss, bool restart = false)
     {
-        InstantiateCharacters(playerCharacters, boss);
+        InstantiateCharacters(playerCharacters, boss, restart);
 
         turnManager.InitializeTurnManager(this.playerCharacters, this.boss);
 
-        ReferenceUI();
+        ReferenceUI(restart);
 
         StartTurn();
     }
 
-    public void ReferenceUI()
+    public void ReferenceUI(bool restart = false)
     {
         VisualElement battleDoc = ExcentraDatabase.TryGetDocument("battle").rootVisualElement;
         charPanel = battleDoc.Q<VisualElement>("char-panel");
@@ -57,6 +55,7 @@ public class BattleManager
         stateLabel = battleDoc.Q<Label>("state-label");
         bossHP = battleDoc.Q<ProgressBar>("boss-hp");
         specialPanel = battleDoc.Q<VisualElement>("special-panel");
+        endScreen = battleDoc.Q<VisualElement>("end-screen");
         
         ExcentraGame.Instance.damageNumberHandlerScript.battleUIRoot = battleDoc;
 
@@ -75,10 +74,10 @@ public class BattleManager
         stateLabel.style.visibility = Visibility.Hidden;
 
         ChangeState(BattleState.PLAYER_CHOICE);
-        SetUIValues();
+        SetUIValues(restart);
     }
 
-    public void SetUIValues()
+    public void SetUIValues(bool restart = false)
     {
         foreach (var character in playerCharacters)
         {
@@ -91,15 +90,23 @@ public class BattleManager
         EntityStats bossHPStats = boss.GetComponent<EntityStats>();
         hpDictionary[bossHPStats.entityName].value = bossHPStats.CalculateHPPercentage();
 
-        controlPanel.Q<Button>("basic-control").clicked += OnBasicClicked;
-        controlPanel.Q<Button>("special-control").clicked += OnSpecialClicked;
-        controlPanel.Q<Button>("move-control").clicked += OnMoveClicked;
-        controlPanel.Q<Button>("end-control").clicked += OnEndClicked;
+        if (!restart)
+        {
+            controlPanel.Q<Button>("basic-control").clicked += OnBasicClicked;
+            controlPanel.Q<Button>("special-control").clicked += OnSpecialClicked;
+            controlPanel.Q<Button>("move-control").clicked += OnMoveClicked;
+            controlPanel.Q<Button>("end-control").clicked += OnEndClicked;
+            endScreen.Q<Button>("restart-button").clicked += OnRestartClicked;
+        }
+
+
+        endScreen.style.display = DisplayStyle.None;
     }
 
     // Place the characters down on the screen
-    public void InstantiateCharacters(List<GameObject> playerCharacters, GameObject boss)
+    public void InstantiateCharacters(List<GameObject> playerCharacters, GameObject boss, bool restart)
     {
+        this.playerCharacters.Clear();
         foreach (var character in playerCharacters) 
         {
             float x = UnityEngine.Random.Range(-17, 0);
@@ -207,6 +214,25 @@ public class BattleManager
         input.enabled = false;
     }
 
+    public bool IsLose(bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            foreach (var player in playerCharacters)
+            {
+                if (player.GetComponent<EntityStats>().currentHP > 0)
+                    return false;
+            }
+        }
+        else
+        {
+            if (boss.GetComponent<EntityStats>().currentHP > 0)
+                return false;
+        }
+
+        return true;
+    }
+
     public void EndTurn()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
@@ -232,6 +258,23 @@ public class BattleManager
                         entityStats.effectHandler.effects.Clear();
                         DisplayStatuses(entityStats);
                         entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");
+
+                        bool isPlayer = entityStats.isPlayer;
+
+                        if (IsLose(isPlayer))
+                        {
+                            CleanupTurn();
+                            if (isPlayer)
+                                endScreen.Q<Label>("defeat").style.display = DisplayStyle.Flex;
+                            else
+                                endScreen.Q<Label>("victory").style.display = DisplayStyle.Flex;    
+                            endScreen.style.display = DisplayStyle.Flex;
+
+                            return;
+                        }
+                        else
+                            Debug.Log("NO LOSE!");
+                        
                     }
                 }
                 else
@@ -425,6 +468,8 @@ public class BattleManager
     {
         battleVariables.battleState = newState;
 
+        Debug.Log(newState);
+
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
             stateLabel.style.visibility = Visibility.Visible;
@@ -499,6 +544,8 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
 
         controller.basicActive = true;
+
+        Debug.Log("why no work");
     }
 
     public void OnDisableBasic()
@@ -520,10 +567,12 @@ public class BattleManager
 
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
+            Debug.Log("lmaooo");
             OnDisableBasic();
         } 
         else
         {
+            Debug.Log("Hi!");
             OnEnableBasic();
         }
         
@@ -691,6 +740,13 @@ public class BattleManager
             specialPanel.style.visibility = Visibility.Visible;
         }
     }
+
+    public void OnRestartClicked()
+    {
+        Debug.Log("TEST!");
+        PostBattleCleanup();
+        InitializeBattle(tempCharacterPrefabs, tempBossPrefab, true);
+    }
     
     public void OnAbilityShot()
     {
@@ -733,5 +789,52 @@ public class BattleManager
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityController controller = currTurn.GetComponent<EntityController>();
         return controller.InitializeAoe(element.userData as Ability);
+    }
+
+    // Change how this works when new key system in place.
+    public void PostBattleCleanup()
+    {
+        CleanupTurn();
+        List<string> newPlayerCharacters = new List<string>();
+        string bossName = boss.GetComponent<EntityStats>().entityName;
+        UnityEngine.Object.Destroy(boss);
+
+        foreach (var player in playerCharacters)
+        {
+            EntityStats stats = player.GetComponent<EntityStats>();
+            EntityController controller = player.GetComponent<EntityController>();
+            
+
+            newPlayerCharacters.Add(stats.entityName);
+            controller.Cleanup();
+            UnityEngine.Object.Destroy(player);
+        }
+
+        playerCharacters.Clear();
+        boss = null;
+
+        tempCharacterPrefabs.Clear();
+        tempBossPrefab = null;
+
+        foreach (var playerName in newPlayerCharacters)
+        {
+            tempCharacterPrefabs.Add(ExcentraDatabase.TryGetEntity(playerName));
+        }
+        tempBossPrefab = ExcentraDatabase.TryGetEntity(bossName);
+
+        for (int i = 0; i < aoeArenadata.aoes.Count; i++)
+        {
+            GameObject aoe = aoeArenadata.PopAoe(i);
+
+            UnityEngine.Object.Destroy(aoe);
+        }
+
+        Debug.Log("Hello!asdasd");
+
+        hpDictionary.Clear();
+        mpDictionary.Clear();
+        debuffScrollers.Clear();
+        battleVariables = new BattleVariables();
+        turnManager = new TurnManager();
     }
 }
