@@ -260,6 +260,12 @@ public class EntityController : MonoBehaviour
         transform.position = turnStartPos;
     }
 
+    public void Cleanup()
+    {
+        Destroy(circleBasicRangeInstance);
+        circleBasicRangeRenderer = null;
+    }
+
     public void OnSpecialAttack(InputAction.CallbackContext context)
     {
         if (ExcentraGame.battleManager.GetState() == BattleState.PLAYER_SPECIAL)
@@ -296,8 +302,6 @@ public class EntityController : MonoBehaviour
             if (ExcentraGame.battleManager.BasicShouldBeHighlighted(stats))
                 EnableOutline();
 
-            
-
             GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
             EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
 
@@ -306,7 +310,19 @@ public class EntityController : MonoBehaviour
                 bool canTarget = false;
 
                 if (currAbility.entityType == EntityType.ALLY)
+                {
                     canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
+
+                    if (currAbility.damageType == DamageType.REVIVE)
+                    {
+                        if (stats.currentHP > 0)
+                        {
+                            canTarget = false;
+                            Debug.Log("Test!!");
+                        }
+                    }
+
+                }
                 else if (currAbility.entityType == EntityType.ENEMY)
                     canTarget = currAttackerStats.isPlayer != entityStats.isPlayer;
 
@@ -365,18 +381,42 @@ public class EntityController : MonoBehaviour
 
         Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
         GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
+        EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
 
         // Need to tidy this up (please)
         if (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE)
         {
             if (Vector2.Distance(currAttacker.transform.position, this.gameObject.transform.position) < currAbility.range / 2f)
             {
-                DisableOutline();
-                BattleClickInfo info = new BattleClickInfo();
-                info.target = this.gameObject;
-                info.isSingleSkill = true;
-                info.singleAbility = currAbility;
-                ExcentraGame.battleManager.HandleEntityAction(info);
+                bool canTarget = false;
+
+                if (currAbility.entityType == EntityType.ALLY)
+                {
+                    canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
+
+                    if (currAbility.damageType == DamageType.REVIVE)
+                    {
+                        if (stats.currentHP > 0)
+                        {
+                            canTarget = false;
+                            Debug.Log("Test!!");
+                        }
+                    }
+
+                }
+                else if (currAbility.entityType == EntityType.ENEMY)
+                    canTarget = currAttackerStats.isPlayer != entityStats.isPlayer;
+
+                if (canTarget)
+                {
+                    DisableOutline();
+                    BattleClickInfo info = new BattleClickInfo();
+                    info.target = this.gameObject;
+                    info.isSingleSkill = true;
+                    info.singleAbility = currAbility;
+                    ExcentraGame.battleManager.HandleEntityAction(info);
+                }
+
             }
         }
 

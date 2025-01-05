@@ -1,0 +1,9 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="VisualElement" picking-mode="Ignore" style="flex-grow: 1; position: absolute; left: 25%; top: 25%; bottom: 25%; right: 25%; background-color: rgba(0, 0, 0, 0.73); border-top-width: 5px; border-right-width: 5px; border-bottom-width: 5px; border-left-width: 5px; border-left-color: rgb(166, 166, 166); border-right-color: rgb(166, 166, 166); border-top-color: rgb(166, 166, 166); border-bottom-color: rgb(166, 166, 166);">
+        <engine:VisualElement name="VisualElement" picking-mode="Ignore" style="flex-grow: 1; justify-content: center; align-items: center; height: 635px; position: absolute; top: 0; left: 0; bottom: 0; right: 0;">
+            <engine:Label text="Congratulations! You won!" name="victory" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 25px; display: none;" />
+            <engine:Label text="You Lost!" name="defeat" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 25px; visibility: visible; display: none;" />
+        </engine:VisualElement>
+        <engine:Button text="Restart" name="restart-button" style="position: absolute; bottom: 10%; left: 40%; right: 40%;" />
+    </engine:VisualElement>
+</engine:UXML>
