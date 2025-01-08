@@ -59,7 +59,7 @@ public class HandleDetection : MonoBehaviour
 
             if (ExcentraGame.battleManager.TargetingEligible(aoeData.attackerObject, Entity)) 
             {
-                controller.HandleAoEOver();
+                controller.HandleTarget(true);
                 aoeData.HandleAddTarget(Entity);
             }
 
@@ -72,7 +72,7 @@ public class HandleDetection : MonoBehaviour
 
         if (aoe.tag == "aoe")
         {
-            controller.HandleAoELeave();
+            controller.HandleTarget(false);
             ConeAoe aoeData = aoe.GetComponent<ConeAoe>();
             aoeData.HandleRemoveTarget(Entity);
         }

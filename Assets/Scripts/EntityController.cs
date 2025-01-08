@@ -151,11 +151,11 @@ public class EntityController : MonoBehaviour
             // Flip the sprite based on movement direction
             if (inputVector.x > 0)
             {
-                FaceRight();   // Normal scale for moving right
+                FaceDirection(false);   // Normal scale for moving right
             }
             else if (inputVector.x < 0)
             {
-                FaceLeft(); // Flipped scale for moving left
+                FaceDirection(true); // Flipped scale for moving left
             }
 
             Vector2 newPosition = rb.position + inputVector * moveSpeed * Time.fixedDeltaTime;
@@ -168,14 +168,12 @@ public class EntityController : MonoBehaviour
 
     }
 
-    public void FaceRight()
+    public void FaceDirection(bool left)
     {
-        transform.localScale = localScale;
-    }
-
-    public void FaceLeft()
-    {
-        transform.localScale = new Vector2(localScale.x * -1, localScale.y); // Flipped scale for moving left
+        if (left)
+            transform.localScale = new Vector2(localScale.x * -1, localScale.y); // Flipped scale for moving left
+        else
+            transform.localScale = localScale;
     }
 
     public void OnHit()
@@ -188,24 +186,20 @@ public class EntityController : MonoBehaviour
         ExcentraGame.battleManager.EndTurn();
     }
 
-    public void EnableOutline()
+    /// <summary>
+    /// Handles what to do when the respective <b>Entity</b>
+    /// becomes targeted through such means (such as an <b>Area of Effect</b>
+    /// or <b>Mouse Over</b> during a <b>Single</b> attack).
+    /// <br/><br/>
+    /// <b>active</b> - Provides information on whether or not the <b>Entity</b> is active or not.
+    /// </summary>
+    /// <param name="active">Determines whether or not...</param>
+    public void HandleTarget(bool active)
     {
-        spriteRenderer.material.SetFloat("_Thickness", 0.001f);
-    }
-
-    public void DisableOutline()
-    {
-        spriteRenderer.material.SetFloat("_Thickness", 0f);
-    }
-
-    public void HandleAoEOver()
-    {
-        EnableOutline();
-    }
-
-    public void HandleAoELeave()
-    {
-        DisableOutline();
+        if (active)
+            spriteRenderer.material.SetFloat("_Thickness", 0.001f);
+        else
+            spriteRenderer.material.SetFloat("_Thickness", 0f);
     }
 
     public bool CheckIfDistanceOutsideBase()
@@ -217,9 +211,7 @@ public class EntityController : MonoBehaviour
                 return true;
             }
         }
-
         return false;
-
     }
 
     public void ResetPosition()
@@ -270,7 +262,7 @@ public class EntityController : MonoBehaviour
 
                 if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
                 {
-                    EnableOutline();
+                    HandleTarget(true);
                     return;
                 }
 
@@ -287,57 +279,19 @@ public class EntityController : MonoBehaviour
     {
 
         Ability currAbility = ExcentraGame.battleManager.GetCurrentAbility();
-        EntityStats stats = GetComponent<EntityStats>();
 
-        // Needs a global range checker. ATM only works with basic range!
-        // Some place where everything that needs a range can check it!
-        if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.GetCurrentAttacker(), this.gameObject) && ExcentraGame.battleManager.CheckWithinSkillRange(ExcentraGame.battleManager.GetCurrentAttacker(), this.gameObject) && ExcentraGame.battleManager.IsAlive(this.gameObject))
+        if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
         {
-            DisableOutline();
-            BattleClickInfo info = new BattleClickInfo();
-            info.target = this.gameObject;
-            info.singleAbility = currAbility;
-            ExcentraGame.battleManager.HandleEntityAction(info);
-        }
-
-
-        GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
-        EntityStats currAttackerStats = currAttacker.GetComponent<EntityStats>();
-
-        // Need to tidy this up (please)
-        if (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE)
-        {
-            if (Vector2.Distance(currAttacker.transform.position, this.gameObject.transform.position) < currAbility.range / 2f)
+            if (ExcentraGame.battleManager.CheckWithinSkillRange(ExcentraGame.battleManager.GetCurrentAttacker(), this.gameObject, currAbility))
             {
-                bool canTarget = false;
+                HandleTarget(false);
 
-                if (currAbility.entityType == EntityType.ALLY)
-                {
-                    canTarget = currAttackerStats.isPlayer == entityStats.isPlayer;
-
-                    if (currAbility.damageType == DamageType.REVIVE)
-                    {
-                        if (stats.currentHP > 0)
-                        {
-                            canTarget = false;
-                        }
-                    }
-
-                }
-                else if (currAbility.entityType == EntityType.ENEMY)
-                    canTarget = currAttackerStats.isPlayer != entityStats.isPlayer;
-
-                if (canTarget)
-                {
-                    DisableOutline();
-                    BattleClickInfo info = new BattleClickInfo();
-                    info.target = this.gameObject;
-                    info.isSingleSkill = true;
-                    info.singleAbility = currAbility;
-                    ExcentraGame.battleManager.HandleEntityAction(info);
-                }
-
+                BattleClickInfo info = new BattleClickInfo();
+                info.target = this.gameObject;
+                info.singleAbility = currAbility;
+                ExcentraGame.battleManager.HandleEntityAction(info);
             }
+
         }
 
     }
@@ -350,7 +304,7 @@ public class EntityController : MonoBehaviour
 
             if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
             {
-                DisableOutline();
+                HandleTarget(false);
                 return;
             }
 

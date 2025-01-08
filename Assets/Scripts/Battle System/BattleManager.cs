@@ -321,16 +321,16 @@ public class BattleManager
                 if (information != null && information.target != null)
                 {
                     if (information.target.transform.position.x > currTurn.transform.position.x)
-                        entityController.FaceRight();
+                        entityController.FaceDirection(false);
                     else
-                        entityController.FaceLeft();
+                        entityController.FaceDirection(true);
                 }
                 else if (information != null && information.mousePosition != null)
                 {
                     if (information.mousePosition.x > currTurn.transform.position.x)
-                        entityController.FaceRight();
+                        entityController.FaceDirection(false);
                     else
-                        entityController.FaceLeft();
+                        entityController.FaceDirection(true);
                 }    
 
                 if (battleVariables.battleState == BattleState.PLAYER_BASIC && information != null)
@@ -659,22 +659,12 @@ public class BattleManager
         
     }
 
+    // TODO: Could be on the entity itself honestly
     public bool IsAlive(GameObject entity)
     {
         EntityStats stats = entity.GetComponent<EntityStats>();
         if (stats.currentHP > 0)
             return true;
-        return false;
-    }
-
-    public bool WithinBasicRange(GameObject entity)
-    {
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats stats = currTurn.GetComponent<EntityStats>();
-
-        if (Vector2.Distance(currTurn.transform.position, entity.transform.position) < stats.CalculateBasicRangeRadius() / 2)
-            return true;
-
         return false;
     }
 
@@ -742,6 +732,8 @@ public class BattleManager
     {
         return SpawnAoe((element.userData as Ability), GetCurrentAttacker(), GetCurrentAttacker());
     }
+
+    // ------ CLEANED UP PROPER FUNCTIONS ------------
 
     // Just spawns the AoE. Assumes all checks pass to allow the AoE to spawn
     public GameObject SpawnAoe(Ability skill, GameObject origin, GameObject attacker)
