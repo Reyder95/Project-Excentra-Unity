@@ -19,6 +19,9 @@ public class ExcentraGame : MonoBehaviour
     [SerializeField]
     List<StatusEntry> statusEffects = new List<StatusEntry>();
 
+    [SerializeField]
+    List<NormalPrefab> miscPrefabs = new List<NormalPrefab>();
+
     public DamageNumberHandler damageNumberHandlerScript;
 
     public static ExcentraGame Instance { get; private set; }
@@ -37,6 +40,7 @@ public class ExcentraGame : MonoBehaviour
         ExcentraDatabase.LoadUIAssets(uiSubDocs);
         ExcentraDatabase.LoadAbilities(abilities);
         ExcentraDatabase.LoadStatuses(statusEffects);
+        ExcentraDatabase.LoadMiscPrefabs(miscPrefabs);
 
         battleManager = new BattleManager((prefab, position) => Instantiate(prefab, position, Quaternion.identity));
 

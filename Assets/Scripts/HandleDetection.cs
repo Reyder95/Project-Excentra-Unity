@@ -57,7 +57,7 @@ public class HandleDetection : MonoBehaviour
             EntityStats attackerStats = aoeData.attackerObject.GetComponent<EntityStats>();
             EntityStats defenderStats = Entity.GetComponent<EntityStats>();
 
-            if (IsAttackable(aoeData, attackerStats, defenderStats)) 
+            if (ExcentraGame.battleManager.TargetingEligible(aoeData.attackerObject, Entity)) 
             {
                 controller.HandleAoEOver();
                 aoeData.HandleAddTarget(Entity);

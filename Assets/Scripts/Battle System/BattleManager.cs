@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using static UnityEngine.EventSystems.EventTrigger;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class BattleManager
 {
@@ -272,8 +275,6 @@ public class BattleManager
 
                             return;
                         }
-                        else
-                            Debug.Log("NO LOSE!");
                         
                     }
                 }
@@ -294,12 +295,7 @@ public class BattleManager
             specialPanel.style.visibility = Visibility.Hidden;
 
             controller.lineRenderer.positionCount = 0;
-            if (stats.arenaAoeIndex != -1)
-            {
-                GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
-                ExcentraGame.DestroyAoe(aoe);
-                stats.arenaAoeIndex = -1;
-            }
+            DestroyAoe(currTurn);
         }
 
         CleanupTurn();
@@ -468,8 +464,6 @@ public class BattleManager
     {
         battleVariables.battleState = newState;
 
-        Debug.Log(newState);
-
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
             stateLabel.style.visibility = Visibility.Visible;
@@ -544,8 +538,6 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
 
         controller.basicActive = true;
-
-        Debug.Log("why no work");
     }
 
     public void OnDisableBasic()
@@ -567,12 +559,10 @@ public class BattleManager
 
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
-            Debug.Log("lmaooo");
             OnDisableBasic();
         } 
         else
         {
-            Debug.Log("Hi!");
             OnEnableBasic();
         }
         
@@ -625,35 +615,19 @@ public class BattleManager
                     battleVariables.currAbility = element.userData as Ability;
                     ChangeState(BattleState.PLAYER_SPECIAL);
 
-                    if ((element.userData as Ability).areaStyle == AreaStyle.SINGLE || ((element.userData as Ability).targetMode == TargetMode.FREE && (element.userData as Ability).shape == Shape.CIRCLE))
+                    if ((element.userData as Ability).areaStyle == AreaStyle.SINGLE || ((element.userData as Ability).shape == Shape.CIRCLE))
                         controller.specialActive = true;
 
                     if (specialPanel.style.visibility == Visibility.Visible)
                         specialPanel.style.visibility = Visibility.Hidden;
 
-                    if ((element.userData as Ability).areaStyle == AreaStyle.AREA)
-                        HandleSkillAoe(element, controller, stats);
+                    if (NeedsAoe(element.userData as Ability))
+                        ActivateAbilityTelegraph(element);
 
                 });
 
                 skillScroller.Add(newSkill);
             }
-        }
-    }
-
-    private void HandleSkillAoe(VisualElement element, EntityController controller, EntityStats stats)
-    {
-        GameObject aoe = ActivateAbilityTelegraph(element);
-
-        if ((element.userData as Ability).targetMode != TargetMode.SELECT)
-        {
-            int aoeIndex = aoeArenadata.AddAoe(aoe);
-            stats.arenaAoeIndex = aoeIndex;
-        }
-        else
-        {
-            if ((element.userData as Ability).shape == Shape.CIRCLE)
-                controller.specialActive = true;
         }
     }
 
@@ -704,17 +678,6 @@ public class BattleManager
         return false;
     }
 
-    public bool BasicShouldBeHighlighted(EntityStats entity)
-    {
-        if (GetState() == BattleState.PLAYER_BASIC)
-        {
-            if (!entity.isPlayer)
-                return true;
-        }
-
-        return false;
-    }
-
     public void EscapePressed()
     {
         if (specialPanel.style.visibility == Visibility.Visible)
@@ -725,25 +688,17 @@ public class BattleManager
     {
         if (GetState() == BattleState.PLAYER_SPECIAL)
         {
-            EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
-            if (stats.arenaAoeIndex >= 0)
-            {
-                GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
-                ExcentraGame.DestroyAoe(aoe);
-            }
+            DestroyAoe(turnManager.GetCurrentTurn());
             battleVariables.currAbility = null;
             controller.specialActive = false;
-            stats.arenaAoeIndex = -1;
             ChangeState(BattleState.PLAYER_CHOICE);
-            
             specialPanel.style.visibility = Visibility.Visible;
         }
     }
 
     public void OnRestartClicked()
     {
-        Debug.Log("TEST!");
         PostBattleCleanup();
         InitializeBattle(tempCharacterPrefabs, tempBossPrefab, true);
     }
@@ -760,7 +715,7 @@ public class BattleManager
 
             if (aoeInit.ability.shape == Shape.CIRCLE && aoeInit.ability.targetMode == TargetMode.SELECT)
             {
-                if (Vector2.Distance(currEntity.transform.position, currAoe.transform.position) > aoeInit.ability.range / 2)
+                if (!CheckWithinSkillRange(currEntity, currAoe, aoeInit.ability))
                     return;
             }
 
@@ -785,12 +740,60 @@ public class BattleManager
 
     public GameObject ActivateAbilityTelegraph(VisualElement element)
     {
-
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-        return controller.InitializeAoe(element.userData as Ability);
+        return SpawnAoe((element.userData as Ability), GetCurrentAttacker(), GetCurrentAttacker());
     }
 
+    // Just spawns the AoE. Assumes all checks pass to allow the AoE to spawn
+    public GameObject SpawnAoe(Ability skill, GameObject origin, GameObject attacker)
+    {
+        GameObject aoe = null;
+        EntityStats stats = attacker.GetComponent<EntityStats>();
+
+        if (skill.shape == Shape.CONE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), origin.transform.position, Quaternion.identity);
+            aoe.GetComponent<ConeAoe>().InitializeCone(origin, attacker, skill);
+        }
+        else if (skill.shape == Shape.CIRCLE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
+            aoe.GetComponent<ConeAoe>().InitializeCircle(origin, attacker, skill);
+        }
+        else if (skill.shape == Shape.LINE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), origin.transform.position, Quaternion.identity);
+            aoe.GetComponent<ConeAoe>().InitializeLine(origin, attacker, skill);
+        }
+
+        if (aoe != null)
+        {
+            int index = aoeArenadata.AddAoe(aoe);
+            stats.arenaAoeIndex = index;
+        }
+
+        return aoe;
+    }
+
+    // Each entity should have their aoe as an index on their stats. This is done via the above function.
+    public void DestroyAoe(GameObject owner)
+    {
+        EntityStats stats = owner.GetComponent<EntityStats>();
+        if (stats.arenaAoeIndex == -1)
+            return;
+
+        GameObject aoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
+        UnityEngine.GameObject.Destroy(aoe);
+        stats.arenaAoeIndex = -1;
+    }
+
+    public bool NeedsAoe(Ability skill)
+    {
+        if (skill.areaStyle == AreaStyle.SINGLE || skill.targetMode == TargetMode.SELECT)
+            return false;
+
+        return true;
+    }
+    
     // Change how this works when new key system in place.
     public void PostBattleCleanup()
     {
@@ -829,12 +832,83 @@ public class BattleManager
             UnityEngine.Object.Destroy(aoe);
         }
 
-        Debug.Log("Hello!asdasd");
-
         hpDictionary.Clear();
         mpDictionary.Clear();
         debuffScrollers.Clear();
         battleVariables = new BattleVariables();
         turnManager = new TurnManager();
+    }
+
+    public bool TargetingEligible(GameObject attacker, GameObject defender)
+    {
+        EntityStats attackerStats = attacker.GetComponent<EntityStats>();
+        EntityStats defenderStats = defender.GetComponent<EntityStats>();
+
+        bool sameTeam = attackerStats.isPlayer == defenderStats.isPlayer;
+
+        if (GetState() == BattleState.PLAYER_BASIC)
+        {
+            return !sameTeam;
+        }
+        else if (GetState() == BattleState.PLAYER_SPECIAL)
+        {
+            Ability currAbility = GetCurrentAbility();
+
+            if (currAbility != null)
+            {
+                EntityType entityType = currAbility.entityType;
+
+                if (entityType == EntityType.ALLY)
+                {
+                    bool revive = false;
+                    
+
+                    if (currAbility.damageType == DamageType.REVIVE)
+                        revive = true;
+
+                    if (sameTeam)
+                    {
+                        if (revive)
+                        {
+                            if (defenderStats.currentHP <= 0)
+                                return true;
+                        }
+                        else
+                        {
+                            if (defenderStats.currentHP > 0)
+                                return true;
+                        }
+                    }
+
+                }
+                else if (entityType == EntityType.ENEMY)
+                {
+                    if (!sameTeam && defenderStats.currentHP > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, Ability skill = null)
+    {
+        EntityStats attackerStats = attacker.GetComponent<EntityStats>();
+
+        if (skill == null)
+        {
+            if (Vector2.Distance(attacker.transform.position, defender.transform.position) < attackerStats.CalculateBasicRangeRadius() / 2)
+                return true;
+        }
+        else
+        {
+            if (Vector2.Distance(attacker.transform.position, defender.transform.position) < skill.range / 2)
+                return true;
+        }
+
+        return false;
     }
 }

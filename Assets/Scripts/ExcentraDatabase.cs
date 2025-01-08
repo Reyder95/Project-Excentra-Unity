@@ -9,6 +9,7 @@ public static class ExcentraDatabase
     private static Dictionary<string, VisualTreeAsset> uiAssetDictionary = new Dictionary<string, VisualTreeAsset>();
     private static Dictionary<string, Ability> abilityDictionary = new Dictionary<string, Ability>();
     private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
+    private static Dictionary<string, GameObject> miscPrefabDictionary = new Dictionary<string, GameObject>();
 
     // Potentially a poor way of doing this. Should this be in the status damage helper class? 
     // Potential future solution: In status helper, use status "effect type" in a dictionary, pointing it to various functions.
@@ -63,6 +64,14 @@ public static class ExcentraDatabase
         }
     }
 
+    public static void LoadMiscPrefabs(List<NormalPrefab> miscPrefabs)
+    {
+        foreach (var miscPrefab in miscPrefabs)
+        {
+            miscPrefabDictionary.Add(miscPrefab.key, miscPrefab.prefab);
+        }
+    }
+
     public static GameObject TryGetEntity(string key)
     {
         if (entityDictionary.ContainsKey(key))
@@ -109,5 +118,13 @@ public static class ExcentraDatabase
             return statStatusNames[key];
 
         return new List<string>();
+    }
+
+    public static GameObject TryGetMiscPrefab(string key)
+    {
+        if (miscPrefabDictionary.ContainsKey(key))
+            return miscPrefabDictionary[key];
+
+        return null;
     }
 }

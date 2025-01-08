@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -23,8 +24,16 @@ public class AoeArenaData
 
     public GameObject PopAoe(int index)
     {
-        GameObject aoe = aoes[index];
-        aoes.RemoveAt(index);
-        return aoe;
+        try
+        {
+            GameObject aoe = aoes[index];
+            aoes.RemoveAt(index);
+            return aoe;
+        } catch (ArgumentOutOfRangeException ex)
+        {
+            Debug.Log(ex.Message);
+            return null;
+        }
+
     }
 }
