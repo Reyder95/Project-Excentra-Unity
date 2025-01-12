@@ -21,4 +21,39 @@ public class BattleVariables
     public GameObject currAoe;
 
     public bool isAttacking = false;
+
+    public BattleState GetState()
+    {
+        return battleState;
+    }
+
+    public Ability GetCurrentAbility()
+    {
+        if (GetState() == BattleState.PLAYER_SPECIAL)
+        {
+            return currAbility;
+        }
+
+        return null;
+    }
+
+    public void SetCurrentAoe(GameObject aoe)
+    {
+        currAoe = aoe;
+    }
+
+    public GameObject GetCurrentAoe()
+    {
+        return currAoe;
+    }
+
+    public bool IsEntityAttacking()
+    {
+        return isAttacking;
+    }
+
+    public void DeleteCurrentAoe()
+    {
+        currAoe = null;
+    }
 }

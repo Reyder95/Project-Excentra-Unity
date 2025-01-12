@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
-using static UnityEngine.EventSystems.EventTrigger;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class BattleManager
 {
@@ -15,8 +12,8 @@ public class BattleManager
     private List<GameObject> playerCharacters = new List<GameObject>();
     private GameObject boss = new GameObject();
 
-    private TurnManager turnManager = new TurnManager();
-    private BattleVariables battleVariables = new BattleVariables();
+    public TurnManager turnManager = new TurnManager();
+    public BattleVariables battleVariables = new BattleVariables();
     public AoeArenaData aoeArenadata = new AoeArenaData();
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
@@ -50,6 +47,7 @@ public class BattleManager
         StartTurn();
     }
 
+    // Grabs UI elements and saves them to variables
     public void ReferenceUI(bool restart = false)
     {
         VisualElement battleDoc = ExcentraDatabase.TryGetDocument("battle").rootVisualElement;
@@ -80,6 +78,7 @@ public class BattleManager
         SetUIValues(restart);
     }
 
+    // Sets various values of UI elements, such as HP bars and things. Also does some slight additional referencing
     public void SetUIValues(bool restart = false)
     {
         foreach (var character in playerCharacters)
@@ -127,6 +126,8 @@ public class BattleManager
         this.boss = bossInstantiation;
     }
 
+    // Handles each status an entity has upon the start of the turn. Returns the alive status of the entity by the end. For example: Poisons that may drop an Entity's HP to 0.
+    // Removes a turn (or the entire status) each time it "triggers"
     public bool HandleTurnStatuses()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
@@ -173,14 +174,18 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
+        // Check an Entity's current set of statuses that have on turn start.
+        // If they die, immediately end the turn
         if (HandleTurnStatuses())
         {
             EndTurn();
             return;
         }
 
+        // Handle the turn if it's a player or enemy.
         if (stats.isPlayer)
         {
+            // If player, enable their input and set some basic values. Change state to PLAYER_CHOICE.
             input.enabled = true;
             controller.turnStartPos = currTurn.transform.position;
             controller.DrawMovementCircle();
@@ -188,52 +193,13 @@ public class BattleManager
         }
         else
         {
+            // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
             var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
             int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
             currTurn.GetComponent<EntityController>().MoveTowards(possibleChars[randChar]);
             ChangeState(BattleState.AWAIT_ENEMY);
         }
         
-    }
-
-    public void CleanupTurn()
-    {
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats currStats = currTurn.GetComponent<EntityStats>();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-        PlayerInput input = currTurn.GetComponent<PlayerInput>();
-
-        currStats.moveDouble = false;
-
-        battleVariables.attacker = null;
-        battleVariables.targets = null;
-        battleVariables.isAttacking = false;
-        battleVariables.currAbility = null;
-
-        controller.specialActive = false;
-        
-
-        ChangeState(BattleState.TURN_TRANSITION);
-        input.enabled = false;
-    }
-
-    public bool IsLose(bool isPlayer)
-    {
-        if (isPlayer)
-        {
-            foreach (var player in playerCharacters)
-            {
-                if (player.GetComponent<EntityStats>().currentHP > 0)
-                    return false;
-            }
-        }
-        else
-        {
-            if (boss.GetComponent<EntityStats>().currentHP > 0)
-                return false;
-        }
-
-        return true;
     }
 
     public void EndTurn()
@@ -243,11 +209,14 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
         bool isRevive = false;
 
+        // Checks if we need to revive dead Entities during this EndTurn() phase
         if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.REVIVE)
         {
             isRevive = true;
         }
 
+        // If there are targets during this EndTurn() phase
+        // Loop through them all to check health statuses. If they are <= to 0, either revive (if isRevive is true), or kill if otherwise.
         if (battleVariables.targets != null)
         {
             foreach (var entity in battleVariables.targets)
@@ -270,12 +239,12 @@ public class BattleManager
                             if (isPlayer)
                                 endScreen.Q<Label>("defeat").style.display = DisplayStyle.Flex;
                             else
-                                endScreen.Q<Label>("victory").style.display = DisplayStyle.Flex;    
+                                endScreen.Q<Label>("victory").style.display = DisplayStyle.Flex;
                             endScreen.style.display = DisplayStyle.Flex;
 
                             return;
                         }
-                        
+
                     }
                 }
                 else
@@ -287,23 +256,64 @@ public class BattleManager
             }
         }
 
-
-        if (stats.isPlayer)
-        {
-            controller.basicActive = false;
-
-            specialPanel.style.visibility = Visibility.Hidden;
-
-            controller.lineRenderer.positionCount = 0;
-            DestroyAoe(currTurn);
-        }
-
+        // Clean up the turn, then wait a few seconds and then start the turn.
         CleanupTurn();
+
         ExcentraGame.Instance.WaitCoroutine(0.5f, () =>
         {
             turnManager.EndCurrentTurn();
             StartTurn();
         });
+    }
+
+    // Cleans up all the variables at the end of a turn
+    public void CleanupTurn()
+    {
+        GameObject currTurn = turnManager.GetCurrentTurn();
+        EntityStats currStats = currTurn.GetComponent<EntityStats>();
+        EntityController controller = currTurn.GetComponent<EntityController>();
+        PlayerInput input = currTurn.GetComponent<PlayerInput>();
+
+        currStats.moveDouble = false;
+
+        // Battle Variables cleanup
+        battleVariables.attacker = null;
+        battleVariables.targets = null;
+        battleVariables.isAttacking = false;
+        battleVariables.currAbility = null;
+
+        // Controller cleanup
+        controller.specialActive = false;
+        controller.basicActive = false;
+        controller.lineRenderer.positionCount = 0;
+
+        // MIsc. cleanup
+        specialPanel.style.visibility = Visibility.Hidden;
+        DestroyAoe(currTurn);
+        input.enabled = false;
+
+        // Transition to next turn (requires this state)
+        ChangeState(BattleState.TURN_TRANSITION);
+    }
+
+    // Checks whether a side (enemy or player) loses. Typically checked upon one death from either side (to avoid excess calls)
+    public bool IsLose(bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            foreach (var player in playerCharacters)
+            {
+                if (player.GetComponent<EntityStats>().currentHP > 0)
+                    return false;
+            }
+        }
+        else
+        {
+            if (boss.GetComponent<EntityStats>().currentHP > 0)
+                return false;
+        }
+
+        return true;
     }
 
     public void HandleEntityAction(BattleClickInfo information = null)
@@ -491,79 +501,24 @@ public class BattleManager
         }
     }
 
-    public BattleState GetState()
-    {
-        return battleVariables.battleState;
-    }
-
-    public Ability GetCurrentAbility()
-    {
-        if (GetState() == BattleState.PLAYER_SPECIAL)
-        {
-            return battleVariables.currAbility;
-        }
-
-        return null;
-    }
-
-    public GameObject GetCurrentAttacker()
-    {
-        return turnManager.GetCurrentTurn();
-    }
-
-    public void SetCurrentAoe(GameObject aoe)
-    {
-        battleVariables.currAoe = aoe;
-    }
-
-    public GameObject GetCurrentAoe()
-    {
-        return battleVariables.currAoe;
-    }
-
-    public bool IsEntityAttacking()
-    {
-        return battleVariables.isAttacking;
-    }
-
-    public void DeleteCurrentAoe()
-    {
-        battleVariables.currAoe = null;
-    }
-
-    public void OnEnableBasic()
-    {
-        ChangeState(BattleState.PLAYER_BASIC);
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-
-        controller.basicActive = true;
-    }
-
-    public void OnDisableBasic()
-    {
-        ChangeState(BattleState.PLAYER_CHOICE);
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-
-        controller.basicActive = false;
-    }
-
     public void OnBasicClicked()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
+        EntityController controller = currTurn.GetComponent<EntityController>();
 
         if (currStats.moveDouble)
             return;
 
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
-            OnDisableBasic();
+            ChangeState(BattleState.PLAYER_CHOICE);
+            controller.basicActive = false;
         } 
         else
         {
-            OnEnableBasic();
+            ChangeState(BattleState.PLAYER_BASIC);
+            controller.basicActive = true;
         }
         
     }
@@ -577,8 +532,6 @@ public class BattleManager
 
         if (currStats.moveDouble)
             return;
-
-        //GameObject cone = _instantiateFunction(controller.coneAoe, currTurn.transform.position);
 
         VisualTreeAsset itemAsset = ExcentraDatabase.TryGetSubDocument("skill-item"); 
         VisualElement skillScroller = specialPanel.Q<VisualElement>("skill-scroller");
@@ -633,7 +586,7 @@ public class BattleManager
 
     public void OnMoveClicked()
     {
-        if (GetState() == BattleState.PLAYER_CHOICE)
+        if (battleVariables.GetState() == BattleState.PLAYER_CHOICE)
         {
             GameObject currTurn = turnManager.GetCurrentTurn();
             EntityStats stats = currTurn.GetComponent<EntityStats>();
@@ -676,7 +629,7 @@ public class BattleManager
 
     public void RightClickPressed()
     {
-        if (GetState() == BattleState.PLAYER_SPECIAL)
+        if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
         {
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
             DestroyAoe(turnManager.GetCurrentTurn());
@@ -730,7 +683,7 @@ public class BattleManager
 
     public GameObject ActivateAbilityTelegraph(VisualElement element)
     {
-        return SpawnAoe((element.userData as Ability), GetCurrentAttacker(), GetCurrentAttacker());
+        return SpawnAoe((element.userData as Ability), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
     }
 
     // ------ CLEANED UP PROPER FUNCTIONS ------------
@@ -838,13 +791,13 @@ public class BattleManager
 
         bool sameTeam = attackerStats.isPlayer == defenderStats.isPlayer;
 
-        if (GetState() == BattleState.PLAYER_BASIC)
+        if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
         {
             return !sameTeam;
         }
-        else if (GetState() == BattleState.PLAYER_SPECIAL)
+        else if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
         {
-            Ability currAbility = GetCurrentAbility();
+            Ability currAbility = battleVariables.GetCurrentAbility();
 
             if (currAbility != null)
             {
