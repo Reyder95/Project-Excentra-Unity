@@ -82,7 +82,7 @@ public class TurnManager
             VisualElement charPortrait = charElement.Q<VisualElement>("portrait");
             Label delayLabel = charElement.Q<Label>("delay");
             charPortrait.style.backgroundImage = character.GetComponent<EntityStats>().portrait;
-            delayLabel.text = character.GetComponent<EntityStats>().delay.ToString();
+            delayLabel.text = ((int)character.GetComponent<EntityStats>().delay).ToString();
             turnOrderUI.Add(charElement);
         }
     }
