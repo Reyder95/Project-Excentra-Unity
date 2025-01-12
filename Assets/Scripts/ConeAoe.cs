@@ -1,42 +1,47 @@
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.Image;
+// ConeAoe.cs
+// Needs a name change to AoeComponent.cs
 
+using UnityEngine;
+
+// Handles all the physical game object effects on screen, colors, shapes, scaling, direction, etc
 public class ConeAoe : MonoBehaviour
 {
-    public Ability ability;
-    public AoeData aoeData;
-    public int arenaAoeIndex = -1;
+    // General information
+    public Ability ability; // The ability associated with this AoE.
+    public AoeData aoeData; // The data for this aoe (targets, etc)
+    public int arenaAoeIndex = -1;  // The index in the arenaAoE section this is associated with.
 
+    // Who is the attacker, and where should this object be the origin to?
     public GameObject originObject;
     public GameObject attackerObject;
 
+    // Do we want to freeze the aoe in place and not interact based on other factors? (usually done when an aoe goes into attack phase)
     public bool freezeAoe = false;
 
-    [Header("Cone and Line")]
-    public Vector2 destination;
+    public Vector2 destination; // Destination, used for line and cone. Essentially allows us to get the direction of the cone/line based on destination
     
-
+    // Cone and line variables. Self explanatory for the most part
     public float width = 4f;
     public float distance = 0f;
+
+    // Game objects that are set in the inspector that we will manipulate via scale or color.
     public GameObject triangle;
     public GameObject circle;
     public GameObject line;
     public bool scaleX = true;      // Scale along the X-axis (default)
     Vector3 newScale;
     
+    // Frozen information that we will save when freezeAoe is true, and used instead of the actual data
     public Vector2 frozenScale;
     public Quaternion frozenRotation;
     public Vector2 frozenDestination;
 
-    [Header("Circle")]
+    // Circle information. 
     public float radius = 2f;
     public GameObject circleAoe;
     public Vector2 circlePosition;
 
+    // Frozen position of the circle
     public Vector2 frozenPosition;
 
     public void Start()
@@ -44,6 +49,7 @@ public class ConeAoe : MonoBehaviour
         aoeData = new AoeData();
     }
 
+    // We initialize all the data of the cone and place that cone in a respective spot based on some information
     public void InitializeCone(GameObject originObject, GameObject attackerObject, Ability ability = null)
     {
         this.ability = ability;
@@ -228,6 +234,7 @@ public class ConeAoe : MonoBehaviour
 
     }
 
+    // Snapshots information for the freezing of the aoe position
     public void FreezeAoe()
     {
         if (ability != null)

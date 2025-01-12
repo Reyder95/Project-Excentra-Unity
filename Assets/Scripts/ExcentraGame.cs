@@ -1,9 +1,13 @@
+// ExcentraGame.cs
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Our base game class that runs everything necessary.
 public class ExcentraGame : MonoBehaviour
 {
+    // key/value Lists that hold information we will send into our ExcentraDatabase. Easy for inspector use
     [SerializeField]
     List<EntityPrefab> entityPrefabs = new List<EntityPrefab>();
 
@@ -22,11 +26,11 @@ public class ExcentraGame : MonoBehaviour
     [SerializeField]
     List<NormalPrefab> miscPrefabs = new List<NormalPrefab>();
 
-    public DamageNumberHandler damageNumberHandlerScript;
+    public DamageNumberHandler damageNumberHandlerScript;   // Needs to be on monobehaviour so we can place and delete the damage numbers
 
-    public static ExcentraGame Instance { get; private set; }
+    public static ExcentraGame Instance { get; private set; }   // Singleton used in very specific circumstances
 
-    public static BattleManager battleManager;
+    public static BattleManager battleManager;  // The battle manager that handles all battles
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,6 +39,8 @@ public class ExcentraGame : MonoBehaviour
         {
             Instance = this;
         }
+
+        // Load everything into our database
         ExcentraDatabase.LoadEntities(entityPrefabs);
         ExcentraDatabase.LoadDocuments(uiDocs);
         ExcentraDatabase.LoadUIAssets(uiSubDocs);
@@ -42,6 +48,7 @@ public class ExcentraGame : MonoBehaviour
         ExcentraDatabase.LoadStatuses(statusEffects);
         ExcentraDatabase.LoadMiscPrefabs(miscPrefabs);
 
+        // Initialize our battle manager (for the initial battle)
         battleManager = new BattleManager((prefab, position) => Instantiate(prefab, position, Quaternion.identity));
 
         // Initialize the four player characters
@@ -59,6 +66,7 @@ public class ExcentraGame : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
+    // Helper coroutine function for awaiting (used right now in battle manager to await in between turns)
     public void WaitCoroutine(float waitTime, System.Action callback)
     {
         StartCoroutine(WaitAndExecute(waitTime, callback));
@@ -70,14 +78,9 @@ public class ExcentraGame : MonoBehaviour
         callback?.Invoke();
     }
 
+    // TODO: Use UnityEngine.GameObject.Destroy() potentially? Though I forget if that's the exact function
     public static void DestroyAoe(GameObject aoe)
     {
         Destroy(aoe);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

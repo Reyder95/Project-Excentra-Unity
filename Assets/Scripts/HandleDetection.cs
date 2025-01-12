@@ -1,5 +1,9 @@
+// HandleDetection.cs
+
 using UnityEngine;
 
+// Handles detection for an AoE and an entity.
+// This is on the entity, as a smaller box for aoe calculations. Can be thought of similarly for bullet hell games, as well as the tiny "dot" in MMOs like FFXIV. 
 public class HandleDetection : MonoBehaviour
 {
     public GameObject Entity;
@@ -10,6 +14,7 @@ public class HandleDetection : MonoBehaviour
         controller = Entity.GetComponent<EntityController>();
     }
 
+    // Determines if you are even eligible to target the entity. Useful helper function for the triggers
     public bool IsAttackable(ConeAoe aoe, EntityStats attackerStats, EntityStats defenderStats) {
         if (ExcentraGame.battleManager.battleVariables.GetCurrentAbility().damageType == DamageType.REVIVE || ExcentraGame.battleManager.IsAlive(defenderStats.gameObject))
         {
@@ -48,6 +53,7 @@ public class HandleDetection : MonoBehaviour
         return false;
     }
 
+    // For the following triggers, determines if colliding entity is an AoE. If so, check if can target, then "handleTarget" the entity
     public void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject aoe = collision.gameObject;

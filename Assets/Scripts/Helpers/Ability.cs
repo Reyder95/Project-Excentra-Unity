@@ -1,3 +1,5 @@
+// Ability.cs
+
 using UnityEngine;
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,7 @@ public enum DamageType
     REVIVE
 }
 
+// Handles the data for skills. Entities can cast special skills.
 [Serializable]
 public class Ability
 {

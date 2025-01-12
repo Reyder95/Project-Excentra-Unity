@@ -1,3 +1,5 @@
+// BattleManager.cs
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,20 +7,28 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
+// Class that runs the battle, from turn processes, to damage being dealt, to handling statuses, killing off entities, and declaring a winning side.
+// One of the most important classes at this point
 public class BattleManager
 {
-    private readonly System.Func<GameObject, Vector2, GameObject> _instantiateFunction;
+    private readonly System.Func<GameObject, Vector2, GameObject> _instantiateFunction; // Allows instantiation outside of MonoBehaviour, but I'd recc to just use (UnityEngine.GameObject.Instantiate())
 
-    private List<GameObject> playerCharacters = new List<GameObject>();
-    private GameObject boss = new GameObject();
+    private List<GameObject> playerCharacters = new List<GameObject>(); // All of the player character's Game Objects by reference
+    private GameObject boss = new GameObject(); // The boss (will need modification for multiple enemies)
 
-    public TurnManager turnManager = new TurnManager();
-    public BattleVariables battleVariables = new BattleVariables();
-    public AoeArenaData aoeArenadata = new AoeArenaData();
+    public TurnManager turnManager = new TurnManager(); // The turn manager handles everything regarding the turn order, delays, etc. The battle manager uses the turnManager to facilitate the turns
+    public BattleVariables battleVariables = new BattleVariables();     // The important battle variables, like current targets, current abilities being used, etc. Keeps track of everything important for the round.
+    public AoeArenaData aoeArenadata = new AoeArenaData();      // Handles track of all the AoEs in the arena. Their targets, etc.
+    
+    // Dictionaries for the HP UI elements and the MP UI elements of the players and enemies (where applicable)
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
+
+    // The debuff bar for allies or enemies. Similar vein to HP/MP
     private Dictionary<string, VisualElement> debuffScrollers = new Dictionary<string, VisualElement>();
 
+
+    // Specific UI elements
     VisualElement charPanel;
     VisualElement controlPanel;
     VisualElement specialPanel;
@@ -277,7 +287,6 @@ public class BattleManager
         currStats.moveDouble = false;
 
         // Battle Variables cleanup
-        battleVariables.attacker = null;
         battleVariables.targets = null;
         battleVariables.isAttacking = false;
         battleVariables.currAbility = null;
@@ -316,6 +325,9 @@ public class BattleManager
         return true;
     }
 
+    // -- DURING TURN
+    // Handles an entity's action providing an information key. Information tends to be sent in if doing a SINGLE click, but 
+    // aoes don't usually have one.
     public void HandleEntityAction(BattleClickInfo information = null)
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
@@ -348,7 +360,6 @@ public class BattleManager
                     Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
                     targetList.Add(information.target.GetComponent<EntityStats>().entityName, information.target);
                     battleVariables.targets = targetList;
-                    battleVariables.attacker = currTurn;
                     battleVariables.isAttacking = true;
                     currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
                 }
@@ -359,7 +370,6 @@ public class BattleManager
                         battleVariables.currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
                         battleVariables.currAbility = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<ConeAoe>().ability;
                         battleVariables.targets = battleVariables.currAoe.GetComponent<ConeAoe>().aoeData.TargetList;
-                        battleVariables.attacker = currTurn;
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
                     }
@@ -367,7 +377,6 @@ public class BattleManager
                     {
                         battleVariables.currAbility = information.singleAbility;
                         battleVariables.targets = new Dictionary<string, GameObject>() { { information.target.GetComponent<EntityStats>().entityName, information.target } };
-                        battleVariables.attacker = currTurn;
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
                     }
@@ -378,25 +387,32 @@ public class BattleManager
                 Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
                 targetList.Add(information.target.GetComponent<EntityStats>().entityName, information.target);
                 battleVariables.targets = targetList;
-                battleVariables.attacker = turnManager.GetCurrentTurn();
                 currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
             }
         }
 
     }
 
+    // Spawns an AOE telegraph for the user
+    public GameObject ActivateAbilityTelegraph(VisualElement element)
+    {
+        return SpawnAoe((element.userData as Ability), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
+    }
+
+    // When the animation "hits" the target, this event is triggered. Does the specific attack towards this group of targets
     public void OnHit()
     {
         Dictionary<string, GameObject> targetList = battleVariables.targets;
 
         foreach (var entity in targetList)
         {
-            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, battleVariables.currAbility));
+            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currAbility));
             DealDamage(entity.Value, entityDamage);
         }
 
     }
 
+    // Displays statuses to the screen for each entity in play
     public void DisplayStatuses(EntityStats entityStats)
     {
         try
@@ -501,6 +517,35 @@ public class BattleManager
         }
     }
 
+    // TODO: Could be on the entity itself honestly
+    public bool IsAlive(GameObject entity)
+    {
+        EntityStats stats = entity.GetComponent<EntityStats>();
+        if (stats.currentHP > 0)
+            return true;
+        return false;
+    }
+
+    public void EscapePressed()
+    {
+        if (specialPanel.style.visibility == Visibility.Visible)
+            specialPanel.style.visibility = Visibility.Hidden;
+    }
+
+    public void RightClickPressed()
+    {
+        if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
+        {
+            EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
+            DestroyAoe(turnManager.GetCurrentTurn());
+            battleVariables.currAbility = null;
+            controller.specialActive = false;
+            ChangeState(BattleState.PLAYER_CHOICE);
+            specialPanel.style.visibility = Visibility.Visible;
+        }
+    }
+
+    // ----- BUTTON EVENTS
     public void OnBasicClicked()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
@@ -514,13 +559,13 @@ public class BattleManager
         {
             ChangeState(BattleState.PLAYER_CHOICE);
             controller.basicActive = false;
-        } 
+        }
         else
         {
             ChangeState(BattleState.PLAYER_BASIC);
             controller.basicActive = true;
         }
-        
+
     }
 
     public void OnSpecialClicked()
@@ -533,7 +578,7 @@ public class BattleManager
         if (currStats.moveDouble)
             return;
 
-        VisualTreeAsset itemAsset = ExcentraDatabase.TryGetSubDocument("skill-item"); 
+        VisualTreeAsset itemAsset = ExcentraDatabase.TryGetSubDocument("skill-item");
         VisualElement skillScroller = specialPanel.Q<VisualElement>("skill-scroller");
 
         controller.basicActive = false;
@@ -600,7 +645,7 @@ public class BattleManager
             entityController.DrawMovementCircle();
         }
 
-        
+
     }
 
     public void OnEndClicked()
@@ -609,35 +654,7 @@ public class BattleManager
         {
             EndTurn();
         }
-        
-    }
 
-    // TODO: Could be on the entity itself honestly
-    public bool IsAlive(GameObject entity)
-    {
-        EntityStats stats = entity.GetComponent<EntityStats>();
-        if (stats.currentHP > 0)
-            return true;
-        return false;
-    }
-
-    public void EscapePressed()
-    {
-        if (specialPanel.style.visibility == Visibility.Visible)
-            specialPanel.style.visibility = Visibility.Hidden;
-    }
-
-    public void RightClickPressed()
-    {
-        if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
-        {
-            EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
-            DestroyAoe(turnManager.GetCurrentTurn());
-            battleVariables.currAbility = null;
-            controller.specialActive = false;
-            ChangeState(BattleState.PLAYER_CHOICE);
-            specialPanel.style.visibility = Visibility.Visible;
-        }
     }
 
     public void OnRestartClicked()
@@ -679,11 +696,6 @@ public class BattleManager
 
             HandleEntityAction(info);
         } catch (NullReferenceException) { }
-    }
-
-    public GameObject ActivateAbilityTelegraph(VisualElement element)
-    {
-        return SpawnAoe((element.userData as Ability), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
     }
 
     // ------ CLEANED UP PROPER FUNCTIONS ------------
@@ -784,6 +796,7 @@ public class BattleManager
         turnManager = new TurnManager();
     }
 
+    // Checks if an attacker can even target the defender
     public bool TargetingEligible(GameObject attacker, GameObject defender)
     {
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
@@ -839,6 +852,8 @@ public class BattleManager
         return false;
     }
 
+    // Checks within a skill or basic range (combines both types of functions into one)
+    // TODO: Might be better to have a range handler that we can pass in some parameters and it auto-calculates a range. Good to centralize things.
     public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, Ability skill = null)
     {
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();

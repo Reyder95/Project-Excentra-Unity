@@ -1,8 +1,11 @@
+// AoeArenaData.cs
+
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
+// Class that handles all the information for AoEs within the arena itself. Will be used very importantly for boss AoEs as well.
+// Might have turn support for AoEs as such that can throw them into the turn order (this might be primarily handled by the turnManager class)
 public class AoeArenaData
 {
     public List<GameObject> aoes = new List<GameObject>();

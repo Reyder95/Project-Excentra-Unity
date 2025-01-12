@@ -310,20 +310,25 @@ public class EntityController : MonoBehaviour
         if (entityStats.currentHP <= 0 && (currAbility == null || currAbility.damageType != DamageType.REVIVE))
             return;
 
-        if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
+
+        if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
         {
-            if (ExcentraGame.battleManager.CheckWithinSkillRange(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject, currAbility))
+            if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
             {
+                if (ExcentraGame.battleManager.CheckWithinSkillRange(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject, currAbility))
+                {
 
-                HandleTarget(false);
+                    HandleTarget(false);
 
-                BattleClickInfo info = new BattleClickInfo();
-                info.target = this.gameObject;
-                info.singleAbility = currAbility;
-                ExcentraGame.battleManager.HandleEntityAction(info);
+                    BattleClickInfo info = new BattleClickInfo();
+                    info.target = this.gameObject;
+                    info.singleAbility = currAbility;
+                    ExcentraGame.battleManager.HandleEntityAction(info);
+                }
+
             }
-
         }
+
 
     }
 

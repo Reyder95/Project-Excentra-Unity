@@ -1,7 +1,9 @@
+// AoeData.cs
+
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using UnityEngine;
 
+// Has the damage information for an AoE indicator. Handles hitting multiple entities at once.
 public class AoeData
 {
     private Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();

@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+// GlobalDamageHelper.cs
+
 using UnityEngine;
 
 public class ActionInformation
@@ -17,6 +18,9 @@ public class ActionInformation
     }
 }
 
+// One of the most important classes in the game. Helps standardize and centralize damage calculations for both magic and physical damage.
+// Basically a "numbers only" class. The logic doesn't happen here, just a number with which to do logic with happens.
+// Such as a revive wouldn't be handled here, or a status effect application, but the numbers on the initial application would be handled here, and the rest would be handled elsewhere
 public class GlobalDamageHelper
 {
     public static float HandleActionCalculation(ActionInformation info)
@@ -62,20 +66,25 @@ public class GlobalDamageHelper
         return damageCalculation;
     }
 
+    // For skills, there are many forms of damage types (listed below). Based on the damage type, things must happen.
     private static float AreaSkillCalculation(ActionInformation info)
     {
+        // If damage, do the damage
         if (info.skill.damageType == DamageType.DAMAGE)
         {
             return IndividualSkillDamageCalculation(info.skill, info.target, info.attacker);
         }
+        // If heal, heal the entity
         else if (info.skill.damageType == DamageType.HEAL)
         {
             return IndividualSkillHealCalculation(info.skill, info.target, info.attacker);
         }
+        // If status effect, do no damage at all
         else if (info.skill.damageType == DamageType.STATUS)
         {
             return 0f;
         }
+        // If revive, do the heal calculation. A revive will occur on the battle manager side
         else if (info.skill.damageType == DamageType.REVIVE)
         {
             return IndividualSkillHealCalculation(info.skill, info.target, info.attacker);
