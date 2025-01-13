@@ -1,12 +1,15 @@
+// EntityStats.cs
+
 using System.Collections.Generic;
 using System;
 using UnityEngine;
 
+// Handles all the base stats of an entity. Also has calculations for calculating the base stat into the actual stat used for damage/healing/defense.
 [System.Serializable]
 public class EntityStats : MonoBehaviour
 {
     [Header("Abilities")]
-    public List<string> abilityKeys = new List<string>();
+    public List<string> skillKeys = new List<string>();
 
     [Header("General Information")]
     public string entityName;
@@ -38,11 +41,14 @@ public class EntityStats : MonoBehaviour
     [NonSerialized]
     public float delay;
 
+    // Aggression is like "aggro" in mmos. currently not implemented, but will be soon
     [Header("Aggression")]
     public float aggressionGen;
     public float aggressionDropoff;
     public float aggressionTurns;
 
+    // Has to be accurate with the animation. For example, if an animation hits 3 times. This should be equal to 3.
+    // This divides the total damage by the # of hits. Meaning you can set a "total" damage, rather than a "damage per hit".
     [Header("Misc.")]
     public int basicAttackCount = 1;
 
@@ -54,6 +60,7 @@ public class EntityStats : MonoBehaviour
     [NonSerialized]
     public StatusEffectHandler effectHandler = new StatusEffectHandler();
 
+    // -- Calculations! Calculates various stats or important information based on stats, and status effects
     public void CalculateDelay(bool turn = false)
     {
         if (!turn)
@@ -96,10 +103,13 @@ public class EntityStats : MonoBehaviour
         return basicRange / 5f;
     }
 
+    // Standard calculation function. Takes in a stat
     public float Calculation(string stat, float statValue)
     {
         float finalStat = statValue;
 
+        // Gets the statuses that would affect the "stat key" that we send in.
+        // For example, "attack" would get back phys damage related statuses, since they effect the end stat of Attack
         List<string> statusNames = ExcentraDatabase.TryGetStatusNames(stat);
 
         foreach (var statusName in statusNames)

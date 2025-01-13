@@ -1,3 +1,5 @@
+// BattleManager.cs
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,20 +7,28 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
+// Class that runs the battle, from turn processes, to damage being dealt, to handling statuses, killing off entities, and declaring a winning side.
+// One of the most important classes at this point
 public class BattleManager
 {
-    private readonly System.Func<GameObject, Vector2, GameObject> _instantiateFunction;
+    private readonly System.Func<GameObject, Vector2, GameObject> _instantiateFunction; // Allows instantiation outside of MonoBehaviour, but I'd recc to just use (UnityEngine.GameObject.Instantiate())
 
-    private List<GameObject> playerCharacters = new List<GameObject>();
-    private GameObject boss = new GameObject();
+    private List<GameObject> playerCharacters = new List<GameObject>(); // All of the player character's Game Objects by reference
+    private GameObject boss = new GameObject(); // The boss (will need modification for multiple enemies)
 
-    private TurnManager turnManager = new TurnManager();
-    private BattleVariables battleVariables = new BattleVariables();
-    public AoeArenaData aoeArenadata = new AoeArenaData();
+    public TurnManager turnManager = new TurnManager(); // The turn manager handles everything regarding the turn order, delays, etc. The battle manager uses the turnManager to facilitate the turns
+    public BattleVariables battleVariables = new BattleVariables();     // The important battle variables, like current targets, current abilities being used, etc. Keeps track of everything important for the round.
+    public AoeArenaData aoeArenadata = new AoeArenaData();      // Handles track of all the AoEs in the arena. Their targets, etc.
+    
+    // Dictionaries for the HP UI elements and the MP UI elements of the players and enemies (where applicable)
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
+
+    // The debuff bar for allies or enemies. Similar vein to HP/MP
     private Dictionary<string, VisualElement> debuffScrollers = new Dictionary<string, VisualElement>();
 
+
+    // Specific UI elements
     VisualElement charPanel;
     VisualElement controlPanel;
     VisualElement specialPanel;
@@ -47,6 +57,7 @@ public class BattleManager
         StartTurn();
     }
 
+    // Grabs UI elements and saves them to variables
     public void ReferenceUI(bool restart = false)
     {
         VisualElement battleDoc = ExcentraDatabase.TryGetDocument("battle").rootVisualElement;
@@ -77,6 +88,7 @@ public class BattleManager
         SetUIValues(restart);
     }
 
+    // Sets various values of UI elements, such as HP bars and things. Also does some slight additional referencing
     public void SetUIValues(bool restart = false)
     {
         foreach (var character in playerCharacters)
@@ -124,6 +136,8 @@ public class BattleManager
         this.boss = bossInstantiation;
     }
 
+    // Handles each status an entity has upon the start of the turn. Returns the alive status of the entity by the end. For example: Poisons that may drop an Entity's HP to 0.
+    // Removes a turn (or the entire status) each time it "triggers"
     public bool HandleTurnStatuses()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
@@ -170,14 +184,18 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
+        // Check an Entity's current set of statuses that have on turn start.
+        // If they die, immediately end the turn
         if (HandleTurnStatuses())
         {
             EndTurn();
             return;
         }
 
+        // Handle the turn if it's a player or enemy.
         if (stats.isPlayer)
         {
+            // If player, enable their input and set some basic values. Change state to PLAYER_CHOICE.
             input.enabled = true;
             controller.turnStartPos = currTurn.transform.position;
             controller.DrawMovementCircle();
@@ -185,52 +203,13 @@ public class BattleManager
         }
         else
         {
+            // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
             var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
             int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
             currTurn.GetComponent<EntityController>().MoveTowards(possibleChars[randChar]);
             ChangeState(BattleState.AWAIT_ENEMY);
         }
         
-    }
-
-    public void CleanupTurn()
-    {
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats currStats = currTurn.GetComponent<EntityStats>();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-        PlayerInput input = currTurn.GetComponent<PlayerInput>();
-
-        currStats.moveDouble = false;
-
-        battleVariables.attacker = null;
-        battleVariables.targets = null;
-        battleVariables.isAttacking = false;
-        battleVariables.currAbility = null;
-
-        controller.specialActive = false;
-        
-
-        ChangeState(BattleState.TURN_TRANSITION);
-        input.enabled = false;
-    }
-
-    public bool IsLose(bool isPlayer)
-    {
-        if (isPlayer)
-        {
-            foreach (var player in playerCharacters)
-            {
-                if (player.GetComponent<EntityStats>().currentHP > 0)
-                    return false;
-            }
-        }
-        else
-        {
-            if (boss.GetComponent<EntityStats>().currentHP > 0)
-                return false;
-        }
-
-        return true;
     }
 
     public void EndTurn()
@@ -240,11 +219,14 @@ public class BattleManager
         EntityController controller = currTurn.GetComponent<EntityController>();
         bool isRevive = false;
 
-        if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.REVIVE)
+        // Checks if we need to revive dead Entities during this EndTurn() phase
+        if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.REVIVE)
         {
             isRevive = true;
         }
 
+        // If there are targets during this EndTurn() phase
+        // Loop through them all to check health statuses. If they are <= to 0, either revive (if isRevive is true), or kill if otherwise.
         if (battleVariables.targets != null)
         {
             foreach (var entity in battleVariables.targets)
@@ -267,14 +249,12 @@ public class BattleManager
                             if (isPlayer)
                                 endScreen.Q<Label>("defeat").style.display = DisplayStyle.Flex;
                             else
-                                endScreen.Q<Label>("victory").style.display = DisplayStyle.Flex;    
+                                endScreen.Q<Label>("victory").style.display = DisplayStyle.Flex;
                             endScreen.style.display = DisplayStyle.Flex;
 
                             return;
                         }
-                        else
-                            Debug.Log("NO LOSE!");
-                        
+
                     }
                 }
                 else
@@ -286,23 +266,9 @@ public class BattleManager
             }
         }
 
-
-        if (stats.isPlayer)
-        {
-            controller.basicActive = false;
-
-            specialPanel.style.visibility = Visibility.Hidden;
-
-            controller.lineRenderer.positionCount = 0;
-            if (stats.arenaAoeIndex != -1)
-            {
-                GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
-                ExcentraGame.DestroyAoe(aoe);
-                stats.arenaAoeIndex = -1;
-            }
-        }
-
+        // Clean up the turn, then wait a few seconds and then start the turn.
         CleanupTurn();
+
         ExcentraGame.Instance.WaitCoroutine(0.5f, () =>
         {
             turnManager.EndCurrentTurn();
@@ -310,6 +276,58 @@ public class BattleManager
         });
     }
 
+    // Cleans up all the variables at the end of a turn
+    public void CleanupTurn()
+    {
+        GameObject currTurn = turnManager.GetCurrentTurn();
+        EntityStats currStats = currTurn.GetComponent<EntityStats>();
+        EntityController controller = currTurn.GetComponent<EntityController>();
+        PlayerInput input = currTurn.GetComponent<PlayerInput>();
+
+        currStats.moveDouble = false;
+
+        // Battle Variables cleanup
+        battleVariables.targets = null;
+        battleVariables.isAttacking = false;
+        battleVariables.currSkill = null;
+
+        // Controller cleanup
+        controller.specialActive = false;
+        controller.basicActive = false;
+        controller.lineRenderer.positionCount = 0;
+
+        // MIsc. cleanup
+        specialPanel.style.visibility = Visibility.Hidden;
+        DestroyAoe(currTurn);
+        input.enabled = false;
+
+        // Transition to next turn (requires this state)
+        ChangeState(BattleState.TURN_TRANSITION);
+    }
+
+    // Checks whether a side (enemy or player) loses. Typically checked upon one death from either side (to avoid excess calls)
+    public bool IsLose(bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            foreach (var player in playerCharacters)
+            {
+                if (player.GetComponent<EntityStats>().currentHP > 0)
+                    return false;
+            }
+        }
+        else
+        {
+            if (boss.GetComponent<EntityStats>().currentHP > 0)
+                return false;
+        }
+
+        return true;
+    }
+
+    // -- DURING TURN
+    // Handles an entity's action providing an information key. Information tends to be sent in if doing a SINGLE click, but 
+    // aoes don't usually have one.
     public void HandleEntityAction(BattleClickInfo information = null)
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
@@ -325,16 +343,16 @@ public class BattleManager
                 if (information != null && information.target != null)
                 {
                     if (information.target.transform.position.x > currTurn.transform.position.x)
-                        entityController.FaceRight();
+                        entityController.FaceDirection(false);
                     else
-                        entityController.FaceLeft();
+                        entityController.FaceDirection(true);
                 }
                 else if (information != null && information.mousePosition != null)
                 {
                     if (information.mousePosition.x > currTurn.transform.position.x)
-                        entityController.FaceRight();
+                        entityController.FaceDirection(false);
                     else
-                        entityController.FaceLeft();
+                        entityController.FaceDirection(true);
                 }    
 
                 if (battleVariables.battleState == BattleState.PLAYER_BASIC && information != null)
@@ -342,7 +360,6 @@ public class BattleManager
                     Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
                     targetList.Add(information.target.GetComponent<EntityStats>().entityName, information.target);
                     battleVariables.targets = targetList;
-                    battleVariables.attacker = currTurn;
                     battleVariables.isAttacking = true;
                     currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
                 }
@@ -351,17 +368,15 @@ public class BattleManager
                     if (stats.arenaAoeIndex != -1)
                     {
                         battleVariables.currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
-                        battleVariables.currAbility = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<ConeAoe>().ability;
+                        battleVariables.currSkill = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<ConeAoe>().skill;
                         battleVariables.targets = battleVariables.currAoe.GetComponent<ConeAoe>().aoeData.TargetList;
-                        battleVariables.attacker = currTurn;
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
                     }
                     else
                     {
-                        battleVariables.currAbility = information.singleAbility;
+                        battleVariables.currSkill = information.singleSkill;
                         battleVariables.targets = new Dictionary<string, GameObject>() { { information.target.GetComponent<EntityStats>().entityName, information.target } };
-                        battleVariables.attacker = currTurn;
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
                     }
@@ -372,25 +387,32 @@ public class BattleManager
                 Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
                 targetList.Add(information.target.GetComponent<EntityStats>().entityName, information.target);
                 battleVariables.targets = targetList;
-                battleVariables.attacker = turnManager.GetCurrentTurn();
                 currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
             }
         }
 
     }
 
+    // Spawns an AOE telegraph for the user
+    public GameObject ActivateSkillTelegraph(VisualElement element)
+    {
+        return SpawnAoe((element.userData as Skill), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
+    }
+
+    // When the animation "hits" the target, this event is triggered. Does the specific attack towards this group of targets
     public void OnHit()
     {
         Dictionary<string, GameObject> targetList = battleVariables.targets;
 
         foreach (var entity in targetList)
         {
-            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, battleVariables.attacker, battleVariables.currAbility));
+            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currSkill));
             DealDamage(entity.Value, entityDamage);
         }
 
     }
 
+    // Displays statuses to the screen for each entity in play
     public void DisplayStatuses(EntityStats entityStats)
     {
         try
@@ -428,9 +450,9 @@ public class BattleManager
 
     public void AddStatusToEnemy(EntityStats entityStats)
     {
-        if (battleVariables.currAbility != null)
+        if (battleVariables.currSkill != null)
         {
-            foreach (var status in battleVariables.currAbility.statusEffect)
+            foreach (var status in battleVariables.currSkill.statusEffects)
             {
                 float statusChance = status.chance;
                 float randomNum = UnityEngine.Random.Range(0, 100);
@@ -451,7 +473,7 @@ public class BattleManager
         AddStatusToEnemy(entityStats);
 
 
-        if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
+        if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE || battleVariables.currSkill == null)
         {
             entityController.animator.Play("Damage", -1, 0f);
         }
@@ -467,8 +489,6 @@ public class BattleManager
     public void ChangeState(BattleState newState)
     {
         battleVariables.battleState = newState;
-
-        Debug.Log(newState);
 
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
@@ -497,85 +517,55 @@ public class BattleManager
         }
     }
 
-    public BattleState GetState()
+    // TODO: Could be on the entity itself honestly
+    public bool IsAlive(GameObject entity)
     {
-        return battleVariables.battleState;
+        EntityStats stats = entity.GetComponent<EntityStats>();
+        if (stats.currentHP > 0)
+            return true;
+        return false;
     }
 
-    public Ability GetCurrentAbility()
+    public void EscapePressed()
     {
-        if (GetState() == BattleState.PLAYER_SPECIAL)
+        if (specialPanel.style.visibility == Visibility.Visible)
+            specialPanel.style.visibility = Visibility.Hidden;
+    }
+
+    public void RightClickPressed()
+    {
+        if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
         {
-            return battleVariables.currAbility;
+            EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
+            DestroyAoe(turnManager.GetCurrentTurn());
+            battleVariables.currSkill = null;
+            controller.specialActive = false;
+            ChangeState(BattleState.PLAYER_CHOICE);
+            specialPanel.style.visibility = Visibility.Visible;
         }
-
-        return null;
     }
 
-    public GameObject GetCurrentAttacker()
-    {
-        return turnManager.GetCurrentTurn();
-    }
-
-    public void SetCurrentAoe(GameObject aoe)
-    {
-        battleVariables.currAoe = aoe;
-    }
-
-    public GameObject GetCurrentAoe()
-    {
-        return battleVariables.currAoe;
-    }
-
-    public bool IsEntityAttacking()
-    {
-        return battleVariables.isAttacking;
-    }
-
-    public void DeleteCurrentAoe()
-    {
-        battleVariables.currAoe = null;
-    }
-
-    public void OnEnableBasic()
-    {
-        ChangeState(BattleState.PLAYER_BASIC);
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-
-        controller.basicActive = true;
-
-        Debug.Log("why no work");
-    }
-
-    public void OnDisableBasic()
-    {
-        ChangeState(BattleState.PLAYER_CHOICE);
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-
-        controller.basicActive = false;
-    }
-
+    // ----- BUTTON EVENTS
     public void OnBasicClicked()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
+        EntityController controller = currTurn.GetComponent<EntityController>();
 
         if (currStats.moveDouble)
             return;
 
         if (battleVariables.battleState == BattleState.PLAYER_BASIC)
         {
-            Debug.Log("lmaooo");
-            OnDisableBasic();
-        } 
+            ChangeState(BattleState.PLAYER_CHOICE);
+            controller.basicActive = false;
+        }
         else
         {
-            Debug.Log("Hi!");
-            OnEnableBasic();
+            ChangeState(BattleState.PLAYER_BASIC);
+            controller.basicActive = true;
         }
-        
+
     }
 
     public void OnSpecialClicked()
@@ -588,9 +578,7 @@ public class BattleManager
         if (currStats.moveDouble)
             return;
 
-        //GameObject cone = _instantiateFunction(controller.coneAoe, currTurn.transform.position);
-
-        VisualTreeAsset itemAsset = ExcentraDatabase.TryGetSubDocument("skill-item"); 
+        VisualTreeAsset itemAsset = ExcentraDatabase.TryGetSubDocument("skill-item");
         VisualElement skillScroller = specialPanel.Q<VisualElement>("skill-scroller");
 
         controller.basicActive = false;
@@ -602,37 +590,37 @@ public class BattleManager
 
         skillScroller.Clear();
 
-        foreach (string ability in currStats.abilityKeys)
+        foreach (string skill in currStats.skillKeys)
         {
-            Ability currAbility = ExcentraDatabase.TryGetAbility(ability);
+            Skill currSkill = ExcentraDatabase.TryGetSkill(skill);
 
-            if (currAbility != null)
+            if (currSkill != null)
             {
                 VisualElement newSkill = itemAsset.CloneTree();
-                newSkill.Q<Label>("skill-name").text = currAbility.abilityName;
-                newSkill.Q<VisualElement>("image").style.backgroundImage = new StyleBackground(currAbility.icon);
-                newSkill.Q<Label>("skill-cost").text = currAbility.baseAether + " Aether";
-                newSkill.userData = currAbility;
+                newSkill.Q<Label>("skill-name").text = currSkill.skillName;
+                newSkill.Q<VisualElement>("image").style.backgroundImage = new StyleBackground(currSkill.icon);
+                newSkill.Q<Label>("skill-cost").text = currSkill.baseAether + " Aether";
+                newSkill.userData = currSkill;
 
                 newSkill.RegisterCallback<ClickEvent>(e =>
                 {
                     EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
                     EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
                     VisualElement element = (e.currentTarget as VisualElement);
-                    if ((element.userData as Ability).baseAether > stats.currentAether)
+                    if ((element.userData as Skill).baseAether > stats.currentAether)
                         return;
 
-                    battleVariables.currAbility = element.userData as Ability;
+                    battleVariables.currSkill = element.userData as Skill;
                     ChangeState(BattleState.PLAYER_SPECIAL);
 
-                    if ((element.userData as Ability).areaStyle == AreaStyle.SINGLE || ((element.userData as Ability).targetMode == TargetMode.FREE && (element.userData as Ability).shape == Shape.CIRCLE))
+                    if ((element.userData as Skill).areaStyle == AreaStyle.SINGLE || ((element.userData as Skill).shape == Shape.CIRCLE))
                         controller.specialActive = true;
 
                     if (specialPanel.style.visibility == Visibility.Visible)
                         specialPanel.style.visibility = Visibility.Hidden;
 
-                    if ((element.userData as Ability).areaStyle == AreaStyle.AREA)
-                        HandleSkillAoe(element, controller, stats);
+                    if (NeedsAoe(element.userData as Skill))
+                        ActivateSkillTelegraph(element);
 
                 });
 
@@ -641,25 +629,9 @@ public class BattleManager
         }
     }
 
-    private void HandleSkillAoe(VisualElement element, EntityController controller, EntityStats stats)
-    {
-        GameObject aoe = ActivateAbilityTelegraph(element);
-
-        if ((element.userData as Ability).targetMode != TargetMode.SELECT)
-        {
-            int aoeIndex = aoeArenadata.AddAoe(aoe);
-            stats.arenaAoeIndex = aoeIndex;
-        }
-        else
-        {
-            if ((element.userData as Ability).shape == Shape.CIRCLE)
-                controller.specialActive = true;
-        }
-    }
-
     public void OnMoveClicked()
     {
-        if (GetState() == BattleState.PLAYER_CHOICE)
+        if (battleVariables.GetState() == BattleState.PLAYER_CHOICE)
         {
             GameObject currTurn = turnManager.GetCurrentTurn();
             EntityStats stats = currTurn.GetComponent<EntityStats>();
@@ -673,7 +645,7 @@ public class BattleManager
             entityController.DrawMovementCircle();
         }
 
-        
+
     }
 
     public void OnEndClicked()
@@ -682,73 +654,16 @@ public class BattleManager
         {
             EndTurn();
         }
-        
-    }
 
-    public bool IsAlive(GameObject entity)
-    {
-        EntityStats stats = entity.GetComponent<EntityStats>();
-        if (stats.currentHP > 0)
-            return true;
-        return false;
-    }
-
-    public bool WithinBasicRange(GameObject entity)
-    {
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats stats = currTurn.GetComponent<EntityStats>();
-
-        if (Vector2.Distance(currTurn.transform.position, entity.transform.position) < stats.CalculateBasicRangeRadius() / 2)
-            return true;
-
-        return false;
-    }
-
-    public bool BasicShouldBeHighlighted(EntityStats entity)
-    {
-        if (GetState() == BattleState.PLAYER_BASIC)
-        {
-            if (!entity.isPlayer)
-                return true;
-        }
-
-        return false;
-    }
-
-    public void EscapePressed()
-    {
-        if (specialPanel.style.visibility == Visibility.Visible)
-            specialPanel.style.visibility = Visibility.Hidden;
-    }
-
-    public void RightClickPressed()
-    {
-        if (GetState() == BattleState.PLAYER_SPECIAL)
-        {
-            EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
-            EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
-            if (stats.arenaAoeIndex >= 0)
-            {
-                GameObject aoe = aoeArenadata.PopAoe(stats.arenaAoeIndex);
-                ExcentraGame.DestroyAoe(aoe);
-            }
-            battleVariables.currAbility = null;
-            controller.specialActive = false;
-            stats.arenaAoeIndex = -1;
-            ChangeState(BattleState.PLAYER_CHOICE);
-            
-            specialPanel.style.visibility = Visibility.Visible;
-        }
     }
 
     public void OnRestartClicked()
     {
-        Debug.Log("TEST!");
         PostBattleCleanup();
         InitializeBattle(tempCharacterPrefabs, tempBossPrefab, true);
     }
     
-    public void OnAbilityShot()
+    public void OnSkillShot()
     {
         try
         {
@@ -758,24 +673,24 @@ public class BattleManager
             GameObject currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
             ConeAoe aoeInit = currAoe.GetComponent<ConeAoe>();
 
-            if (aoeInit.ability.shape == Shape.CIRCLE && aoeInit.ability.targetMode == TargetMode.SELECT)
+            if (aoeInit.skill.shape == Shape.CIRCLE && aoeInit.skill.targetMode == TargetMode.SELECT)
             {
-                if (Vector2.Distance(currEntity.transform.position, currAoe.transform.position) > aoeInit.ability.range / 2)
+                if (!CheckWithinSkillRange(currEntity, currAoe, aoeInit.skill))
                     return;
             }
 
             aoeInit.FreezeAoe();
             BattleClickInfo info = new BattleClickInfo();
-            if (aoeInit.ability.shape == Shape.CONE || aoeInit.ability.shape == Shape.LINE)
+            if (aoeInit.skill.shape == Shape.CONE || aoeInit.skill.shape == Shape.LINE)
             {
                 info.mousePosition = aoeInit.frozenDestination;
             }
-            else if (aoeInit.ability.shape == Shape.CIRCLE)
+            else if (aoeInit.skill.shape == Shape.CIRCLE)
             {
                 info.mousePosition = aoeInit.frozenPosition;
             }
 
-            stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.ability.baseAether, 0);
+            stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.skill.baseAether, 0);
             mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
             controller.specialActive = false;
 
@@ -783,14 +698,59 @@ public class BattleManager
         } catch (NullReferenceException) { }
     }
 
-    public GameObject ActivateAbilityTelegraph(VisualElement element)
-    {
+    // ------ CLEANED UP PROPER FUNCTIONS ------------
 
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-        return controller.InitializeAoe(element.userData as Ability);
+    // Just spawns the AoE. Assumes all checks pass to allow the AoE to spawn
+    public GameObject SpawnAoe(Skill skill, GameObject origin, GameObject attacker)
+    {
+        GameObject aoe = null;
+        EntityStats stats = attacker.GetComponent<EntityStats>();
+
+        if (skill.shape == Shape.CONE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), origin.transform.position, Quaternion.identity);
+            aoe.GetComponent<ConeAoe>().InitializeCone(origin, attacker, skill);
+        }
+        else if (skill.shape == Shape.CIRCLE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
+            aoe.GetComponent<ConeAoe>().InitializeCircle(origin, attacker, skill);
+        }
+        else if (skill.shape == Shape.LINE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), origin.transform.position, Quaternion.identity);
+            aoe.GetComponent<ConeAoe>().InitializeLine(origin, attacker, skill);
+        }
+
+        if (aoe != null)
+        {
+            int index = aoeArenadata.AddAoe(aoe);
+            stats.arenaAoeIndex = index;
+        }
+
+        return aoe;
     }
 
+    // Each entity should have their aoe as an index on their stats. This is done via the above function.
+    public void DestroyAoe(GameObject owner)
+    {
+        EntityStats stats = owner.GetComponent<EntityStats>();
+        if (stats.arenaAoeIndex == -1)
+            return;
+
+        GameObject aoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
+        UnityEngine.GameObject.Destroy(aoe);
+        stats.arenaAoeIndex = -1;
+    }
+
+    public bool NeedsAoe(Skill skill)
+    {
+        if (skill.areaStyle == AreaStyle.SINGLE || skill.targetMode == TargetMode.SELECT)
+            return false;
+
+        return true;
+    }
+    
     // Change how this works when new key system in place.
     public void PostBattleCleanup()
     {
@@ -829,12 +789,86 @@ public class BattleManager
             UnityEngine.Object.Destroy(aoe);
         }
 
-        Debug.Log("Hello!asdasd");
-
         hpDictionary.Clear();
         mpDictionary.Clear();
         debuffScrollers.Clear();
         battleVariables = new BattleVariables();
         turnManager = new TurnManager();
+    }
+
+    // Checks if an attacker can even target the defender
+    public bool TargetingEligible(GameObject attacker, GameObject defender)
+    {
+        EntityStats attackerStats = attacker.GetComponent<EntityStats>();
+        EntityStats defenderStats = defender.GetComponent<EntityStats>();
+
+        bool sameTeam = attackerStats.isPlayer == defenderStats.isPlayer;
+
+        if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
+        {
+            return !sameTeam;
+        }
+        else if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
+        {
+            Skill currSkill = battleVariables.GetCurrentSkill();
+
+            if (currSkill != null)
+            {
+                EntityType entityType = currSkill.entityType;
+                
+                if (entityType == EntityType.ALLY)
+                {
+                    bool revive = false;
+                    
+
+                    if (currSkill.damageType == DamageType.REVIVE)
+                        revive = true;
+
+                    if (sameTeam)
+                    {
+                        if (revive)
+                        {
+                            if (defenderStats.currentHP <= 0)
+                                return true;
+                        }
+                        else
+                        {
+                            if (defenderStats.currentHP > 0)
+                                return true;
+                        }
+                    }
+
+                }
+                else if (entityType == EntityType.ENEMY)
+                {
+                    if (!sameTeam && defenderStats.currentHP > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // Checks within a skill or basic range (combines both types of functions into one)
+    // TODO: Might be better to have a range handler that we can pass in some parameters and it auto-calculates a range. Good to centralize things.
+    public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, Skill skill = null)
+    {
+        EntityStats attackerStats = attacker.GetComponent<EntityStats>();
+
+        if (skill == null)
+        {
+            if (Vector2.Distance(attacker.transform.position, defender.transform.position) < attackerStats.CalculateBasicRangeRadius() / 2)
+                return true;
+        }
+        else
+        {
+            if (Vector2.Distance(attacker.transform.position, defender.transform.position) < skill.range / 2)
+                return true;
+        }
+
+        return false;
     }
 }
