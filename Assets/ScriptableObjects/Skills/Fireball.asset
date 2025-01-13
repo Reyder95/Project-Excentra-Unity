@@ -19,7 +19,7 @@ MonoBehaviour:
   shape: 0
   entityType: 1
   scaler: 1
-  radius: 10
+  radius: 7
   range: 8
   baseValue: 100
   baseAether: 25

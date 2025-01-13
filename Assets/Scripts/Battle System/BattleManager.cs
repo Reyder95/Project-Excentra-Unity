@@ -530,6 +530,15 @@ public class BattleManager
     {
         if (specialPanel.style.visibility == Visibility.Visible)
             specialPanel.style.visibility = Visibility.Hidden;
+
+        if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
+        {
+            OnBasicClicked();
+        }
+        else if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
+        {
+            RightClickPressed();
+        }
     }
 
     public void RightClickPressed()
@@ -542,6 +551,10 @@ public class BattleManager
             controller.specialActive = false;
             ChangeState(BattleState.PLAYER_CHOICE);
             specialPanel.style.visibility = Visibility.Visible;
+        }
+        else if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
+        {
+            OnBasicClicked();
         }
     }
 
@@ -560,8 +573,9 @@ public class BattleManager
             ChangeState(BattleState.PLAYER_CHOICE);
             controller.basicActive = false;
         }
-        else
+        else if (battleVariables.battleState == BattleState.PLAYER_CHOICE)
         {
+            EscapePressed();
             ChangeState(BattleState.PLAYER_BASIC);
             controller.basicActive = true;
         }

@@ -70,6 +70,7 @@ public class EntityController : MonoBehaviour
 
     private void Update()
     {
+
         if (entityStats.currentHP <= 0)
         {
             boxCollider.offset = deadOffset;
@@ -118,7 +119,14 @@ public class EntityController : MonoBehaviour
         // If not autoMove, allows for entity to move using WASD (if playerInput is enabled)
         else
         {
+        }
 
+    }
+
+    public void FixedUpdate()
+    {
+        if (!autoMove)
+        {
             if (inputVector != Vector2.zero)
             {
                 animator.SetBool("IsWalk", true);
@@ -131,7 +139,7 @@ public class EntityController : MonoBehaviour
             // Flip the sprite based on movement direction
             if (inputVector.x > 0)
             {
-                FaceDirection(false);   
+                FaceDirection(false);
             }
             else if (inputVector.x < 0)
             {
@@ -139,7 +147,7 @@ public class EntityController : MonoBehaviour
             }
 
             // Calculates future movement. If entity will go beyond their "move" radius, prevent them from doing so.
-            Vector2 newPosition = rb.position + inputVector * (moveSpeed * 2) * Time.deltaTime;
+            Vector2 newPosition = rb.position + inputVector * (moveSpeed) * Time.deltaTime;
 
             if (Vector2.Distance(newPosition, turnStartPos) < (entityStats.CalculateMovementRadius() / 2))
             {
@@ -292,6 +300,7 @@ public class EntityController : MonoBehaviour
     {
         if (context.started)
         {
+            
             ExcentraGame.battleManager.EscapePressed();
         }
     }   // Cancels the User Interface for Special attacks.

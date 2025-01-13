@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d18ff3c165bcdc46adfe5c747ee90c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityKeys: []
+  skillKeys: []
   entityName: 
   portrait: {fileID: 0}
   isPlayer: 0
@@ -120,8 +120,10 @@ MonoBehaviour:
   speed: 0
   move: 0
   basicRange: 0
+  aggressionGen: 0
+  aggressionDropoff: 0
+  aggressionTurns: 0
   basicAttackCount: 1
-  moveDouble: 0
 --- !u!114 &421529142559536925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,20 +136,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d65c6aa36c01b841b6fce1aca3cefdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 7
-  animator: {fileID: 0}
-  lineRenderer: {fileID: 0}
-  entityStats: {fileID: 0}
-  playerInput: {fileID: 0}
+  moveSpeed: 5
   turnStartPos: {x: 0, y: 0, z: 0}
   basicActive: 0
-  coneAoe: {fileID: 4484690648970835890, guid: 515721e2f00070e4a8c43cb86842d808, type: 3}
-  circleAoe: {fileID: 8181824542807740559, guid: 38e46b65abaa63446bb78d1d346be5fc, type: 3}
-  lineAoe: {fileID: 6765610906363701024, guid: 308ee99daa0efd84196078c8386bd8d9, type: 3}
+  specialActive: 0
   circleRange: {fileID: 8390718592877475064, guid: 47a241d8a4ab7354cb163eff501e4142, type: 3}
   circleBasicRangeInstance: {fileID: 0}
   circleBasicRangeRenderer: {fileID: 0}
+  animator: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  lineRenderer: {fileID: 0}
+  entityStats: {fileID: 0}
+  playerInput: {fileID: 0}
   charGround: {fileID: 5462995217107779432}
+  aliveOffset: {x: 0, y: 0}
+  aliveSize: {x: 0, y: 0}
+  deadOffset: {x: 0, y: 0}
+  deadSize: {x: 0, y: 0}
 --- !u!212 &138672604131897943
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -190,7 +195,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 735867311
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1000
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -388,11 +393,11 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 32b35790-4ed0-4e9a-aa41-69ac6d629449
-    m_ActionName: 'UI/Point[/Mouse/position,/Pen/position]'
+    m_ActionName: UI/Point
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 3c7022bf-7922-4f7c-a998-c437916075ad
-    m_ActionName: 'UI/Click[/Mouse/leftButton,/Pen/tip]'
+    m_ActionName: UI/Click
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 421529142559536925}
@@ -408,15 +413,15 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_ActionId: 44b200b1-1557-4083-816c-b22cbdf77ddf
-    m_ActionName: 'UI/RightClick[/Mouse/rightButton]'
+    m_ActionName: UI/RightClick
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: dad70c86-b58c-4b17-88ad-f5e53adf419e
-    m_ActionName: 'UI/MiddleClick[/Mouse/middleButton]'
+    m_ActionName: UI/MiddleClick
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 0489e84a-4833-4c40-bfae-cea84b696689
-    m_ActionName: 'UI/ScrollWheel[/Mouse/scroll]'
+    m_ActionName: UI/ScrollWheel
   - m_PersistentCalls:
       m_Calls: []
     m_ActionId: 24908448-c609-4bc3-a128-ea258674378a
