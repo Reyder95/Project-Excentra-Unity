@@ -230,7 +230,14 @@ public class EntityController : MonoBehaviour
     public void HandleTarget(bool active)
     {
         if (active)
+        {
+            if (!entityStats.isPlayer)
+                spriteRenderer.material.SetColor("_Color", new Color(1f, 0f, 0f));
+            else
+                spriteRenderer.material.SetColor("_Color", new Color(0f, 1f, 0f));
             spriteRenderer.material.SetFloat("_Thickness", 0.001f);
+        }
+            
         else
             spriteRenderer.material.SetFloat("_Thickness", 0f);
     }
