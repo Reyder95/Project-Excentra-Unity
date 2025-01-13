@@ -38,9 +38,16 @@ public class EntityController : MonoBehaviour
     public EntityStats entityStats;
     public PlayerInput playerInput;
     private Rigidbody2D rb;
+    private BoxCollider2D boxCollider;
 
     // Misc.
     public GameObject charGround;   // A simple object denoting an entity's ground. Used for handling depth (displaying entities in front and behind each other)
+
+    [Header("Collider Hitboxes")]
+    public Vector2 aliveOffset;
+    public Vector2 aliveSize;
+    public Vector2 deadOffset;
+    public Vector2 deadSize;
 
     void Awake()
     {
@@ -50,6 +57,7 @@ public class EntityController : MonoBehaviour
         entityStats = GetComponent<EntityStats>();
         playerInput = GetComponent<PlayerInput>();
         lineRenderer = GetComponent<LineRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
 
         spriteRenderer.material.SetFloat("_Thickness", 0f); // Outline, by default should be hidden.
         localScale = gameObject.transform.localScale;
@@ -58,11 +66,22 @@ public class EntityController : MonoBehaviour
         circleBasicRangeInstance = Instantiate(circleRange, transform.position, Quaternion.identity);
         circleBasicRangeRenderer = circleBasicRangeInstance.GetComponent<SpriteRenderer>();
 
-
     }
 
     private void Update()
     {
+        if (entityStats.currentHP <= 0)
+        {
+            boxCollider.offset = deadOffset;
+            boxCollider.size = deadSize;
+        }
+        else
+        {
+            boxCollider.offset = aliveOffset;
+            boxCollider.size = aliveSize;
+        }
+
+
         // Sorts entity based on x/y position. Multiplies by 100 as x/y may be a decimal.
         // Divides by -1 such that higher y is lower, lower y is higher. Gives illusion of being behind/in front of other entities
         int sortingLayer = (int)Mathf.Floor(charGround.transform.position.y * 100 / -1);
