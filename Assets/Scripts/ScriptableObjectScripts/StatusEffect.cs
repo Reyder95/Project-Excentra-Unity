@@ -38,6 +38,8 @@ public enum StatType
 [CreateAssetMenu(fileName = "StatusEffect", menuName = "Scriptable Objects/StatusEffect")]
 public class StatusEffect : ScriptableObject
 {
+    [System.NonSerialized]
+    public string key;
     public string effectName;
     public Texture2D icon;
 
