@@ -791,6 +791,11 @@ public class BattleManager
 
         hpDictionary.Clear();
         mpDictionary.Clear();
+
+        foreach (var debuffScroller in debuffScrollers)
+        {
+            debuffScroller.Value.Clear();
+        }
         debuffScrollers.Clear();
         battleVariables = new BattleVariables();
         turnManager = new TurnManager();
