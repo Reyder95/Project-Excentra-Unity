@@ -17,8 +17,11 @@ public class ExcentraGame : MonoBehaviour
     [SerializeField]
     List<UIAsset> uiSubDocs = new List<UIAsset>();
 
+    //[SerializeField]
+    //List<AbilityKey> abilities = new List<AbilityKey>();
+
     [SerializeField]
-    List<AbilityKey> abilities = new List<AbilityKey>();
+    List<SkillKey> skills = new List<SkillKey>();
 
     [SerializeField]
     List<StatusEntry> statusEffects = new List<StatusEntry>();
@@ -44,7 +47,7 @@ public class ExcentraGame : MonoBehaviour
         ExcentraDatabase.LoadEntities(entityPrefabs);
         ExcentraDatabase.LoadDocuments(uiDocs);
         ExcentraDatabase.LoadUIAssets(uiSubDocs);
-        ExcentraDatabase.LoadAbilities(abilities);
+        ExcentraDatabase.LoadSkills(skills);
         ExcentraDatabase.LoadStatuses(statusEffects);
         ExcentraDatabase.LoadMiscPrefabs(miscPrefabs);
 

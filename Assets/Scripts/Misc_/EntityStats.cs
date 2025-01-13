@@ -9,7 +9,7 @@ using UnityEngine;
 public class EntityStats : MonoBehaviour
 {
     [Header("Abilities")]
-    public List<string> abilityKeys = new List<string>();
+    public List<string> skillKeys = new List<string>();
 
     [Header("General Information")]
     public string entityName;

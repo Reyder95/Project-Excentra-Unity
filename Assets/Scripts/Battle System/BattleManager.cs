@@ -220,7 +220,7 @@ public class BattleManager
         bool isRevive = false;
 
         // Checks if we need to revive dead Entities during this EndTurn() phase
-        if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.REVIVE)
+        if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.REVIVE)
         {
             isRevive = true;
         }
@@ -289,7 +289,7 @@ public class BattleManager
         // Battle Variables cleanup
         battleVariables.targets = null;
         battleVariables.isAttacking = false;
-        battleVariables.currAbility = null;
+        battleVariables.currSkill = null;
 
         // Controller cleanup
         controller.specialActive = false;
@@ -368,14 +368,14 @@ public class BattleManager
                     if (stats.arenaAoeIndex != -1)
                     {
                         battleVariables.currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
-                        battleVariables.currAbility = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<ConeAoe>().ability;
+                        battleVariables.currSkill = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<ConeAoe>().skill;
                         battleVariables.targets = battleVariables.currAoe.GetComponent<ConeAoe>().aoeData.TargetList;
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
                     }
                     else
                     {
-                        battleVariables.currAbility = information.singleAbility;
+                        battleVariables.currSkill = information.singleSkill;
                         battleVariables.targets = new Dictionary<string, GameObject>() { { information.target.GetComponent<EntityStats>().entityName, information.target } };
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
@@ -394,9 +394,9 @@ public class BattleManager
     }
 
     // Spawns an AOE telegraph for the user
-    public GameObject ActivateAbilityTelegraph(VisualElement element)
+    public GameObject ActivateSkillTelegraph(VisualElement element)
     {
-        return SpawnAoe((element.userData as Ability), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
+        return SpawnAoe((element.userData as Skill), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
     }
 
     // When the animation "hits" the target, this event is triggered. Does the specific attack towards this group of targets
@@ -406,7 +406,7 @@ public class BattleManager
 
         foreach (var entity in targetList)
         {
-            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currAbility));
+            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currSkill));
             DealDamage(entity.Value, entityDamage);
         }
 
@@ -450,9 +450,9 @@ public class BattleManager
 
     public void AddStatusToEnemy(EntityStats entityStats)
     {
-        if (battleVariables.currAbility != null)
+        if (battleVariables.currSkill != null)
         {
-            foreach (var status in battleVariables.currAbility.statusEffect)
+            foreach (var status in battleVariables.currSkill.statusEffects)
             {
                 float statusChance = status.chance;
                 float randomNum = UnityEngine.Random.Range(0, 100);
@@ -473,7 +473,7 @@ public class BattleManager
         AddStatusToEnemy(entityStats);
 
 
-        if (battleVariables.currAbility != null && battleVariables.currAbility.damageType == DamageType.DAMAGE || battleVariables.currAbility == null)
+        if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE || battleVariables.currSkill == null)
         {
             entityController.animator.Play("Damage", -1, 0f);
         }
@@ -538,7 +538,7 @@ public class BattleManager
         {
             EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
             DestroyAoe(turnManager.GetCurrentTurn());
-            battleVariables.currAbility = null;
+            battleVariables.currSkill = null;
             controller.specialActive = false;
             ChangeState(BattleState.PLAYER_CHOICE);
             specialPanel.style.visibility = Visibility.Visible;
@@ -590,37 +590,37 @@ public class BattleManager
 
         skillScroller.Clear();
 
-        foreach (string ability in currStats.abilityKeys)
+        foreach (string skill in currStats.skillKeys)
         {
-            Ability currAbility = ExcentraDatabase.TryGetAbility(ability);
+            Skill currSkill = ExcentraDatabase.TryGetSkill(skill);
 
-            if (currAbility != null)
+            if (currSkill != null)
             {
                 VisualElement newSkill = itemAsset.CloneTree();
-                newSkill.Q<Label>("skill-name").text = currAbility.abilityName;
-                newSkill.Q<VisualElement>("image").style.backgroundImage = new StyleBackground(currAbility.icon);
-                newSkill.Q<Label>("skill-cost").text = currAbility.baseAether + " Aether";
-                newSkill.userData = currAbility;
+                newSkill.Q<Label>("skill-name").text = currSkill.skillName;
+                newSkill.Q<VisualElement>("image").style.backgroundImage = new StyleBackground(currSkill.icon);
+                newSkill.Q<Label>("skill-cost").text = currSkill.baseAether + " Aether";
+                newSkill.userData = currSkill;
 
                 newSkill.RegisterCallback<ClickEvent>(e =>
                 {
                     EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
                     EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
                     VisualElement element = (e.currentTarget as VisualElement);
-                    if ((element.userData as Ability).baseAether > stats.currentAether)
+                    if ((element.userData as Skill).baseAether > stats.currentAether)
                         return;
 
-                    battleVariables.currAbility = element.userData as Ability;
+                    battleVariables.currSkill = element.userData as Skill;
                     ChangeState(BattleState.PLAYER_SPECIAL);
 
-                    if ((element.userData as Ability).areaStyle == AreaStyle.SINGLE || ((element.userData as Ability).shape == Shape.CIRCLE))
+                    if ((element.userData as Skill).areaStyle == AreaStyle.SINGLE || ((element.userData as Skill).shape == Shape.CIRCLE))
                         controller.specialActive = true;
 
                     if (specialPanel.style.visibility == Visibility.Visible)
                         specialPanel.style.visibility = Visibility.Hidden;
 
-                    if (NeedsAoe(element.userData as Ability))
-                        ActivateAbilityTelegraph(element);
+                    if (NeedsAoe(element.userData as Skill))
+                        ActivateSkillTelegraph(element);
 
                 });
 
@@ -663,7 +663,7 @@ public class BattleManager
         InitializeBattle(tempCharacterPrefabs, tempBossPrefab, true);
     }
     
-    public void OnAbilityShot()
+    public void OnSkillShot()
     {
         try
         {
@@ -673,24 +673,24 @@ public class BattleManager
             GameObject currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
             ConeAoe aoeInit = currAoe.GetComponent<ConeAoe>();
 
-            if (aoeInit.ability.shape == Shape.CIRCLE && aoeInit.ability.targetMode == TargetMode.SELECT)
+            if (aoeInit.skill.shape == Shape.CIRCLE && aoeInit.skill.targetMode == TargetMode.SELECT)
             {
-                if (!CheckWithinSkillRange(currEntity, currAoe, aoeInit.ability))
+                if (!CheckWithinSkillRange(currEntity, currAoe, aoeInit.skill))
                     return;
             }
 
             aoeInit.FreezeAoe();
             BattleClickInfo info = new BattleClickInfo();
-            if (aoeInit.ability.shape == Shape.CONE || aoeInit.ability.shape == Shape.LINE)
+            if (aoeInit.skill.shape == Shape.CONE || aoeInit.skill.shape == Shape.LINE)
             {
                 info.mousePosition = aoeInit.frozenDestination;
             }
-            else if (aoeInit.ability.shape == Shape.CIRCLE)
+            else if (aoeInit.skill.shape == Shape.CIRCLE)
             {
                 info.mousePosition = aoeInit.frozenPosition;
             }
 
-            stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.ability.baseAether, 0);
+            stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.skill.baseAether, 0);
             mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
             controller.specialActive = false;
 
@@ -701,7 +701,7 @@ public class BattleManager
     // ------ CLEANED UP PROPER FUNCTIONS ------------
 
     // Just spawns the AoE. Assumes all checks pass to allow the AoE to spawn
-    public GameObject SpawnAoe(Ability skill, GameObject origin, GameObject attacker)
+    public GameObject SpawnAoe(Skill skill, GameObject origin, GameObject attacker)
     {
         GameObject aoe = null;
         EntityStats stats = attacker.GetComponent<EntityStats>();
@@ -743,7 +743,7 @@ public class BattleManager
         stats.arenaAoeIndex = -1;
     }
 
-    public bool NeedsAoe(Ability skill)
+    public bool NeedsAoe(Skill skill)
     {
         if (skill.areaStyle == AreaStyle.SINGLE || skill.targetMode == TargetMode.SELECT)
             return false;
@@ -810,18 +810,18 @@ public class BattleManager
         }
         else if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
         {
-            Ability currAbility = battleVariables.GetCurrentAbility();
+            Skill currSkill = battleVariables.GetCurrentSkill();
 
-            if (currAbility != null)
+            if (currSkill != null)
             {
-                EntityType entityType = currAbility.entityType;
-
+                EntityType entityType = currSkill.entityType;
+                
                 if (entityType == EntityType.ALLY)
                 {
                     bool revive = false;
                     
 
-                    if (currAbility.damageType == DamageType.REVIVE)
+                    if (currSkill.damageType == DamageType.REVIVE)
                         revive = true;
 
                     if (sameTeam)
@@ -854,7 +854,7 @@ public class BattleManager
 
     // Checks within a skill or basic range (combines both types of functions into one)
     // TODO: Might be better to have a range handler that we can pass in some parameters and it auto-calculates a range. Good to centralize things.
-    public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, Ability skill = null)
+    public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, Skill skill = null)
     {
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
 

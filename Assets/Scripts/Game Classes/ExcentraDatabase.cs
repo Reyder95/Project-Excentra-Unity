@@ -12,7 +12,7 @@ public static class ExcentraDatabase
     private static Dictionary<string, GameObject> entityDictionary = new Dictionary<string, GameObject>();
     private static Dictionary<string, UIDocument> documentDictionary = new Dictionary<string, UIDocument>();
     private static Dictionary<string, VisualTreeAsset> uiAssetDictionary = new Dictionary<string, VisualTreeAsset>();
-    private static Dictionary<string, Ability> abilityDictionary = new Dictionary<string, Ability>();
+    private static Dictionary<string, Skill> skillDictionary = new Dictionary<string, Skill>();
     private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
     private static Dictionary<string, GameObject> miscPrefabDictionary = new Dictionary<string, GameObject>();
 
@@ -54,11 +54,11 @@ public static class ExcentraDatabase
         }
     }
 
-    public static void LoadAbilities(List<AbilityKey> abilities)
+    public static void LoadSkills(List<SkillKey> skills)
     {
-        foreach (var ability in abilities)
+        foreach (var skill in skills)
         {
-            abilityDictionary.Add(ability.key, ability.ability);
+            skillDictionary.Add(skill.key, skill.skill);
         }
     }
 
@@ -103,10 +103,10 @@ public static class ExcentraDatabase
         return null;
     }
 
-    public static Ability TryGetAbility(string key)
+    public static Skill TryGetSkill(string key)
     {
-        if (abilityDictionary.ContainsKey(key))
-            return abilityDictionary[key];
+        if (skillDictionary.ContainsKey(key))
+            return skillDictionary[key];
 
         return null;
     }

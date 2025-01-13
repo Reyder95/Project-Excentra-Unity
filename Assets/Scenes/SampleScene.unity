@@ -506,137 +506,21 @@ MonoBehaviour:
     document: {fileID: 9197481963319205126, guid: 62d71ae4005f3b142a4ee96cb9df27b5, type: 3}
   - key: status-effect
     document: {fileID: 9197481963319205126, guid: ccda335b62ff46840836bc4b9e588635, type: 3}
-  abilities:
-  - key: fireball
-    ability:
-      abilityName: Fireball
-      icon: {fileID: 2800000, guid: 972a4a64a8c68ab4290c2f9ce738ad53, type: 3}
-      areaStyle: 1
-      targetMode: 0
-      shape: 0
-      entityType: 1
-      radius: 5
-      scaler: 1
-      baseValue: 100
-      baseAether: 25
-      scaleMult: 1.5
-      range: 8
-      delayAdditive: 300
-      attackCount: 1
-      damageType: 2
-      statusEffect: []
-  - key: multiheal
-    ability:
-      abilityName: Multi-Heal
-      icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
-      areaStyle: 1
-      targetMode: 1
-      shape: 0
-      entityType: 0
-      radius: 5
-      scaler: 1
-      baseValue: 55
-      baseAether: 30
-      scaleMult: 1.7
-      range: 10
-      delayAdditive: 125
-      attackCount: 1
-      damageType: 0
-      statusEffect: []
-  - key: soul-levia
-    ability:
-      abilityName: Soul-Levia
-      icon: {fileID: 2800000, guid: 972a4a64a8c68ab4290c2f9ce738ad53, type: 3}
-      areaStyle: 0
-      targetMode: 1
-      shape: 0
-      entityType: 0
-      radius: 5
-      scaler: 1
-      baseValue: 55
-      baseAether: 30
-      scaleMult: 1.7
-      range: 10
-      delayAdditive: 125
-      attackCount: 1
-      damageType: 3
-      statusEffect: []
-  - key: spinslash
-    ability:
-      abilityName: Spin Slash
-      icon: {fileID: 2800000, guid: 1af2a92d6f285a54cb98ff0d773580ec, type: 3}
-      areaStyle: 1
-      targetMode: 2
-      shape: 0
-      entityType: 1
-      radius: 5
-      scaler: 1
-      baseValue: 250
-      baseAether: 50
-      scaleMult: 1.3
-      range: 0
-      delayAdditive: 100
-      attackCount: 1
-      damageType: 2
-      statusEffect: []
-  - key: firearrow
-    ability:
-      abilityName: Fire Arrow
-      icon: {fileID: 2800000, guid: 92fd3434aad752f4aa14a92c60daa5b3, type: 3}
-      areaStyle: 1
-      targetMode: 1
-      shape: 1
-      entityType: 1
-      radius: 7
-      scaler: 1
-      baseValue: 130
-      baseAether: 40
-      scaleMult: 1.8
-      range: 10
-      delayAdditive: 225
-      attackCount: 1
-      damageType: 2
-      statusEffect: []
-  - key: poison-slash
-    ability:
-      abilityName: Poison Slash
-      icon: {fileID: 2800000, guid: 92fd3434aad752f4aa14a92c60daa5b3, type: 3}
-      areaStyle: 0
-      targetMode: 0
-      shape: 0
-      entityType: 1
-      radius: 7
-      scaler: 0
-      baseValue: 100
-      baseAether: 40
-      scaleMult: 0.5
-      range: 10
-      delayAdditive: 225
-      attackCount: 1
-      damageType: 2
-      statusEffect:
-      - key: poison
-        chance: 50.4
+  skills:
+  - key: fire-arrow
+    skill: {fileID: 11400000, guid: ab548d3cc3b3b074c9d345ef6084398c, type: 2}
   - key: embolden
-    ability:
-      abilityName: Embolden
-      icon: {fileID: 2800000, guid: 92fd3434aad752f4aa14a92c60daa5b3, type: 3}
-      areaStyle: 0
-      targetMode: 0
-      shape: 0
-      entityType: 0
-      radius: 7
-      scaler: 0
-      baseValue: 0
-      baseAether: 40
-      scaleMult: 1.8
-      range: 10
-      delayAdditive: 225
-      attackCount: 1
-      damageType: 1
-      statusEffect:
-      - key: armour_up
-        chance: 100
+    skill: {fileID: 11400000, guid: 374b266aecb165f49897323489edd597, type: 2}
+  - key: multi-heal
+    skill: {fileID: 11400000, guid: b98930377ea74a543bb8d6925e4d647c, type: 2}
+  - key: soul-levia
+    skill: {fileID: 11400000, guid: 43ed0f392c14d56439440767ccadb7bf, type: 2}
+  - key: poison-slash
+    skill: {fileID: 11400000, guid: 620dffa701815ac40aed524ce385e816, type: 2}
+  - key: spin-slash
+    skill: {fileID: 11400000, guid: 230da62cd5e88b44d8d62531aead0f65, type: 2}
+  - key: fireball
+    skill: {fileID: 11400000, guid: 3806953c1640d0041a9b9732402060ee, type: 2}
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}

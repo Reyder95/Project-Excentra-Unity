@@ -16,16 +16,16 @@ public class HandleDetection : MonoBehaviour
 
     // Determines if you are even eligible to target the entity. Useful helper function for the triggers
     public bool IsAttackable(ConeAoe aoe, EntityStats attackerStats, EntityStats defenderStats) {
-        if (ExcentraGame.battleManager.battleVariables.GetCurrentAbility().damageType == DamageType.REVIVE || ExcentraGame.battleManager.IsAlive(defenderStats.gameObject))
+        if (ExcentraGame.battleManager.battleVariables.GetCurrentSkill().damageType == DamageType.REVIVE || ExcentraGame.battleManager.IsAlive(defenderStats.gameObject))
         {
-            Ability ability = aoe.ability;
+            Skill skill = aoe.skill;
 
-            if (ability.entityType == EntityType.ALLY)
+            if (skill.entityType == EntityType.ALLY)
             {
                 if (defenderStats.isPlayer == attackerStats.isPlayer)
                 {
 
-                    if (ability.damageType == DamageType.REVIVE)
+                    if (skill.damageType == DamageType.REVIVE)
                     {
                         if (defenderStats.currentHP <= 0)
                             return true;
@@ -40,7 +40,7 @@ public class HandleDetection : MonoBehaviour
 
                 }
             }
-            else if (ability.entityType == EntityType.ENEMY)
+            else if (skill.entityType == EntityType.ENEMY)
             {
                 if (defenderStats.isPlayer != attackerStats.isPlayer)
                 {

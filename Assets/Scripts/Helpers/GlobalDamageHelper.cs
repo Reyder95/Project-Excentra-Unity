@@ -6,10 +6,10 @@ public class ActionInformation
 {
     public GameObject target;
     public GameObject attacker;
-    public Ability skill;
+    public Skill skill;
     public AoeData aoeData;
 
-   public ActionInformation(GameObject target, GameObject attacker, Ability skill = null, AoeData aoeData = null)
+   public ActionInformation(GameObject target, GameObject attacker, Skill skill = null, AoeData aoeData = null)
     {
         this.target = target;
         this.attacker = attacker;
@@ -94,31 +94,31 @@ public class GlobalDamageHelper
 
     }
 
-    private static float IndividualSkillDamageCalculation(Ability info, GameObject target, GameObject attacker)
+    private static float IndividualSkillDamageCalculation(Skill skill, GameObject target, GameObject attacker)
     {
         EntityStats targetStats = target.GetComponent<EntityStats>();
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
         
-        if (info.scaler == Scaler.ATTACK)
+        if (skill.scaler == Scaler.ATTACK)
         {
-            float damageValue = InitialDamageCalculation(info.baseValue, attackerStats.CalculateAttack(), info.scaleMult);
+            float damageValue = InitialDamageCalculation(skill.baseValue, attackerStats.CalculateAttack(), skill.scaleMult);
 
-            return DamageCalculationPhysical(damageValue, targetStats.CalculateArmour(), info.attackCount);
+            return DamageCalculationPhysical(damageValue, targetStats.CalculateArmour(), skill.attackCount);
         }
-        else if (info.scaler == Scaler.SPIRIT)
+        else if (skill.scaler == Scaler.SPIRIT)
         {
-            float damageValue = InitialDamageCalculation(info.baseValue, attackerStats.CalculateSpirit(), info.scaleMult);
+            float damageValue = InitialDamageCalculation(skill.baseValue, attackerStats.CalculateSpirit(), skill.scaleMult);
 
-            return DamageCalculationMagical(damageValue, targetStats.CalculateAegis(), info.attackCount);
+            return DamageCalculationMagical(damageValue, targetStats.CalculateAegis(), skill.attackCount);
         }
 
         return 1f;
     }
 
-    private static float IndividualSkillHealCalculation(Ability info, GameObject target, GameObject healer)
+    private static float IndividualSkillHealCalculation(Skill skill, GameObject target, GameObject healer)
     {
         EntityStats healerStats = healer.GetComponent<EntityStats>();
-        float healValue = InitialDamageCalculation(info.baseValue, healerStats.CalculateSpirit(), info.scaleMult);
+        float healValue = InitialDamageCalculation(skill.baseValue, healerStats.CalculateSpirit(), skill.scaleMult);
         return -healValue;
     }
 }

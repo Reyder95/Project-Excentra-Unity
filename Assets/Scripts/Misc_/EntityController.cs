@@ -22,7 +22,7 @@ public class EntityController : MonoBehaviour
     private GameObject target;      // Target entity to move towards
     private bool autoMove = false;  // Enables auto movement for boss. If this is triggered, the boss will move towards the target directly (Navigation not implemented yet)
 
-    // Range - Shows range that entity can attack within. Basic chooses their "basic range", special chooses the specific ability's range
+    // Range - Shows range that entity can attack within. Basic chooses their "basic range", special chooses the specific skill's range
     public bool basicActive = false;
     public bool specialActive = false;
 
@@ -144,7 +144,7 @@ public class EntityController : MonoBehaviour
         }
         else if (specialActive)
         {
-            float range = ExcentraGame.battleManager.battleVariables.GetCurrentAbility().range;
+            float range = ExcentraGame.battleManager.battleVariables.GetCurrentSkill().range;
             circleBasicRangeInstance.transform.localScale = new Vector2(range, range);
         }
             
@@ -257,7 +257,7 @@ public class EntityController : MonoBehaviour
         {
             if (context.started)
             {
-                ExcentraGame.battleManager.OnAbilityShot();
+                ExcentraGame.battleManager.OnSkillShot();
             }
         }
     }   
@@ -284,7 +284,7 @@ public class EntityController : MonoBehaviour
         {
             if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
             {
-                Ability currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentAbility();
+                Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
 
                 if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
                 {
@@ -304,7 +304,7 @@ public class EntityController : MonoBehaviour
     public void OnMouseDown()
     {
 
-        Ability currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentAbility();
+        Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
 
         // If the enemy is dead, check if we are able to revive them.
         if (entityStats.currentHP <= 0 && (currAbility == null || currAbility.damageType != DamageType.REVIVE))
@@ -322,7 +322,7 @@ public class EntityController : MonoBehaviour
 
                     BattleClickInfo info = new BattleClickInfo();
                     info.target = this.gameObject;
-                    info.singleAbility = currAbility;
+                    info.singleSkill = currAbility;
                     ExcentraGame.battleManager.HandleEntityAction(info);
                 }
 
@@ -336,7 +336,7 @@ public class EntityController : MonoBehaviour
     {
         if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
         {
-            Ability currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentAbility();
+            Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
 
             if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
             {
