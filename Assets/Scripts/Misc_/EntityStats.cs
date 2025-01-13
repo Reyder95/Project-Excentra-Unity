@@ -104,7 +104,7 @@ public class EntityStats : MonoBehaviour
     }
 
     // Standard calculation function. Takes in a stat
-    public float Calculation(string stat, float statValue)
+    public float Calculation(StatType stat, float statValue)
     {
         float finalStat = statValue;
 
@@ -126,36 +126,36 @@ public class EntityStats : MonoBehaviour
     // Stat Calculations (use these for all damage calcs)
     public float CalculateAttack()
     {
-        return Calculation("attack", attack);
+        return Calculation(StatType.ATTACK, attack);
     }
 
     public float CalculateSpirit()
     {
-        return Calculation("spirit", spirit);
+        return Calculation(StatType.SPIRIT, spirit);
     }
 
     public float CalculateArmour()
     {
-        return Calculation("armour", armour);
+        return Calculation(StatType.ARMOUR, armour);
     }
 
     public float CalculateEvasion()
     {
-        return Calculation("evasion", evasion);
+        return Calculation(StatType.EVASION, evasion);
     }
 
     public float CalculateAegis()
     {
-        return Calculation("aegis", aegis);
+        return Calculation(StatType.EVASION, aegis);
     }
 
     public float CalculateSpeed()
     {
-        return Calculation("speed", speed);
+        return Calculation(StatType.SPEED, speed);
     }
 
     public float CalculateMove()
     {
-        return Calculation("move", move);
+        return Calculation(StatType.MOVE, move);
     }
 }
