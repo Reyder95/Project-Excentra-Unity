@@ -368,8 +368,8 @@ public class BattleManager
                     if (stats.arenaAoeIndex != -1)
                     {
                         battleVariables.currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
-                        battleVariables.currSkill = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<ConeAoe>().skill;
-                        battleVariables.targets = battleVariables.currAoe.GetComponent<ConeAoe>().aoeData.TargetList;
+                        battleVariables.currSkill = aoeArenadata.GetAoe(stats.arenaAoeIndex).GetComponent<BaseAoe>().skill;
+                        battleVariables.targets = battleVariables.currAoe.GetComponent<BaseAoe>().aoeData.TargetList;
                         battleVariables.isAttacking = true;
                         currTurn.GetComponent<EntityController>().animator.SetTrigger("Special Attack");
                     }
@@ -685,7 +685,7 @@ public class BattleManager
             EntityStats stats = currEntity.GetComponent<EntityStats>();
             EntityController controller = currEntity.GetComponent<EntityController>();
             GameObject currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
-            ConeAoe aoeInit = currAoe.GetComponent<ConeAoe>();
+            BaseAoe aoeInit = currAoe.GetComponent<BaseAoe>();
 
             if (aoeInit.skill.shape == Shape.CIRCLE && aoeInit.skill.targetMode == TargetMode.SELECT)
             {
@@ -695,14 +695,7 @@ public class BattleManager
 
             aoeInit.FreezeAoe();
             BattleClickInfo info = new BattleClickInfo();
-            if (aoeInit.skill.shape == Shape.CONE || aoeInit.skill.shape == Shape.LINE)
-            {
-                info.mousePosition = aoeInit.frozenDestination;
-            }
-            else if (aoeInit.skill.shape == Shape.CIRCLE)
-            {
-                info.mousePosition = aoeInit.frozenPosition;
-            }
+            info.mousePosition = aoeInit.FrozenInfo();
 
             stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.skill.baseAether, 0);
             mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
@@ -723,17 +716,17 @@ public class BattleManager
         if (skill.shape == Shape.CONE)
         {
             aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), origin.transform.position, Quaternion.identity);
-            aoe.GetComponent<ConeAoe>().InitializeCone(origin, attacker, skill);
+            aoe.GetComponent<BaseAoe>().InitializeAoe(origin, attacker, skill);
         }
         else if (skill.shape == Shape.CIRCLE)
         {
             aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
-            aoe.GetComponent<ConeAoe>().InitializeCircle(origin, attacker, skill);
+            aoe.GetComponent<BaseAoe>().InitializeAoe(origin, attacker, skill);
         }
         else if (skill.shape == Shape.LINE)
         {
             aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), origin.transform.position, Quaternion.identity);
-            aoe.GetComponent<ConeAoe>().InitializeLine(origin, attacker, skill);
+            aoe.GetComponent<BaseAoe>().InitializeAoe(origin, attacker, skill);
         }
 
         if (aoe != null)
