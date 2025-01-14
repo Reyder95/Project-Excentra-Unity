@@ -287,9 +287,7 @@ public class BattleManager
         currStats.moveDouble = false;
 
         // Battle Variables cleanup
-        battleVariables.targets = null;
-        battleVariables.isAttacking = false;
-        battleVariables.currSkill = null;
+        battleVariables.CleanVariables();
 
         // Controller cleanup
         controller.specialActive = false;
@@ -332,13 +330,42 @@ public class BattleManager
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats stats = currTurn.GetComponent<EntityStats>();
-        EntityController entityController = currTurn.GetComponent<EntityController>(); 
+        EntityController entityController = currTurn.GetComponent<EntityController>();
+        Skill currSkill = battleVariables.GetCurrentSkill();
 
         if (!battleVariables.isAttacking)
         {
             if (stats.isPlayer)
             {
                 currTurn.GetComponent<PlayerInput>().enabled = false;
+
+                if (information != null)
+                {
+                    Debug.Log("Mouse Position: " + information.mousePosition);
+                    Debug.Log("Curr Player Position: " + currTurn.transform.position);
+                }
+                
+                if (currSkill != null && currSkill.containsMovement)
+                {
+
+                    if (currSkill.selfMove == false)
+                    {
+                        Vector2 targetLocation = currTurn.transform.position;
+                        foreach (var entity in battleVariables.targets)
+                        {
+                            Debug.Log("TEST!");
+                            EntityController controller = entity.Value.GetComponent<EntityController>();
+                            controller.ActivateMovementSkill(currSkill.moveSpeed, targetLocation);
+                        }
+                    }
+                    else
+                    {
+                        Vector2 targetLocation = information.mousePosition;
+                        entityController.ActivateMovementSkill(currSkill.moveSpeed, targetLocation);
+                    }
+
+
+                }
 
                 if (information != null && information.target != null)
                 {

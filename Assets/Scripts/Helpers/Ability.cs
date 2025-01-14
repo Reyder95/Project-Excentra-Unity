@@ -4,46 +4,6 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public enum AreaStyle
-{
-    SINGLE,
-    AREA
-}
-
-public enum TargetMode
-{
-    SELECT,
-    FREE,
-    SELF
-}
-
-public enum Shape
-{
-    CIRCLE,
-    CONE,
-    LINE
-}
-
-public enum EntityType
-{
-    ALLY,
-    ENEMY
-}
-
-public enum Scaler
-{
-    ATTACK,
-    SPIRIT
-}
-
-public enum DamageType
-{
-    HEAL,
-    STATUS,
-    DAMAGE,
-    REVIVE
-}
-
 // Handles the data for skills. Entities can cast special skills.
 //[Serializable]
 //public class Ability

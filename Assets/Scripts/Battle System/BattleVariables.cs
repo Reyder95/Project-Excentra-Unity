@@ -23,6 +23,9 @@ public class BattleVariables
 
     public GameObject currAoe;  // The current AoE telegraph for additional calculations
 
+    // TODO: Maybe make an ability that lets you move enemies to other target locations
+    public Vector2 targetLocation;
+
     public bool isAttacking = false;    // Determines if an attacking animation is playing. Prevents some weird behaviours, and gets disabled once the turn ends.
 
     // -- Important battle gets and sets. Makes it a bit easier for other classes to obtain info for.
@@ -59,5 +62,16 @@ public class BattleVariables
     public void DeleteCurrentAoe()
     {
         currAoe = null;
+    }
+    
+    public void CleanVariables()
+    {
+        targets = new Dictionary<string, GameObject>();
+        currSkill = null;
+        currAoe = null;
+
+        isAttacking = false;
+
+        targetLocation = Vector2.zero;
     }
 }
