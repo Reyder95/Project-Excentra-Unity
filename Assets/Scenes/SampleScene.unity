@@ -521,6 +521,12 @@ MonoBehaviour:
     skill: {fileID: 11400000, guid: 230da62cd5e88b44d8d62531aead0f65, type: 2}
   - key: fireball
     skill: {fileID: 11400000, guid: 3806953c1640d0041a9b9732402060ee, type: 2}
+  - key: launch
+    skill: {fileID: 11400000, guid: 29460bb82222cc24dbe8b7f929106423, type: 2}
+  - key: save
+    skill: {fileID: 11400000, guid: 07ebab7fbe6c3324a805ca1acdaf57b8, type: 2}
+  - key: slam
+    skill: {fileID: 11400000, guid: 02784b6ec6d34e341ba426af6195051f, type: 2}
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}

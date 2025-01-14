@@ -49,6 +49,12 @@ public class EntityController : MonoBehaviour
     public Vector2 deadOffset;
     public Vector2 deadSize;
 
+    // Info for moving skills
+    private Vector2 targetLocation;
+    private float skillMoveSpeed = 0f;
+    private bool isSkillMoving = false;
+
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -125,7 +131,24 @@ public class EntityController : MonoBehaviour
 
     public void FixedUpdate()
     {
-        if (!autoMove)
+        if (isSkillMoving)
+        {
+            Vector2 newPosition = Vector2.MoveTowards(transform.position, targetLocation, Time.fixedDeltaTime * skillMoveSpeed);
+            rb.MovePosition(newPosition);
+
+            if (newPosition.x > transform.position.x)
+            {
+                transform.localScale = localScale;   // Normal scale for moving right
+            }
+            else if (newPosition.x < transform.position.x)
+            {
+                transform.localScale = new Vector2(localScale.x * -1, localScale.y); // Flipped scale for moving left
+            }
+
+            if ((Vector2)transform.position == targetLocation)
+                ResetMovementSkill();
+        }
+        else if (!isSkillMoving && !autoMove)
         {
             if (inputVector != Vector2.zero)
             {
@@ -155,6 +178,18 @@ public class EntityController : MonoBehaviour
             }
         }
 
+    }
+
+    public void ActivateMovementSkill(float movementSpeed, Vector2 destination)
+    {
+        skillMoveSpeed = movementSpeed;
+        targetLocation = destination;
+        isSkillMoving = true;
+    }
+
+    public void ResetMovementSkill()
+    {
+        isSkillMoving = false;
     }
 
     /// <summary>
@@ -358,6 +393,8 @@ public class EntityController : MonoBehaviour
                     BattleClickInfo info = new BattleClickInfo();
                     info.target = this.gameObject;
                     info.singleSkill = currAbility;
+                    info.mousePosition = transform.position;
+                    ExcentraGame.battleManager.battleVariables.targets = new() { { entityStats.entityName, this.gameObject } };
                     ExcentraGame.battleManager.HandleEntityAction(info);
                 }
 
