@@ -15,7 +15,7 @@ public class HandleDetection : MonoBehaviour
     }
 
     // Determines if you are even eligible to target the entity. Useful helper function for the triggers
-    public bool IsAttackable(ConeAoe aoe, EntityStats attackerStats, EntityStats defenderStats) {
+    public bool IsAttackable(BaseAoe aoe, EntityStats attackerStats, EntityStats defenderStats) {
         if (ExcentraGame.battleManager.battleVariables.GetCurrentSkill().damageType == DamageType.REVIVE || ExcentraGame.battleManager.IsAlive(defenderStats.gameObject))
         {
             Skill skill = aoe.skill;
@@ -59,7 +59,7 @@ public class HandleDetection : MonoBehaviour
         GameObject aoe = collision.gameObject;
         if (aoe.tag == "aoe")
         {
-            ConeAoe aoeData = aoe.GetComponent<ConeAoe>();
+            BaseAoe aoeData = aoe.GetComponent<BaseAoe>();
 
             if (ExcentraGame.battleManager.TargetingEligible(aoeData.attackerObject, Entity)) 
             {
@@ -77,7 +77,7 @@ public class HandleDetection : MonoBehaviour
         if (aoe.tag == "aoe")
         {
             controller.HandleTarget(false);
-            ConeAoe aoeData = aoe.GetComponent<ConeAoe>();
+            BaseAoe aoeData = aoe.GetComponent<BaseAoe>();
             aoeData.HandleRemoveTarget(Entity);
         }
     }

@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -12064145
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -308,8 +308,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2162273476819428976}
   - component: {fileID: 7752867378141865768}
-  - component: {fileID: 5937917209128127300}
   - component: {fileID: 7020172106042971123}
+  - component: {fileID: -2295671144460980890}
   m_Layer: 0
   m_Name: Test Cone
   m_TagString: aoe
@@ -393,43 +393,6 @@ PolygonCollider2D:
       - {x: 0.0006339066, y: -0.00025764666}
       - {x: 0.8699825, y: -0.5005193}
   m_UseDelaunayMesh: 0
---- !u!114 &5937917209128127300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4484690648970835890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d09b04a06be45824eafd0550589dcbd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ability:
-    abilityName: 
-    icon: {fileID: 0}
-    targetMode: 0
-    shape: 0
-    entityType: 0
-    radius: 0
-    scaler: 0
-    baseValue: 0
-    baseAether: 0
-    scaleMult: 0
-    delayAdditive: 0
-    revive: 0
-  arenaAoeIndex: -1
-  originObject: {fileID: 0}
-  attackerObject: {fileID: 0}
-  destination: {x: 0, y: 0}
-  width: 4
-  triangle: {fileID: 424816598347822811}
-  circle: {fileID: 8523653247466202084}
-  scaleX: 1
-  scaleY: 1
-  radius: 2
-  circleAoe: {fileID: 0}
-  circlePosition: {x: 0, y: 0}
 --- !u!210 &7020172106042971123
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -442,6 +405,33 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_SortAtRoot: 1
+--- !u!114 &-2295671144460980890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4484690648970835890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827aa38791c8f4a44bba2d90c540db0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skill: {fileID: 0}
+  arenaAoeIndex: -1
+  originObject: {fileID: 0}
+  attackerObject: {fileID: 0}
+  freezeAoe: 0
+  destination: {x: 0, y: 0}
+  triangle: {fileID: 424816598347822811}
+  circle: {fileID: 8523653247466202084}
+  line: {fileID: 0}
+  scaleX: 1
+  width: 4
+  distance: 0
+  frozenScale: {x: 0, y: 0}
+  frozenRotation: {x: 0, y: 0, z: 0, w: 0}
+  frozenDestination: {x: 0, y: 0}
 --- !u!1 &5933382030552656246
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,7 +593,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -12064145
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

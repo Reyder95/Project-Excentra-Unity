@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7545550374668494003}
   - component: {fileID: 6260223269572154130}
-  - component: {fileID: 961006606086063997}
   - component: {fileID: 8781561001420265976}
+  - component: {fileID: -7467149112798386958}
   m_Layer: 0
   m_Name: Line
   m_TagString: aoe
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -12064145
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -90,51 +90,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &961006606086063997
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6765610906363701024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d09b04a06be45824eafd0550589dcbd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ability:
-    abilityName: 
-    icon: {fileID: 0}
-    targetMode: 0
-    shape: 0
-    entityType: 0
-    radius: 0
-    scaler: 0
-    baseValue: 0
-    baseAether: 0
-    scaleMult: 0
-    range: 0
-    delayAdditive: 0
-    attackCount: 1
-    damageType: 0
-  arenaAoeIndex: -1
-  originObject: {fileID: 0}
-  attackerObject: {fileID: 0}
-  freezeAoe: 0
-  destination: {x: 0, y: 0}
-  width: 4
-  distance: 0
-  triangle: {fileID: 0}
-  circle: {fileID: 0}
-  line: {fileID: 7517542174959571764}
-  scaleX: 1
-  frozenScale: {x: 0, y: 0}
-  frozenRotation: {x: 0, y: 0, z: 0, w: 0}
-  frozenDestination: {x: 0, y: 0}
-  radius: 2
-  circleAoe: {fileID: 0}
-  circlePosition: {x: 0, y: 0}
-  frozenPosition: {x: 0, y: 0}
 --- !u!61 &8781561001420265976
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -181,6 +136,33 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.0021967, y: 0.50247097}
   m_EdgeRadius: 0
+--- !u!114 &-7467149112798386958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6765610906363701024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827aa38791c8f4a44bba2d90c540db0f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skill: {fileID: 0}
+  arenaAoeIndex: -1
+  originObject: {fileID: 0}
+  attackerObject: {fileID: 0}
+  freezeAoe: 0
+  destination: {x: 0, y: 0}
+  triangle: {fileID: 0}
+  circle: {fileID: 0}
+  line: {fileID: 7517542174959571764}
+  scaleX: 1
+  width: 4
+  distance: 0
+  frozenScale: {x: 0, y: 0}
+  frozenRotation: {x: 0, y: 0, z: 0, w: 0}
+  frozenDestination: {x: 0, y: 0}
 --- !u!1 &7517542174959571764
 GameObject:
   m_ObjectHideFlags: 0

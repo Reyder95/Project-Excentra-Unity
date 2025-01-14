@@ -97,8 +97,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6690793548753305562}
   - component: {fileID: 4655605540605123237}
-  - component: {fileID: 7017684708506871901}
   - component: {fileID: 3619014839576919002}
+  - component: {fileID: 1959930147151277986}
   m_Layer: 2
   m_Name: Circle
   m_TagString: aoe
@@ -158,51 +158,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &7017684708506871901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8181824542807740559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d09b04a06be45824eafd0550589dcbd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ability:
-    abilityName: 
-    icon: {fileID: 0}
-    targetMode: 0
-    shape: 0
-    entityType: 0
-    radius: 0
-    scaler: 0
-    baseValue: 0
-    baseAether: 0
-    scaleMult: 0
-    range: 0
-    delayAdditive: 0
-    attackCount: 1
-    damageType: 0
-  arenaAoeIndex: -1
-  originObject: {fileID: 0}
-  attackerObject: {fileID: 0}
-  freezeAoe: 0
-  destination: {x: 0, y: 0}
-  width: 4
-  distance: 0
-  triangle: {fileID: 0}
-  circle: {fileID: 0}
-  line: {fileID: 0}
-  scaleX: 1
-  frozenScale: {x: 0, y: 0}
-  frozenRotation: {x: 0, y: 0, z: 0, w: 0}
-  frozenDestination: {x: 0, y: 0}
-  radius: 2
-  circleAoe: {fileID: 6201414465274245443}
-  circlePosition: {x: 0, y: 0}
-  frozenPosition: {x: 0, y: 0}
 --- !u!50 &3619014839576919002
 Rigidbody2D:
   serializedVersion: 5
@@ -230,3 +185,24 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &1959930147151277986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8181824542807740559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3340f1f042d77e844901bf2394a6d209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skill: {fileID: 0}
+  arenaAoeIndex: -1
+  originObject: {fileID: 0}
+  attackerObject: {fileID: 0}
+  freezeAoe: 0
+  radius: 2
+  circleAoe: {fileID: 6201414465274245443}
+  circlePosition: {x: 0, y: 0}
+  frozenPosition: {x: 0, y: 0}
