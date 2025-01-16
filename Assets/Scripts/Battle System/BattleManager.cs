@@ -682,6 +682,9 @@ public class BattleManager
 
         if (battleVariables.GetState() == BattleState.PLAYER_CHOICE)
         {
+            if (specialPanel.style.visibility == Visibility.Visible)
+                specialPanel.style.visibility = Visibility.Hidden;
+
             GameObject currTurn = turnManager.GetCurrentTurn();
             EntityStats stats = currTurn.GetComponent<EntityStats>();
             EntityController entityController = currTurn.GetComponent<EntityController>();
