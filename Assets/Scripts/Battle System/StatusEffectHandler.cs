@@ -18,14 +18,14 @@ public class StatusEffectHandler
 
     public void RemoveEffect(StatusEffect effect)
     {
-        effects.Remove(effect.effectName);
+        effects.Remove(effect.key);
     }
 
     public StatusBattle GetEffect(StatusEffect effect)
     {
-        if (effects.ContainsKey(effect.effectName))
+        if (effects.ContainsKey(effect.key))
         {
-            return effects[effect.effectName];
+            return effects[effect.key];
         }
 
         return null;

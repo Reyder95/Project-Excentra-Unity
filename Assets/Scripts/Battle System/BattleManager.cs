@@ -40,6 +40,8 @@ public class BattleManager
     private List<GameObject> tempCharacterPrefabs = new List<GameObject>();
     private GameObject tempBossPrefab = null;
 
+    public bool overButton = false;
+
     public BattleManager(System.Func<GameObject, Vector2, GameObject> instantiateFunction)
     {
         _instantiateFunction = instantiateFunction;
@@ -109,6 +111,9 @@ public class BattleManager
             controlPanel.Q<Button>("move-control").clicked += OnMoveClicked;
             controlPanel.Q<Button>("end-control").clicked += OnEndClicked;
             endScreen.Q<Button>("restart-button").clicked += OnRestartClicked;
+
+            controlPanel.RegisterCallback<MouseEnterEvent>(ev => MouseEnterButton(ev));
+            controlPanel.RegisterCallback<MouseLeaveEvent>(ev => MouseLeaveButton(ev));
         }
 
 
@@ -588,6 +593,9 @@ public class BattleManager
     // ----- BUTTON EVENTS
     public void OnBasicClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
@@ -611,6 +619,11 @@ public class BattleManager
 
     public void OnSpecialClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
+        if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
+            ChangeState(BattleState.PLAYER_CHOICE);
 
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityController controller = currTurn.GetComponent<EntityController>();
@@ -672,8 +685,14 @@ public class BattleManager
 
     public void OnMoveClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         if (battleVariables.GetState() == BattleState.PLAYER_CHOICE)
         {
+            if (specialPanel.style.visibility == Visibility.Visible)
+                specialPanel.style.visibility = Visibility.Hidden;
+
             GameObject currTurn = turnManager.GetCurrentTurn();
             EntityStats stats = currTurn.GetComponent<EntityStats>();
             EntityController entityController = currTurn.GetComponent<EntityController>();
@@ -691,6 +710,9 @@ public class BattleManager
 
     public void OnEndClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         if (battleVariables.battleState == BattleState.PLAYER_CHOICE)
         {
             EndTurn();
@@ -708,6 +730,9 @@ public class BattleManager
     {
         try
         {
+            if (overButton)
+                return;
+
             GameObject currEntity = turnManager.GetCurrentTurn();
             EntityStats stats = currEntity.GetComponent<EntityStats>();
             EntityController controller = currEntity.GetComponent<EntityController>();
@@ -909,5 +934,17 @@ public class BattleManager
         }
 
         return false;
+    }
+
+    public void MouseEnterButton(MouseEnterEvent ev)
+    {
+        overButton = true;
+        Debug.Log(overButton);
+    }
+
+    public void MouseLeaveButton(MouseLeaveEvent ev)
+    {
+        overButton = false;
+        Debug.Log(overButton);
     }
 }
