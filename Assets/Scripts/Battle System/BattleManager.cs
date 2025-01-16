@@ -112,14 +112,8 @@ public class BattleManager
             controlPanel.Q<Button>("end-control").clicked += OnEndClicked;
             endScreen.Q<Button>("restart-button").clicked += OnRestartClicked;
 
-            controlPanel.Q<Button>("basic-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
-            controlPanel.Q<Button>("basic-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
-            controlPanel.Q<Button>("special-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
-            controlPanel.Q<Button>("special-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
-            controlPanel.Q<Button>("move-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
-            controlPanel.Q<Button>("move-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
-            controlPanel.Q<Button>("end-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
-            controlPanel.Q<Button>("end-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
+            controlPanel.RegisterCallback<MouseEnterEvent>(ev => MouseEnterButton(ev));
+            controlPanel.RegisterCallback<MouseLeaveEvent>(ev => MouseLeaveButton(ev));
         }
 
 
@@ -942,13 +936,15 @@ public class BattleManager
         return false;
     }
 
-    public void MouseEnterButton(MouseOverEvent ev)
+    public void MouseEnterButton(MouseEnterEvent ev)
     {
         overButton = true;
+        Debug.Log(overButton);
     }
 
     public void MouseLeaveButton(MouseLeaveEvent ev)
     {
         overButton = false;
+        Debug.Log(overButton);
     }
 }
