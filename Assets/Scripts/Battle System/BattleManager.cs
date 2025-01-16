@@ -40,6 +40,8 @@ public class BattleManager
     private List<GameObject> tempCharacterPrefabs = new List<GameObject>();
     private GameObject tempBossPrefab = null;
 
+    public bool overButton = false;
+
     public BattleManager(System.Func<GameObject, Vector2, GameObject> instantiateFunction)
     {
         _instantiateFunction = instantiateFunction;
@@ -109,6 +111,15 @@ public class BattleManager
             controlPanel.Q<Button>("move-control").clicked += OnMoveClicked;
             controlPanel.Q<Button>("end-control").clicked += OnEndClicked;
             endScreen.Q<Button>("restart-button").clicked += OnRestartClicked;
+
+            controlPanel.Q<Button>("basic-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
+            controlPanel.Q<Button>("basic-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
+            controlPanel.Q<Button>("special-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
+            controlPanel.Q<Button>("special-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
+            controlPanel.Q<Button>("move-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
+            controlPanel.Q<Button>("move-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
+            controlPanel.Q<Button>("end-control").RegisterCallback<MouseOverEvent>((ev) => MouseEnterButton(ev));
+            controlPanel.Q<Button>("end-control").RegisterCallback<MouseLeaveEvent>((ev) => MouseLeaveButton(ev));
         }
 
 
@@ -617,6 +628,9 @@ public class BattleManager
         if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
             return;
 
+        if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
+            ChangeState(BattleState.PLAYER_CHOICE);
+
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityController controller = currTurn.GetComponent<EntityController>();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
@@ -722,6 +736,9 @@ public class BattleManager
     {
         try
         {
+            if (overButton)
+                return;
+
             GameObject currEntity = turnManager.GetCurrentTurn();
             EntityStats stats = currEntity.GetComponent<EntityStats>();
             EntityController controller = currEntity.GetComponent<EntityController>();
@@ -923,5 +940,15 @@ public class BattleManager
         }
 
         return false;
+    }
+
+    public void MouseEnterButton(MouseOverEvent ev)
+    {
+        overButton = true;
+    }
+
+    public void MouseLeaveButton(MouseLeaveEvent ev)
+    {
+        overButton = false;
     }
 }
