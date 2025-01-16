@@ -588,6 +588,9 @@ public class BattleManager
     // ----- BUTTON EVENTS
     public void OnBasicClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
@@ -611,6 +614,8 @@ public class BattleManager
 
     public void OnSpecialClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
 
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityController controller = currTurn.GetComponent<EntityController>();
@@ -672,6 +677,9 @@ public class BattleManager
 
     public void OnMoveClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         if (battleVariables.GetState() == BattleState.PLAYER_CHOICE)
         {
             GameObject currTurn = turnManager.GetCurrentTurn();
@@ -691,6 +699,9 @@ public class BattleManager
 
     public void OnEndClicked()
     {
+        if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         if (battleVariables.battleState == BattleState.PLAYER_CHOICE)
         {
             EndTurn();
