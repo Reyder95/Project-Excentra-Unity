@@ -35,7 +35,8 @@ public static class StatusCalculatorHelper
     // This dictionary applies to damage that happens to entities, and might apply different stuff depending.
     private static Dictionary<string, System.Func<GameObject, StatusBattle, float>> statusDamageFuncDict = new Dictionary<string, System.Func<GameObject, StatusBattle, float>>()
     {
-        { "Poison", (GameObject target, StatusBattle effect) => PoisonCalc(target, effect)}
+        { "Poison", (GameObject target, StatusBattle effect) => PoisonCalc(target, effect)},
+        { "Burn", (GameObject target, StatusBattle effect) => PoisonCalc(target, effect)}
     };
 
     // Entrypoint for all statuses. It goes through the dictionary and calculates the value which will always be a float, then passes it back.

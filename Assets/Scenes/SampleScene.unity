@@ -507,26 +507,28 @@ MonoBehaviour:
   - key: status-effect
     document: {fileID: 9197481963319205126, guid: ccda335b62ff46840836bc4b9e588635, type: 3}
   skills:
-  - key: fire-arrow
-    skill: {fileID: 11400000, guid: ab548d3cc3b3b074c9d345ef6084398c, type: 2}
-  - key: embolden
-    skill: {fileID: 11400000, guid: 374b266aecb165f49897323489edd597, type: 2}
-  - key: multi-heal
-    skill: {fileID: 11400000, guid: b98930377ea74a543bb8d6925e4d647c, type: 2}
+  - key: protect
+    skill: {fileID: 11400000, guid: ae279a53429e1ec49ac79124cc564e6f, type: 2}
+  - key: slam
+    skill: {fileID: 11400000, guid: f8642dd9501ddc54b9b598aae6e63b56, type: 2}
+  - key: liferoot
+    skill: {fileID: 11400000, guid: 67a698fd6c72a3b4ab0be5e956f397dd, type: 2}
   - key: soul-levia
     skill: {fileID: 11400000, guid: 43ed0f392c14d56439440767ccadb7bf, type: 2}
-  - key: poison-slash
-    skill: {fileID: 11400000, guid: 620dffa701815ac40aed524ce385e816, type: 2}
-  - key: spin-slash
-    skill: {fileID: 11400000, guid: 230da62cd5e88b44d8d62531aead0f65, type: 2}
   - key: fireball
     skill: {fileID: 11400000, guid: 3806953c1640d0041a9b9732402060ee, type: 2}
-  - key: launch
-    skill: {fileID: 11400000, guid: 29460bb82222cc24dbe8b7f929106423, type: 2}
+  - key: fire-arrow
+    skill: {fileID: 11400000, guid: ab548d3cc3b3b074c9d345ef6084398c, type: 2}
+  - key: volley
+    skill: {fileID: 11400000, guid: dbf4b3612ca608d449bf309b92a99a66, type: 2}
+  - key: scissor
+    skill: {fileID: 11400000, guid: a368bfbae8d9c5c479d89b3a7000b723, type: 2}
+  - key: poison-slash
+    skill: {fileID: 11400000, guid: 620dffa701815ac40aed524ce385e816, type: 2}
+  - key: lunge
+    skill: {fileID: 11400000, guid: 483bb377c84f51c49b205304a60fd913, type: 2}
   - key: save
     skill: {fileID: 11400000, guid: 07ebab7fbe6c3324a805ca1acdaf57b8, type: 2}
-  - key: slam
-    skill: {fileID: 11400000, guid: 02784b6ec6d34e341ba426af6195051f, type: 2}
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}
@@ -560,6 +562,8 @@ MonoBehaviour:
     effect: {fileID: 11400000, guid: 1035596bfc7409747a540d80e5cd727b, type: 2}
   - key: spirit_acclimation_red
     effect: {fileID: 11400000, guid: 6d6960cc87bef904cb67869040e96abd, type: 2}
+  - key: burn
+    effect: {fileID: 11400000, guid: f9a7bb456573315469d37b0a2b36389b, type: 2}
   miscPrefabs:
   - key: cone
     prefab: {fileID: 4484690648970835890, guid: 515721e2f00070e4a8c43cb86842d808, type: 3}

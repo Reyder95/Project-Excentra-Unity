@@ -122,15 +122,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'skillKeys.Array.data[0]'
-      value: poison-slash
+      value: scissor
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'skillKeys.Array.data[1]'
-      value: spin-slash
+      value: poison-slash
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'skillKeys.Array.data[2]'
-      value: launch
+      value: lunge
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'abilityKeys.Array.data[0]'

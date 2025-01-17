@@ -10,28 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b19bc66725335b04299133223a539dab, type: 3}
-  m_Name: Slam
+  m_Name: Soul Levia
   m_EditorClassIdentifier: 
-  skillName: Slam
-  icon: {fileID: 2800000, guid: 972a4a64a8c68ab4290c2f9ce738ad53, type: 3}
-  areaStyle: 1
+  skillName: Soul Levia
+  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  areaStyle: 0
   targetMode: 1
   shape: 0
-  entityType: 1
-  scaler: 0
-  radius: 12
+  entityType: 0
+  scaler: 1
+  radius: 5
   range: 10
-  baseValue: 150
-  baseAether: 45
-  scaleMult: 1.8
-  delayAdditive: 150
-  damageType: 2
-  containsMovement: 1
-  selfMove: 1
+  baseValue: 55
+  baseAether: 30
+  scaleMult: 1.7
+  delayAdditive: 125
+  damageType: 3
+  containsMovement: 0
+  selfMove: 0
   offsetDistance: 0
   selfTarget: 0
-  moveSpeed: 8
+  moveSpeed: 3
   attackCount: 1
-  statusEffects:
-  - key: armour_down
-    chance: 100
+  statusEffects: []

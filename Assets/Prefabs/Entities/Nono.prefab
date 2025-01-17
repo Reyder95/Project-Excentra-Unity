@@ -118,7 +118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: skillKeys.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: abilityKeys.Array.size
@@ -126,7 +126,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'skillKeys.Array.data[0]'
-      value: multi-heal
+      value: liferoot
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'skillKeys.Array.data[1]'
@@ -134,6 +134,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'skillKeys.Array.data[2]'
+      value: fireball
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: 'skillKeys.Array.data[3]'
       value: save
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}

@@ -10,21 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b19bc66725335b04299133223a539dab, type: 3}
-  m_Name: Fireball
+  m_Name: Scissor
   m_EditorClassIdentifier: 
-  skillName: Fireball
-  icon: {fileID: 2800000, guid: 972a4a64a8c68ab4290c2f9ce738ad53, type: 3}
-  areaStyle: 1
+  skillName: Scissor
+  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  areaStyle: 0
   targetMode: 0
   shape: 0
   entityType: 1
-  scaler: 1
-  radius: 7
-  range: 8
-  baseValue: 100
-  baseAether: 25
-  scaleMult: 1.5
-  delayAdditive: 300
+  scaler: 0
+  radius: 0
+  range: 4
+  baseValue: 150
+  baseAether: 100
+  scaleMult: 1.4
+  delayAdditive: 200
   damageType: 2
+  containsMovement: 0
+  selfMove: 0
+  offsetDistance: 0
+  selfTarget: 0
+  moveSpeed: 3
   attackCount: 1
   statusEffects: []
