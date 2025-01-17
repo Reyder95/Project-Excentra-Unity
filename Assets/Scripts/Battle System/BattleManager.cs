@@ -360,13 +360,13 @@ public class BattleManager
                         {
                             Debug.Log("TEST!");
                             EntityController controller = entity.Value.GetComponent<EntityController>();
-                            controller.ActivateMovementSkill(currSkill.moveSpeed, targetLocation);
+                            controller.ActivateMovementSkill(currSkill.moveSpeed, targetLocation, currSkill.offsetDistance);
                         }
                     }
                     else
                     {
                         Vector2 targetLocation = information.mousePosition;
-                        entityController.ActivateMovementSkill(currSkill.moveSpeed, targetLocation);
+                        entityController.ActivateMovementSkill(currSkill.moveSpeed, targetLocation, currSkill.offsetDistance);
                     }
 
 
@@ -624,6 +624,8 @@ public class BattleManager
 
         if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
             ChangeState(BattleState.PLAYER_CHOICE);
+
+        RightClickPressed();
 
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityController controller = currTurn.GetComponent<EntityController>();

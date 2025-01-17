@@ -180,10 +180,15 @@ public class EntityController : MonoBehaviour
 
     }
 
-    public void ActivateMovementSkill(float movementSpeed, Vector2 destination)
+    public void ActivateMovementSkill(float movementSpeed, Vector2 destination, float offset)
     {
+        Vector2 direction = (destination - (Vector2)transform.position).normalized;
+        Vector2 offsetVector = direction * offset;
+        Vector2 targetPoint = destination + offsetVector;
+
+        targetLocation = targetPoint;
+
         skillMoveSpeed = movementSpeed;
-        targetLocation = destination;
         isSkillMoving = true;
     }
 
