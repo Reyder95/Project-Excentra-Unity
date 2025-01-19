@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 659611506, guid: 8af7b37f9559fdd46b8f2373e7f18a52, type: 3}
+      objectReference: {fileID: 654387019, guid: 8af7b37f9559fdd46b8f2373e7f18a52, type: 3}
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
@@ -20,6 +20,38 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 06aa30bdcccbcc94899473751f80afbb, type: 2}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: deadSize.x
+      value: 0.1873268
+      objectReference: {fileID: 0}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: deadSize.y
+      value: 0.1656401
+      objectReference: {fileID: 0}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aliveSize.x
+      value: 0.1814564
+      objectReference: {fileID: 0}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aliveSize.y
+      value: 0.2037974
+      objectReference: {fileID: 0}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: deadOffset.x
+      value: 0.004556186
+      objectReference: {fileID: 0}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: deadOffset.y
+      value: -0.001337275
+      objectReference: {fileID: 0}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aliveOffset.x
+      value: -0.001314178
+      objectReference: {fileID: 0}
+    - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aliveOffset.y
+      value: 0.01774138
+      objectReference: {fileID: 0}
     - target: {fileID: 2622219198015121584, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.0849
@@ -34,7 +66,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: speed
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: armour
@@ -42,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: attack
-      value: 50
+      value: 85
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: spirit
@@ -77,12 +109,32 @@ PrefabInstance:
       value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: skillKeys.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: abilityKeys.Array.size
-      value: 1
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: 'skillKeys.Array.data[0]'
+      value: protect
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: 'skillKeys.Array.data[1]'
+      value: slam
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: 'skillKeys.Array.data[2]'
+      value: slam
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'abilityKeys.Array.data[0]'
       value: fireball
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: 'abilityKeys.Array.data[1]'
+      value: embolden
       objectReference: {fileID: 0}
     - target: {fileID: 5393262343277882581, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Enabled
@@ -142,19 +194,19 @@ PrefabInstance:
       objectReference: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Size.x
-      value: 0.18145642
+      value: 0.18732677
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Size.y
-      value: 0.20379737
+      value: 0.16564006
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Offset.x
-      value: -0.0013141781
+      value: 0.0045561865
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Offset.y
-      value: 0.017741378
+      value: -0.0013372749
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_SpriteTilingProperty.pivot.x

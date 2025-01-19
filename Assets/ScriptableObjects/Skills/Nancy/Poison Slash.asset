@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b19bc66725335b04299133223a539dab, type: 3}
+  m_Name: Poison Slash
+  m_EditorClassIdentifier: 
+  skillName: Poison Slash
+  icon: {fileID: 2800000, guid: bf3e35a399ee5d94b8b195c13ba21c3a, type: 3}
+  areaStyle: 0
+  targetMode: 0
+  shape: 0
+  entityType: 1
+  scaler: 0
+  radius: 7
+  range: 10
+  baseValue: 100
+  baseAether: 120
+  scaleMult: 0.5
+  delayAdditive: 225
+  damageType: 2
+  containsMovement: 0
+  selfMove: 0
+  offsetDistance: 0
+  selfTarget: 0
+  moveSpeed: 3
+  attackCount: 1
+  statusEffects:
+  - key: poison
+    chance: 75

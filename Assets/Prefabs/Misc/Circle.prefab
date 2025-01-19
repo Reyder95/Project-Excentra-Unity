@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1674674124327472493}
   - component: {fileID: 8068224055348419154}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -12064145
-  m_SortingLayer: 2
+  m_SortingLayer: 1
   m_SortingOrder: -1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -97,9 +97,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6690793548753305562}
   - component: {fileID: 4655605540605123237}
-  - component: {fileID: 7017684708506871901}
-  - component: {fileID: 2727158795659417907}
-  m_Layer: 0
+  - component: {fileID: 3619014839576919002}
+  - component: {fileID: 1959930147151277986}
+  m_Layer: 2
   m_Name: Circle
   m_TagString: aoe
   m_Icon: {fileID: 0}
@@ -158,44 +158,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &7017684708506871901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8181824542807740559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d09b04a06be45824eafd0550589dcbd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ability:
-    abilityName: 
-    icon: {fileID: 0}
-    targetMode: 0
-    shape: 0
-    entityType: 0
-    radius: 0
-    scaler: 0
-    baseValue: 0
-    baseAether: 0
-    scaleMult: 0
-    delayAdditive: 0
-    revive: 0
-  arenaAoeIndex: -1
-  originObject: {fileID: 0}
-  attackerObject: {fileID: 0}
-  destination: {x: 0, y: 0}
-  width: 4
-  triangle: {fileID: 0}
-  circle: {fileID: 0}
-  scaleX: 1
-  scaleY: 1
-  radius: 2
-  circleAoe: {fileID: 6201414465274245443}
-  circlePosition: {x: 0, y: 0}
---- !u!50 &2727158795659417907
+--- !u!50 &3619014839576919002
 Rigidbody2D:
   serializedVersion: 5
   m_ObjectHideFlags: 0
@@ -222,3 +185,24 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &1959930147151277986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8181824542807740559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3340f1f042d77e844901bf2394a6d209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skill: {fileID: 0}
+  arenaAoeIndex: -1
+  originObject: {fileID: 0}
+  attackerObject: {fileID: 0}
+  freezeAoe: 0
+  radius: 2
+  circleAoe: {fileID: 6201414465274245443}
+  circlePosition: {x: 0, y: 0}
+  frozenPosition: {x: 0, y: 0}
