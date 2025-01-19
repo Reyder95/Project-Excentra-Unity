@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lunge
   m_EditorClassIdentifier: 
   skillName: Lunge
-  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  icon: {fileID: 2800000, guid: 991b088f1dc15d74da6d95dc591cff1a, type: 3}
   areaStyle: 1
   targetMode: 1
   shape: 2

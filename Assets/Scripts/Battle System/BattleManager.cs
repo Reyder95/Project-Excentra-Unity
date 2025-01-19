@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.UIElements;
 
 // Class that runs the battle, from turn processes, to damage being dealt, to handling statuses, killing off entities, and declaring a winning side.
@@ -120,6 +122,12 @@ public class BattleManager
         endScreen.style.display = DisplayStyle.None;
     }
 
+    public void SetMPPercent(string entityName, float percent)
+    {
+        mpDictionary[entityName].value = percent;
+        Debug.Log(percent);
+        Debug.Log("Test!");
+    }
     // Place the characters down on the screen
     public void InstantiateCharacters(List<GameObject> playerCharacters, GameObject boss, bool restart)
     {
@@ -730,14 +738,17 @@ public class BattleManager
     
     public void OnSkillShot()
     {
+        GameObject currEntity = turnManager.GetCurrentTurn();
+        EntityStats stats = currEntity.GetComponent<EntityStats>();
+        EntityController controller = currEntity.GetComponent<EntityController>();
+
         try
         {
             if (overButton)
                 return;
 
-            GameObject currEntity = turnManager.GetCurrentTurn();
-            EntityStats stats = currEntity.GetComponent<EntityStats>();
-            EntityController controller = currEntity.GetComponent<EntityController>();
+
+            
             GameObject currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
             BaseAoe aoeInit = currAoe.GetComponent<BaseAoe>();
 
@@ -756,7 +767,15 @@ public class BattleManager
             controller.specialActive = false;
 
             HandleEntityAction(info);
-        } catch (NullReferenceException) { }
+        }
+        catch (NullReferenceException) 
+        {
+            //Debug.Log("Hi!");
+
+            //stats.currentAether = Mathf.Max(stats.currentAether - battleVariables.GetCurrentSkill().baseAether, 0);
+            //mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            //controller.specialActive = false;
+        }
     }
 
     // ------ CLEANED UP PROPER FUNCTIONS ------------
@@ -938,15 +957,18 @@ public class BattleManager
         return false;
     }
 
+    public GameObject GetCurrentAttacker()
+    {
+        return turnManager.GetCurrentTurn();
+    }
+
     public void MouseEnterButton(MouseEnterEvent ev)
     {
         overButton = true;
-        Debug.Log(overButton);
     }
 
     public void MouseLeaveButton(MouseLeaveEvent ev)
     {
         overButton = false;
-        Debug.Log(overButton);
     }
 }

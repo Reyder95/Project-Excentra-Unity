@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Burn
   m_EditorClassIdentifier: 
   effectName: Burn
-  icon: {fileID: 2800000, guid: 59a8a13789f44464dbc06c5632679bdd, type: 3}
+  icon: {fileID: 2800000, guid: 5554f6ba31bdbbb47bb1db8c89d8ec9d, type: 3}
   description: 
   effectType: 0
   effectMagnitude: 0.7

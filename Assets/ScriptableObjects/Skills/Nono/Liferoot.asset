@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Liferoot
   m_EditorClassIdentifier: 
   skillName: Liferoot
-  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  icon: {fileID: 2800000, guid: 39797626bb1111346b245186e7ff4482, type: 3}
   areaStyle: 0
   targetMode: 0
   shape: 0

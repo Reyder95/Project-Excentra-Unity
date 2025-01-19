@@ -380,6 +380,8 @@ public class EntityController : MonoBehaviour
     {
 
         Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
+        GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
+        EntityStats currStats = currAttacker.GetComponent<EntityStats>();
 
         // If the enemy is dead, check if we are able to revive them.
         if (entityStats.currentHP <= 0 && (currAbility == null || currAbility.damageType != DamageType.REVIVE))
@@ -399,14 +401,15 @@ public class EntityController : MonoBehaviour
                     info.target = this.gameObject;
                     info.singleSkill = currAbility;
                     info.mousePosition = transform.position;
+
+                    currStats.currentAether = Mathf.Max(currStats.currentAether - currAbility.baseAether, 0);
+                    ExcentraGame.battleManager.SetMPPercent(currStats.entityName, currStats.CalculateMPPercentage());
                     ExcentraGame.battleManager.battleVariables.targets = new() { { entityStats.entityName, this.gameObject } };
                     ExcentraGame.battleManager.HandleEntityAction(info);
                 }
 
             }
         }
-
-
     }
 
     public void OnMouseExit()

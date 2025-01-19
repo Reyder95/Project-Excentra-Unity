@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Poison Slash
   m_EditorClassIdentifier: 
   skillName: Poison Slash
-  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  icon: {fileID: 2800000, guid: bf3e35a399ee5d94b8b195c13ba21c3a, type: 3}
   areaStyle: 0
   targetMode: 0
   shape: 0

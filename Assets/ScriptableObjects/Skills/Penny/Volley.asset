@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Volley
   m_EditorClassIdentifier: 
   skillName: Volley
-  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  icon: {fileID: 2800000, guid: 3d0d646c529835a4d9dbdd3f38a22afe, type: 3}
   areaStyle: 1
   targetMode: 1
   shape: 1

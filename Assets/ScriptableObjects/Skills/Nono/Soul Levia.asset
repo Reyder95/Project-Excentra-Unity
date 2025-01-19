@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Soul Levia
   m_EditorClassIdentifier: 
   skillName: Soul Levia
-  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  icon: {fileID: 2800000, guid: 8a18eff26c5c358468144667b8983441, type: 3}
   areaStyle: 0
   targetMode: 1
   shape: 0

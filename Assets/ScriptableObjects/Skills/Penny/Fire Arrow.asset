@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Fire Arrow
   m_EditorClassIdentifier: 
   skillName: Fire Arrow
-  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  icon: {fileID: 2800000, guid: 261b9ec53b8757e4b9a10a88ee88762f, type: 3}
   areaStyle: 1
   targetMode: 1
   shape: 2
