@@ -374,6 +374,16 @@ public class BattleManager
                     else
                     {
                         Vector2 targetLocation = information.mousePosition;
+                        if (stats.arenaAoeIndex != -1)
+                        {
+                            Debug.Log("Test!");
+                            if (currSkill.shape != Shape.CIRCLE)
+                            {
+                                GameObject aoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
+                                targetLocation = (aoe.GetComponent<BaseAoe>() as DerivedDirectional).endPoint;
+                            }
+                        }
+                        
                         entityController.ActivateMovementSkill(currSkill.moveSpeed, targetLocation, currSkill.offsetDistance);
                     }
 

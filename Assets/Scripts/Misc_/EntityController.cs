@@ -401,9 +401,12 @@ public class EntityController : MonoBehaviour
                     info.target = this.gameObject;
                     info.singleSkill = currAbility;
                     info.mousePosition = transform.position;
+                    if (currAbility != null)
+                    {
+                        currStats.currentAether = Mathf.Max(currStats.currentAether - currAbility.baseAether, 0);
+                        ExcentraGame.battleManager.SetMPPercent(currStats.entityName, currStats.CalculateMPPercentage());
+                    }
 
-                    currStats.currentAether = Mathf.Max(currStats.currentAether - currAbility.baseAether, 0);
-                    ExcentraGame.battleManager.SetMPPercent(currStats.entityName, currStats.CalculateMPPercentage());
                     ExcentraGame.battleManager.battleVariables.targets = new() { { entityStats.entityName, this.gameObject } };
                     ExcentraGame.battleManager.HandleEntityAction(info);
                 }

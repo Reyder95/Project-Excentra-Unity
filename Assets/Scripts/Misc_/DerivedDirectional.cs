@@ -14,10 +14,12 @@ public class DerivedDirectional : BaseAoe
 
     public float width = 4f;
     public float distance = 0f;
+    public Vector2 endPoint;
 
     public Vector2 frozenScale;
     public Quaternion frozenRotation;
     public Vector2 frozenDestination;
+    public Vector2 frozenPosition;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
@@ -41,7 +43,7 @@ public class DerivedDirectional : BaseAoe
         {
             destination = mouseWorldPosition;
 
-            transform.position = originObject.transform.position;
+            
             // Calculate the distance between origin and destination
 
             // Adjust the scale of the sprite
@@ -54,15 +56,19 @@ public class DerivedDirectional : BaseAoe
             Vector2 direction = (destination - (Vector2)originObject.transform.position).normalized;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
+            endPoint = (Vector2)originObject.transform.position + direction * distance;
+
             if (!freezeAoe)
             {
                 transform.rotation = Quaternion.Euler(0, 0, angle);
                 transform.localScale = newScale;
+                transform.position = originObject.transform.position;
             }
             else
             {
                 transform.rotation = frozenRotation;
                 transform.localScale = frozenScale;
+                transform.position = frozenPosition;
             }
 
         }
@@ -133,6 +139,7 @@ public class DerivedDirectional : BaseAoe
             frozenScale = transform.localScale;
             frozenRotation = transform.rotation;
             frozenDestination = destination;
+            frozenPosition = originObject.transform.position;
         }
     }
 }
