@@ -308,6 +308,7 @@ public class BattleManager
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
         currStats.moveDouble = false;
+        controller.HandleTarget(false);
 
         // Battle Variables cleanup
         battleVariables.CleanVariables();
@@ -713,7 +714,13 @@ public class BattleManager
                     ChangeState(BattleState.PLAYER_SPECIAL);
 
                     if ((element.userData as Skill).areaStyle == AreaStyle.SINGLE || ((element.userData as Skill).shape == Shape.CIRCLE))
+                    {
                         controller.specialActive = true;
+
+                        if ((element.userData as Skill).targetMode == TargetMode.SELF)
+                            controller.HandleTarget(true);
+                    }
+                        
 
                     if (specialPanel.style.visibility == Visibility.Visible)
                         specialPanel.style.visibility = Visibility.Hidden;
@@ -776,6 +783,17 @@ public class BattleManager
         GameObject currEntity = turnManager.GetCurrentTurn();
         EntityStats stats = currEntity.GetComponent<EntityStats>();
         EntityController controller = currEntity.GetComponent<EntityController>();
+        Skill currSkill = battleVariables.GetCurrentSkill();
+        if (currSkill.targetMode == TargetMode.SELF && currSkill.areaStyle == AreaStyle.SINGLE)
+        {
+            BattleClickInfo info = new BattleClickInfo();
+            info.target = currEntity;
+            info.singleSkill = currSkill;
+            HandleEntityAction(info);
+            stats.currentAether = Mathf.Max(stats.currentAether - currSkill.baseAether, 0);
+            mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            return;
+        }
 
         try
         {
