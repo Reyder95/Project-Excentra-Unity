@@ -529,6 +529,8 @@ MonoBehaviour:
     skill: {fileID: 11400000, guid: 483bb377c84f51c49b205304a60fd913, type: 2}
   - key: save
     skill: {fileID: 11400000, guid: 07ebab7fbe6c3324a805ca1acdaf57b8, type: 2}
+  - key: bring-it-on
+    skill: {fileID: 11400000, guid: 7da479b8f601c5947a028b851cc1642c, type: 2}
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}

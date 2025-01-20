@@ -21,8 +21,8 @@ MonoBehaviour:
   scaler: 0
   radius: 6
   range: 5
-  baseValue: 100
-  baseAether: 50
+  baseValue: 130
+  baseAether: 80
   scaleMult: 0.8
   delayAdditive: 150
   damageType: 2

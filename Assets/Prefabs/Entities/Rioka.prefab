@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: aliveOffset.y
       value: 0.01774138
       objectReference: {fileID: 0}
+    - target: {fileID: 1719475619647554519, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2622219198015121584, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.0849
@@ -105,12 +109,20 @@ PrefabInstance:
       value: Rioka
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aggressionGen
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: maximumAether
       value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aggressionDecay
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: skillKeys.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: abilityKeys.Array.size
@@ -126,7 +138,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'skillKeys.Array.data[2]'
-      value: slam
+      value: bring-it-on
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'abilityKeys.Array.data[0]'

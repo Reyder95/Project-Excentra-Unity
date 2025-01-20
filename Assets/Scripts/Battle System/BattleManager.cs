@@ -125,8 +125,6 @@ public class BattleManager
     public void SetMPPercent(string entityName, float percent)
     {
         mpDictionary[entityName].value = percent;
-        Debug.Log(percent);
-        Debug.Log("Test!");
     }
     // Place the characters down on the screen
     public void InstantiateCharacters(List<GameObject> playerCharacters, GameObject boss, bool restart)
@@ -163,7 +161,7 @@ public class BattleManager
             float damageToDeal = StatusCalculatorHelper.CalculateDamage(currTurn, status.Value);
             if (damageToDeal != 0f)
             {
-                DealDamage(currTurn, damageToDeal);
+                DealDamage(currTurn, damageToDeal, status.Value.owner);
 
                 if (stats.currentHP <= 0)
                 {
@@ -216,10 +214,23 @@ public class BattleManager
         }
         else
         {
+            EnemyContents contents = currTurn.GetComponent<EnemyContents>();
+            contents.aggression.ReduceAggressionEnmity();
+
+            GameObject currTarget = contents.aggression.ReturnTargetEntity();
+
+            if (currTarget == null)
+            {
+                var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+
+
+                int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
+                currTarget = possibleChars[randChar];
+            }
+
             // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
-            var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
-            int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
-            currTurn.GetComponent<EntityController>().MoveTowards(possibleChars[randChar]);
+
+            currTurn.GetComponent<EntityController>().MoveTowards(currTarget);
             ChangeState(BattleState.AWAIT_ENEMY);
         }
         
@@ -250,6 +261,11 @@ public class BattleManager
                     if (entityStats.currentHP <= 0)
                     {
                         turnManager.KillEntity(entity.Value);
+
+                        // Just boss right now, modify for use with other enemies when time comes
+                        EnemyContents contents = boss.GetComponent<EnemyContents>();
+                        contents.aggression.RemoveEntityFromAggressionList(entity.Value);
+
                         entityStats.effectHandler.effects.Clear();
                         DisplayStatuses(entityStats);
                         entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");
@@ -298,6 +314,7 @@ public class BattleManager
         PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
         currStats.moveDouble = false;
+        controller.HandleTarget(false);
 
         // Battle Variables cleanup
         battleVariables.CleanVariables();
@@ -351,12 +368,6 @@ public class BattleManager
             if (stats.isPlayer)
             {
                 currTurn.GetComponent<PlayerInput>().enabled = false;
-
-                if (information != null)
-                {
-                    Debug.Log("Mouse Position: " + information.mousePosition);
-                    Debug.Log("Curr Player Position: " + currTurn.transform.position);
-                }
                 
                 if (currSkill != null && currSkill.containsMovement)
                 {
@@ -366,7 +377,6 @@ public class BattleManager
                         Vector2 targetLocation = currTurn.transform.position;
                         foreach (var entity in battleVariables.targets)
                         {
-                            Debug.Log("TEST!");
                             EntityController controller = entity.Value.GetComponent<EntityController>();
                             controller.ActivateMovementSkill(currSkill.moveSpeed, targetLocation, currSkill.offsetDistance);
                         }
@@ -376,7 +386,6 @@ public class BattleManager
                         Vector2 targetLocation = information.mousePosition;
                         if (stats.arenaAoeIndex != -1)
                         {
-                            Debug.Log("Test!");
                             if (currSkill.shape != Shape.CIRCLE)
                             {
                                 GameObject aoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
@@ -515,12 +524,20 @@ public class BattleManager
         DisplayStatuses(entityStats);
     }
 
-    public void DealDamage(GameObject entity, float entityDamage)
+    public void DealDamage(GameObject entity, float entityDamage, GameObject attacker = null)
     {
         EntityController entityController = entity.GetComponent<EntityController>();
         EntityStats entityStats = entity.GetComponent<EntityStats>();
+        EnemyContents contents = entity.GetComponent<EnemyContents>();
 
         AddStatusToEnemy(entityStats);
+
+        GameObject currAttacker = null;
+
+        if (attacker != null)
+            currAttacker = attacker;
+        else
+            currAttacker = turnManager.GetCurrentTurn();
 
 
         if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE || battleVariables.currSkill == null)
@@ -528,8 +545,15 @@ public class BattleManager
             entityController.animator.Play("Damage", -1, 0f);
         }
 
-        if (entityDamage > 0f)  
+        if (entityDamage > 0f)
+        {
             ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
+            if (contents.enabled)
+            {
+                contents.aggression.AggressionEntryPoint(new AggressionElement(currAttacker, entityDamage));
+            }
+        }
+            
         entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
         if (entityStats.currentHP > entityStats.maximumHP)
             entityStats.currentHP = entityStats.maximumHP;
@@ -688,7 +712,13 @@ public class BattleManager
                     ChangeState(BattleState.PLAYER_SPECIAL);
 
                     if ((element.userData as Skill).areaStyle == AreaStyle.SINGLE || ((element.userData as Skill).shape == Shape.CIRCLE))
+                    {
                         controller.specialActive = true;
+
+                        if ((element.userData as Skill).targetMode == TargetMode.SELF)
+                            controller.HandleTarget(true);
+                    }
+                        
 
                     if (specialPanel.style.visibility == Visibility.Visible)
                         specialPanel.style.visibility = Visibility.Hidden;
@@ -751,6 +781,17 @@ public class BattleManager
         GameObject currEntity = turnManager.GetCurrentTurn();
         EntityStats stats = currEntity.GetComponent<EntityStats>();
         EntityController controller = currEntity.GetComponent<EntityController>();
+        Skill currSkill = battleVariables.GetCurrentSkill();
+        if (currSkill.targetMode == TargetMode.SELF && currSkill.areaStyle == AreaStyle.SINGLE)
+        {
+            BattleClickInfo info = new BattleClickInfo();
+            info.target = currEntity;
+            info.singleSkill = currSkill;
+            HandleEntityAction(info);
+            stats.currentAether = Mathf.Max(stats.currentAether - currSkill.baseAether, 0);
+            mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            return;
+        }
 
         try
         {
@@ -778,14 +819,7 @@ public class BattleManager
 
             HandleEntityAction(info);
         }
-        catch (NullReferenceException) 
-        {
-            //Debug.Log("Hi!");
-
-            //stats.currentAether = Mathf.Max(stats.currentAether - battleVariables.GetCurrentSkill().baseAether, 0);
-            //mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
-            //controller.specialActive = false;
-        }
+        catch (NullReferenceException) {}
     }
 
     // ------ CLEANED UP PROPER FUNCTIONS ------------

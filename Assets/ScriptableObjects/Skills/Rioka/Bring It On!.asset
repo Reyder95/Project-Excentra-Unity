@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b19bc66725335b04299133223a539dab, type: 3}
-  m_Name: Poison Slash
+  m_Name: Bring It On!
   m_EditorClassIdentifier: 
-  skillName: Poison Slash
-  icon: {fileID: 2800000, guid: bf3e35a399ee5d94b8b195c13ba21c3a, type: 3}
+  skillName: Bring It On
+  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
   areaStyle: 0
-  targetMode: 0
+  targetMode: 2
   shape: 0
-  entityType: 1
-  scaler: 0
-  radius: 7
-  range: 10
-  baseValue: 100
-  baseAether: 60
-  scaleMult: 0.5
-  delayAdditive: 225
-  damageType: 2
+  entityType: 0
+  scaler: 1
+  radius: 0
+  range: 0
+  baseValue: 0
+  baseAether: 100
+  scaleMult: 0
+  delayAdditive: 100
+  damageType: 1
   containsMovement: 0
   selfMove: 0
   offsetDistance: 0
@@ -33,5 +33,5 @@ MonoBehaviour:
   moveSpeed: 3
   attackCount: 1
   statusEffects:
-  - key: poison
-    chance: 75
+  - key: aggression_up
+    chance: 100
