@@ -623,6 +623,7 @@ public class BattleManager
             DestroyAoe(turnManager.GetCurrentTurn());
             battleVariables.currSkill = null;
             controller.specialActive = false;
+            controller.HandleTarget(false);
             ChangeState(BattleState.PLAYER_CHOICE);
             specialPanel.style.visibility = Visibility.Visible;
         }
