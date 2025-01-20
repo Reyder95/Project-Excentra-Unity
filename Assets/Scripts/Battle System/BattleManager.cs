@@ -125,8 +125,6 @@ public class BattleManager
     public void SetMPPercent(string entityName, float percent)
     {
         mpDictionary[entityName].value = percent;
-        Debug.Log(percent);
-        Debug.Log("Test!");
     }
     // Place the characters down on the screen
     public void InstantiateCharacters(List<GameObject> playerCharacters, GameObject boss, bool restart)
@@ -225,10 +223,6 @@ public class BattleManager
             {
                 var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
 
-                foreach (var character in possibleChars)
-                {
-                    Debug.Log(character.GetComponent<EntityStats>().entityName);
-                }
 
                 int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
                 currTarget = possibleChars[randChar];
@@ -374,12 +368,6 @@ public class BattleManager
             if (stats.isPlayer)
             {
                 currTurn.GetComponent<PlayerInput>().enabled = false;
-
-                if (information != null)
-                {
-                    Debug.Log("Mouse Position: " + information.mousePosition);
-                    Debug.Log("Curr Player Position: " + currTurn.transform.position);
-                }
                 
                 if (currSkill != null && currSkill.containsMovement)
                 {
@@ -389,7 +377,6 @@ public class BattleManager
                         Vector2 targetLocation = currTurn.transform.position;
                         foreach (var entity in battleVariables.targets)
                         {
-                            Debug.Log("TEST!");
                             EntityController controller = entity.Value.GetComponent<EntityController>();
                             controller.ActivateMovementSkill(currSkill.moveSpeed, targetLocation, currSkill.offsetDistance);
                         }
@@ -399,7 +386,6 @@ public class BattleManager
                         Vector2 targetLocation = information.mousePosition;
                         if (stats.arenaAoeIndex != -1)
                         {
-                            Debug.Log("Test!");
                             if (currSkill.shape != Shape.CIRCLE)
                             {
                                 GameObject aoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
@@ -833,14 +819,7 @@ public class BattleManager
 
             HandleEntityAction(info);
         }
-        catch (NullReferenceException) 
-        {
-            //Debug.Log("Hi!");
-
-            //stats.currentAether = Mathf.Max(stats.currentAether - battleVariables.GetCurrentSkill().baseAether, 0);
-            //mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
-            //controller.specialActive = false;
-        }
+        catch (NullReferenceException) {}
     }
 
     // ------ CLEANED UP PROPER FUNCTIONS ------------

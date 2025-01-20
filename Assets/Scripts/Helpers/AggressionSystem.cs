@@ -20,7 +20,7 @@ public class AggressionSystem
             AddEntityToAggressionList(element);
         }
 
-        OutputAggressionList();
+        //OutputAggressionList();
     }
 
     // Adds an entity to the aggression list based on its aggressionValue. This aggressionList should always be sorted properly.
@@ -31,31 +31,16 @@ public class AggressionSystem
         if (aggressionList.Contains(stats.entityName))
             return;
 
-        int counter = 0;
-
-        foreach (DictionaryEntry entry in aggressionList)
-        {
-            AggressionElement entryValue = entry.Value as AggressionElement;
-            
-
-            if (entryValue.aggressionValue < element.aggressionValue)
-            {
-                aggressionList.Insert(counter, stats.entityName, element);
-                return;
-            }
-
-            counter++;
-        }
-
         aggressionList.Add(stats.entityName, element);
+
+        SortAggressionList();
     }
 
     public void RemoveEntityFromAggressionList(GameObject entity)
     {
         EntityStats stats = entity.GetComponent<EntityStats>();
         aggressionList.Remove(stats.entityName);
-        Debug.Log("Displaying!");
-        OutputAggressionList();
+        //OutputAggressionList();
     }
 
     public void ModifyExistingEntityValue(AggressionElement element)
@@ -68,6 +53,8 @@ public class AggressionSystem
 
             entryValue.aggressionValue = Mathf.Max(entryValue.aggressionValue, element.aggressionValue);
         }
+
+        SortAggressionList();
     }
 
     public void ReduceAggressionEnmity()
@@ -79,17 +66,9 @@ public class AggressionSystem
 
             entryValue.aggressionValue = entryValue.aggressionValue * (1 - 0.20f * (1 + (stats.aggressionDecay / 100)));
         }
-
-        var sortedByValues = new OrderedDictionary();
-
-        foreach (var entry in aggressionList.Cast<DictionaryEntry>().OrderByDescending(entry => (entry.Value as AggressionElement).aggressionValue))
-        {
-            sortedByValues.Add(entry.Key, entry.Value);
-        }
-
-        aggressionList = sortedByValues;
-
-        OutputAggressionList();
+        SortAggressionList();
+        
+        //OutputAggressionList();
     }
 
     public GameObject ReturnTargetEntity()
@@ -99,6 +78,18 @@ public class AggressionSystem
 
         AggressionElement entity = aggressionList[0] as AggressionElement;
         return entity.entity;
+    }
+
+    public void SortAggressionList()
+    {
+        var sortedByValues = new OrderedDictionary();
+
+        foreach (var entry in aggressionList.Cast<DictionaryEntry>().OrderByDescending(entry => (entry.Value as AggressionElement).aggressionValue))
+        {
+            sortedByValues.Add(entry.Key, entry.Value);
+        }
+
+        aggressionList = sortedByValues;
     }
 
     public void OutputAggressionList()
