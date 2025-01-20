@@ -158,4 +158,9 @@ public class EntityStats : MonoBehaviour
     {
         return Calculation(StatType.MOVE, move);
     }
+
+    public float CalculateAggressionGen()
+    {
+        return Calculation(StatType.AGGRESSION, aggressionGen);
+    }
 }

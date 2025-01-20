@@ -48,6 +48,14 @@ public class AggressionSystem
         aggressionList.Add(stats.entityName, element);
     }
 
+    public void RemoveEntityFromAggressionList(GameObject entity)
+    {
+        EntityStats stats = entity.GetComponent<EntityStats>();
+        aggressionList.Remove(stats.entityName);
+        Debug.Log("Displaying!");
+        OutputAggressionList();
+    }
+
     public void ModifyExistingEntityValue(AggressionElement element)
     {
         EntityStats stats = element.entity.GetComponent<EntityStats>();

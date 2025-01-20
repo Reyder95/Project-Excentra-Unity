@@ -217,14 +217,21 @@ public class BattleManager
         else
         {
             EnemyContents contents = currTurn.GetComponent<EnemyContents>();
+            contents.aggression.ReduceAggressionEnmity();
 
             GameObject currTarget = contents.aggression.ReturnTargetEntity();
 
             if (currTarget == null)
             {
                 var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+
+                foreach (var character in possibleChars)
+                {
+                    Debug.Log(character.GetComponent<EntityStats>().entityName);
+                }
+
                 int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
-                currTarget = playerCharacters[randChar];
+                currTarget = possibleChars[randChar];
             }
 
             // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
@@ -260,6 +267,11 @@ public class BattleManager
                     if (entityStats.currentHP <= 0)
                     {
                         turnManager.KillEntity(entity.Value);
+
+                        // Just boss right now, modify for use with other enemies when time comes
+                        EnemyContents contents = boss.GetComponent<EnemyContents>();
+                        contents.aggression.RemoveEntityFromAggressionList(entity.Value);
+
                         entityStats.effectHandler.effects.Clear();
                         DisplayStatuses(entityStats);
                         entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");

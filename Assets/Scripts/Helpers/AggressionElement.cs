@@ -9,7 +9,7 @@ public class AggressionElement
     {
         EntityStats stats = entity.GetComponent<EntityStats>();
         this.entity = entity;
-        this.aggressionValue = ((damageDealt * 0.3f) * (stats.aggressionGen) * (1 + (stats.aggressionGen / 100)) / 10);
+        this.aggressionValue = ((damageDealt * 0.3f) * (stats.CalculateAggressionGen()) * (1 + (stats.CalculateAggressionGen() / 100)) / 10);
 
         Debug.Log("Aggro! " + aggressionValue);
     }
