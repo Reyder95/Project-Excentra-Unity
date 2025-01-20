@@ -623,12 +623,28 @@ public class BattleManager
             DestroyAoe(turnManager.GetCurrentTurn());
             battleVariables.currSkill = null;
             controller.specialActive = false;
-            controller.HandleTarget(false);
             ChangeState(BattleState.PLAYER_CHOICE);
             specialPanel.style.visibility = Visibility.Visible;
+
+            foreach (var character in playerCharacters)
+            {
+                EntityController charController = character.GetComponent<EntityController>();
+                charController.HandleTarget(false);
+            }
+
+            EntityController bossController = boss.GetComponent<EntityController>();
+            bossController.HandleTarget(false);
         }
         else if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
         {
+            foreach (var character in playerCharacters)
+            {
+                EntityController charController = character.GetComponent<EntityController>();
+                charController.HandleTarget(false);
+            }
+
+            EntityController bossController = boss.GetComponent<EntityController>();
+            bossController.HandleTarget(false);
             OnBasicClicked();
         }
     }
