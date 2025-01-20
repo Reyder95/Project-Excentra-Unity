@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Specialized;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class AggressionSystem
@@ -73,9 +75,21 @@ public class AggressionSystem
         foreach (DictionaryEntry entry in aggressionList)
         {
             AggressionElement entryValue = entry.Value as AggressionElement;
+            EntityStats stats = entryValue.entity.GetComponent<EntityStats>();
 
-            entryValue.aggressionValue = entryValue.aggressionValue * 0.20f;
+            entryValue.aggressionValue = entryValue.aggressionValue * (1 - 0.20f * (1 + (stats.aggressionDecay / 100)));
         }
+
+        var sortedByValues = new OrderedDictionary();
+
+        foreach (var entry in aggressionList.Cast<DictionaryEntry>().OrderByDescending(entry => (entry.Value as AggressionElement).aggressionValue))
+        {
+            sortedByValues.Add(entry.Key, entry.Value);
+        }
+
+        aggressionList = sortedByValues;
+
+        OutputAggressionList();
     }
 
     public GameObject ReturnTargetEntity()

@@ -44,7 +44,7 @@ public class EntityStats : MonoBehaviour
     // Aggression is like "aggro" in mmos. currently not implemented, but will be soon
     [Header("Aggression")]
     public float aggressionGen;
-    public float aggressionDropoff;
+    public float aggressionDecay;
     public float aggressionTurns;
 
     // Has to be accurate with the animation. For example, if an animation hits 3 times. This should be equal to 3.
@@ -162,5 +162,10 @@ public class EntityStats : MonoBehaviour
     public float CalculateAggressionGen()
     {
         return Calculation(StatType.AGGRESSION, aggressionGen);
+    }
+
+    public float CalculateAggressionDecay()
+    {
+        return Calculation(StatType.AGGRESSION_FALL, aggressionDecay);
     }
 }
