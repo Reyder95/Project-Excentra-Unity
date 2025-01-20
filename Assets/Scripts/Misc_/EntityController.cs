@@ -361,6 +361,9 @@ public class EntityController : MonoBehaviour
             {
                 Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
 
+                if (currAbility != null && currAbility.targetMode == TargetMode.SELF && currAbility.areaStyle == AreaStyle.SINGLE)
+                    return;
+
                 if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
                 {
                     HandleTarget(true);
@@ -420,6 +423,9 @@ public class EntityController : MonoBehaviour
         if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
         {
             Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
+
+            if (currAbility != null && currAbility.targetMode == TargetMode.SELF && currAbility.areaStyle == AreaStyle.SINGLE)
+                return;
 
             if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
             {

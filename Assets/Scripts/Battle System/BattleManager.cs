@@ -779,6 +779,8 @@ public class BattleManager
     
     public void OnSkillShot()
     {
+        if (overButton)
+            return;
         GameObject currEntity = turnManager.GetCurrentTurn();
         EntityStats stats = currEntity.GetComponent<EntityStats>();
         EntityController controller = currEntity.GetComponent<EntityController>();
@@ -796,8 +798,7 @@ public class BattleManager
 
         try
         {
-            if (overButton)
-                return;
+            
 
 
             
