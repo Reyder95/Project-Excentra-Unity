@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: aliveOffset.y
       value: 0.009013608
       objectReference: {fileID: 0}
+    - target: {fileID: 1719475619647554519, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2622219198015121584, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_LocalPosition.y
       value: -0.0793
@@ -103,6 +107,10 @@ PrefabInstance:
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: entityName
       value: Penny
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aggressionGen
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: maximumAether

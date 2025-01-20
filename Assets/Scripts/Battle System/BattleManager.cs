@@ -163,7 +163,7 @@ public class BattleManager
             float damageToDeal = StatusCalculatorHelper.CalculateDamage(currTurn, status.Value);
             if (damageToDeal != 0f)
             {
-                DealDamage(currTurn, damageToDeal);
+                DealDamage(currTurn, damageToDeal, status.Value.owner);
 
                 if (stats.currentHP <= 0)
                 {
@@ -216,10 +216,20 @@ public class BattleManager
         }
         else
         {
+            EnemyContents contents = currTurn.GetComponent<EnemyContents>();
+
+            GameObject currTarget = contents.aggression.ReturnTargetEntity();
+
+            if (currTarget == null)
+            {
+                var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+                int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
+                currTarget = playerCharacters[randChar];
+            }
+
             // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
-            var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
-            int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
-            currTurn.GetComponent<EntityController>().MoveTowards(possibleChars[randChar]);
+
+            currTurn.GetComponent<EntityController>().MoveTowards(currTarget);
             ChangeState(BattleState.AWAIT_ENEMY);
         }
         
@@ -515,12 +525,20 @@ public class BattleManager
         DisplayStatuses(entityStats);
     }
 
-    public void DealDamage(GameObject entity, float entityDamage)
+    public void DealDamage(GameObject entity, float entityDamage, GameObject attacker = null)
     {
         EntityController entityController = entity.GetComponent<EntityController>();
         EntityStats entityStats = entity.GetComponent<EntityStats>();
+        EnemyContents contents = entity.GetComponent<EnemyContents>();
 
         AddStatusToEnemy(entityStats);
+
+        GameObject currAttacker = null;
+
+        if (attacker != null)
+            currAttacker = attacker;
+        else
+            currAttacker = turnManager.GetCurrentTurn();
 
 
         if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE || battleVariables.currSkill == null)
@@ -528,8 +546,15 @@ public class BattleManager
             entityController.animator.Play("Damage", -1, 0f);
         }
 
-        if (entityDamage > 0f)  
+        if (entityDamage > 0f)
+        {
             ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
+            if (contents.enabled)
+            {
+                contents.aggression.AggressionEntryPoint(new AggressionElement(currAttacker, entityDamage));
+            }
+        }
+            
         entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
         if (entityStats.currentHP > entityStats.maximumHP)
             entityStats.currentHP = entityStats.maximumHP;
