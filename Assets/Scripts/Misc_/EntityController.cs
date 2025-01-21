@@ -172,6 +172,11 @@ public class EntityController : MonoBehaviour
             // Calculates future movement. If entity will go beyond their "move" radius, prevent them from doing so.
             Vector2 newPosition = rb.position + inputVector * (moveSpeed) * Time.deltaTime;
 
+            newPosition.x = Mathf.Clamp(newPosition.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
+            newPosition.y = Mathf.Clamp(newPosition.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
+
+
+
             if (Vector2.Distance(newPosition, turnStartPos) < (entityStats.CalculateMovementRadius() / 2))
             {
                 rb.MovePosition(newPosition);

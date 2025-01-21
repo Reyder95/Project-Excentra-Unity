@@ -35,6 +35,11 @@ public class CameraMovementHandler : MonoBehaviour
         {
             targetPos = new Vector3(ExcentraGame.battleManager.turnManager.GetCurrentTurn().transform.position.x, ExcentraGame.battleManager.turnManager.GetCurrentTurn().transform.position.y, -1);
 
+            float clampedX = Mathf.Clamp(targetPos.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
+            float clampedY = Mathf.Clamp(targetPos.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
+
+            targetPos = new Vector3(clampedX, clampedY, targetPos.z);
+
             transform.position = Vector3.Lerp(transform.position, targetPos, cameraSmoothSpeed * Time.fixedDeltaTime);
         }
 

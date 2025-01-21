@@ -29,6 +29,8 @@ public class BattleManager
     // The debuff bar for allies or enemies. Similar vein to HP/MP
     private Dictionary<string, VisualElement> debuffScrollers = new Dictionary<string, VisualElement>();
 
+    public BattleArena arena;
+
 
     // Specific UI elements
     VisualElement charPanel;
@@ -50,8 +52,10 @@ public class BattleManager
     }
 
     // Start initializing the battle with specific characters
-    public void InitializeBattle(List<GameObject> playerCharacters, GameObject boss, bool restart = false)
+    public void InitializeBattle(List<GameObject> playerCharacters, GameObject boss, BattleArena arena, bool restart = false)
     {
+        this.arena = arena;
+
         InstantiateCharacters(playerCharacters, boss, restart);
 
         turnManager.InitializeTurnManager(this.playerCharacters, this.boss);
@@ -132,8 +136,8 @@ public class BattleManager
         this.playerCharacters.Clear();
         foreach (var character in playerCharacters) 
         {
-            float x = UnityEngine.Random.Range(-17, 0);
-            float y = UnityEngine.Random.Range(0, 8);
+            float x = UnityEngine.Random.Range(arena.leftBound, arena.GetCenter().x);
+            float y = UnityEngine.Random.Range(arena.topBound, arena.GetCenter().y);
             GameObject instantiatedCharacter = _instantiateFunction(character, new Vector2(x, y));
             instantiatedCharacter.GetComponent<EntityStats>().InitializeCurrentStats();
             this.playerCharacters.Add(instantiatedCharacter);
@@ -790,7 +794,7 @@ public class BattleManager
     public void OnRestartClicked()
     {
         PostBattleCleanup();
-        InitializeBattle(tempCharacterPrefabs, tempBossPrefab, true);
+        InitializeBattle(tempCharacterPrefabs, tempBossPrefab, arena, true);
     }
     
     public void OnSkillShot()
