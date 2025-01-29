@@ -24,51 +24,101 @@ public class DerivedCircle : BaseAoe
         // Set the z-value to 0 if you are working in 2D (to ignore depth)
         mouseWorldPosition.z = 0;
 
-        if (skill != null && skill.shape == Shape.CIRCLE)
+        if (skill is PlayerSkill)
         {
-            radius = skill.radius;
+            if (skill != null && (skill as PlayerSkill).shape == Shape.CIRCLE)
+            {
+                radius = skill.radius;
+                Vector3 newScale = transform.localScale;
+
+                newScale.y = radius;
+                newScale.x = radius;
+
+                transform.localScale = newScale;
+
+                if ((skill as PlayerSkill).targetMode == TargetMode.FREE)
+                {
+                    if (Vector2.Distance(this.attackerObject.transform.position, mouseWorldPosition) < skill.range / 2f)
+                        circlePosition = mouseWorldPosition;
+                    else
+                    {
+                        Vector2 direction = mouseWorldPosition - this.attackerObject.transform.position;
+                        direction = direction.normalized * (skill.range / 2);
+                        circlePosition = (Vector2)this.attackerObject.transform.position + direction;
+                    }
+                }
+                else if ((skill as PlayerSkill).targetMode == TargetMode.SELF)
+                {
+                    circlePosition = originObject.transform.position;
+                }
+                else if ((skill as PlayerSkill).targetMode == TargetMode.SELECT)
+                {
+                    circlePosition = originObject.transform.position;
+                }
+
+                if (!freezeAoe)
+                {
+                    transform.position = circlePosition;
+                }
+                else
+                {
+                    transform.position = frozenPosition;
+                }
+            }
+        }
+        else
+        {
             Vector3 newScale = transform.localScale;
 
             newScale.y = radius;
-            newScale.x = radius;    
+            newScale.x = radius;
 
             transform.localScale = newScale;
 
-            if (skill.targetMode == TargetMode.FREE)
-            {
-                if (Vector2.Distance(this.attackerObject.transform.position, mouseWorldPosition) < skill.range / 2f)
-                    circlePosition = mouseWorldPosition;
-                else
-                {
-                    Vector2 direction = mouseWorldPosition - this.attackerObject.transform.position;
-                    direction = direction.normalized * (skill.range / 2);
-                    circlePosition = (Vector2)this.attackerObject.transform.position + direction;
-                }
-            }
-            else if (skill.targetMode == TargetMode.SELF)
-            {
-                circlePosition = originObject.transform.position;
-            }
-            else if (skill.targetMode == TargetMode.SELECT)
-            {
-                circlePosition = originObject.transform.position;
-            }
-
-            if (!freezeAoe)
-            {
-                transform.position = circlePosition;
-            }
-            else
-            {
-                transform.position = frozenPosition;
-            }
+            transform.position = circlePosition;
         }
     }
 
-    public override void InitializeAoe(GameObject originObject, GameObject attackerObject, Skill skill = null)
+    // Make a connected function between both initialization functions that prevent copy/pasted logic
+    public override void InitializeEnemyAoe(EnemyAoeData aoeData, GameObject attackerObject, BaseSkill skill)
     {
-        if (skill == null || skill.shape != Shape.CIRCLE)
+        base.aoeData = new AoeData();
+
+        if (skill == null && aoeData.shape != Shape.CIRCLE)
             return;
+
+        this.skill = skill;
+        this.attackerObject = attackerObject;
+        this.radius = aoeData.size;
+        
+        if (aoeData.objectOrigin != null)
+        {
+            this.circlePosition = aoeData.objectOrigin.transform.position;
+        }
+        else
+        {
+            this.circlePosition = aoeData.origin;
+        }
+
+        Color newColor = Color.red;
+        SpriteRenderer circleRenderer = circleAoe.GetComponent<SpriteRenderer>();
+        circleRenderer.color = newColor;
+        Color colorWithAlpha = circleRenderer.color;
+        colorWithAlpha.a = 0.5f;
+        circleRenderer.color = colorWithAlpha;
+        circleAoe.SetActive(true);
+    }
+
+    public override void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null)
+    {
+        base.aoeData = new AoeData();
+
+        if (skill is PlayerSkill)
+        {
+            if (skill == null || (skill as PlayerSkill).shape != Shape.CIRCLE)
+                return;
+        }
+
 
         this.skill = skill;
         this.attackerObject = attackerObject;
@@ -114,10 +164,14 @@ public class DerivedCircle : BaseAoe
 
     public override void FreezeAoe()
     {
-        if (skill != null && skill.shape == Shape.CIRCLE)
+        if (skill is PlayerSkill)
         {
-            base.FreezeAoe();
-            frozenPosition = transform.position;
+            if (skill != null && (skill as PlayerSkill).shape == Shape.CIRCLE)
+            {
+                base.FreezeAoe();
+                frozenPosition = transform.position;
+            }
         }
+
     }
 }

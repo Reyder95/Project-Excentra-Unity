@@ -29,6 +29,9 @@ public class ExcentraGame : MonoBehaviour
     [SerializeField]
     List<NormalPrefab> miscPrefabs = new List<NormalPrefab>();
 
+    [SerializeField]
+    List<BossEnemyPhases> bossPhases = new List<BossEnemyPhases>();
+
     public DamageNumberHandler damageNumberHandlerScript;   // Needs to be on monobehaviour so we can place and delete the damage numbers
 
     public static ExcentraGame Instance { get; private set; }   // Singleton used in very specific circumstances
@@ -50,6 +53,7 @@ public class ExcentraGame : MonoBehaviour
         ExcentraDatabase.LoadSkills(skills);
         ExcentraDatabase.LoadStatuses(statusEffects);
         ExcentraDatabase.LoadMiscPrefabs(miscPrefabs);
+        ExcentraDatabase.LoadBossPhases(bossPhases);
 
         // Initialize our battle manager (for the initial battle)
         battleManager = new BattleManager((prefab, position) => Instantiate(prefab, position, Quaternion.identity));

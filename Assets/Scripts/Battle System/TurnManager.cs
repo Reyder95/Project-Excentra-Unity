@@ -1,5 +1,6 @@
 // TurnManager.cs
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -93,7 +94,14 @@ public class TurnManager
         turnOrder.Remove(entity);
 
         EntityStats entityStats = entity.GetComponent<EntityStats>();
-        deadUnits.Add(entityStats.entityName, entity);
+
+        try
+        {
+            deadUnits.Add(entityStats.entityName, entity);
+        }
+        catch (ArgumentException)
+        {
+        }
     }
 
     public void ReviveEntity(GameObject entity)

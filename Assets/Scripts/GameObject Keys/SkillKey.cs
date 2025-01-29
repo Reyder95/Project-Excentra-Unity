@@ -4,5 +4,5 @@ using UnityEngine;
 public class SkillKey
 {
     public string key;
-    public Skill skill;
+    public PlayerSkill skill;
 }

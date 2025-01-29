@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b31fd6b9b74264c4b90d161e000586ea, type: 3}
+  m_Name: Destructive Repression
+  m_EditorClassIdentifier: 
+  skillName: Destructive Repression
+  areaStyle: 1
+  scaleMult: 1
+  entityType: 0
+  scaler: 0
+  radius: 0
+  range: 0
+  baseValue: 200
+  delayAdditive: 200
+  damageType: 2
+  containsMovement: 0
+  selfMove: 0
+  offsetDistance: 0
+  selfTarget: 0
+  moveSpeed: 3
+  attackCount: 1
+  statusEffects: []
+  removeAll: 1
+  removeStatuses: []
+  key: destructive-repression
+  targetType: 4
+  aoeData:
+  - stationary: 0
+    shape: 0
+    origin: {x: 0, y: 0}
+    endPoint: {x: 0, y: 0}
+    size: 5
+    onSelf: 0
+    onTarget: 1
+    subTargetType: 7
+    prefabKey: cone
+  - stationary: 0
+    shape: 0
+    origin: {x: 0, y: 0}
+    endPoint: {x: 0, y: 0}
+    size: 5
+    onSelf: 0
+    onTarget: 1
+    subTargetType: 5
+    prefabKey: cone
+  turnWindup: 0

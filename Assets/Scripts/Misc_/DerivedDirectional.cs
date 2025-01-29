@@ -39,53 +39,114 @@ public class DerivedDirectional : BaseAoe
         // Set the z-value to 0 if you are working in 2D (to ignore depth)
         mouseWorldPosition.z = 0;
 
-        if (skill != null && (skill.shape == Shape.CONE || skill.shape == Shape.LINE))
+        if (skill is PlayerSkill)
         {
-            destination = mouseWorldPosition;
+            Debug.Log("TEST!");
+            if (skill != null && ((skill as PlayerSkill).shape == Shape.CONE || (skill as PlayerSkill).shape == Shape.LINE))
+            {
+                destination = mouseWorldPosition;
 
-            
-            // Calculate the distance between origin and destination
+                // Calculate the distance between origin and destination
 
-            // Adjust the scale of the sprite
-            newScale = transform.localScale;
+                // Adjust the scale of the sprite
+                newScale = transform.localScale;
 
-            if (scaleX) newScale.x = distance;  // Scale along X-axis
+                if (scaleX) newScale.x = distance;  // Scale along X-axis
+                newScale.y = width;
+
+                // Optional: Rotate the sprite to face the destination
+                Vector2 direction = (destination - (Vector2)originObject.transform.position).normalized;
+                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+                endPoint = (Vector2)originObject.transform.position + direction * distance;
+
+                if (!freezeAoe)
+                {
+                    transform.rotation = Quaternion.Euler(0, 0, angle);
+                    transform.localScale = newScale;
+                    transform.position = originObject.transform.position;
+                }
+                else
+                {
+                    transform.rotation = frozenRotation;
+                    transform.localScale = frozenScale;
+                    transform.position = frozenPosition;
+                }
+
+            }
+        }
+        else
+        {
+            if (scaleX) newScale.x = Vector2.Distance(transform.position, destination);  // Scale along X-axis
             newScale.y = width;
 
-            // Optional: Rotate the sprite to face the destination
-            Vector2 direction = (destination - (Vector2)originObject.transform.position).normalized;
+            //Debug.Log(destination);
+
+            Vector2 direction = (destination - (Vector2)transform.position.normalized);
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-            endPoint = (Vector2)originObject.transform.position + direction * distance;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+            transform.localScale = newScale;
+        }
 
-            if (!freezeAoe)
-            {
-                transform.rotation = Quaternion.Euler(0, 0, angle);
-                transform.localScale = newScale;
-                transform.position = originObject.transform.position;
-            }
-            else
-            {
-                transform.rotation = frozenRotation;
-                transform.localScale = frozenScale;
-                transform.position = frozenPosition;
-            }
+    }
 
+    public override void InitializeEnemyAoe(EnemyAoeData aoeData, GameObject attackerObject, BaseSkill skill)
+    {
+        base.aoeData = new AoeData();
+        this.skill = skill;
+        this.attackerObject = attackerObject;
+        this.destination = aoeData.endPoint;
+
+        Debug.Log(aoeData.objectOrigin);
+
+        if (aoeData.objectOrigin != null)
+        {
+            transform.position = aoeData.objectOrigin.transform.position;
+            Debug.Log(aoeData.objectOrigin.transform.position);
+        }
+        else
+        {
+            transform.position = aoeData.origin;
+        }
+
+        if (aoeData.objectTarget != null)
+        {
+            this.destination = aoeData.objectTarget.transform.position;
+        }    
+        else
+        {
+            this.destination = aoeData.endPoint;
+        }
+
+        width = aoeData.size;
+
+        if (aoeData.shape == Shape.CONE)
+        {
+            ColorCone();
+        } else
+        {
+            ColorLine();
         }
     }
 
-    public override void InitializeAoe(GameObject originObject, GameObject attackerObject, Skill skill = null)
+    public override void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null)
     {
+        base.aoeData = new AoeData();
         this.skill = skill;
         this.attackerObject = attackerObject;
 
         width = skill.radius;
         distance = skill.range;
 
-        if (skill != null && skill.shape == Shape.LINE)
-            ColorLine();
-        else
-            ColorCone();
+        if (skill is PlayerSkill)
+        {
+            if (skill != null && (skill as PlayerSkill).shape == Shape.LINE)
+                ColorLine();
+            else
+                ColorCone();
+        }
+
 
         this.originObject = originObject;
 
@@ -133,13 +194,17 @@ public class DerivedDirectional : BaseAoe
 
     public override void FreezeAoe()
     {
-        if (skill!= null && (skill.shape == Shape.CONE || skill.shape == Shape.LINE))
+        if (skill is PlayerSkill)
         {
-            base.FreezeAoe();
-            frozenScale = transform.localScale;
-            frozenRotation = transform.rotation;
-            frozenDestination = destination;
-            frozenPosition = originObject.transform.position;
+            if (skill != null && ((skill as PlayerSkill).shape == Shape.CONE || (skill as PlayerSkill).shape == Shape.LINE))
+            {
+                base.FreezeAoe();
+                frozenScale = transform.localScale;
+                frozenRotation = transform.rotation;
+                frozenDestination = destination;
+                frozenPosition = originObject.transform.position;
+            }
         }
+
     }
 }

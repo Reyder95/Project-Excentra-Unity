@@ -3,11 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 using UnityEngine.UIElements;
+using static UnityEngine.UI.Image;
 
 // Class that runs the battle, from turn processes, to damage being dealt, to handling statuses, killing off entities, and declaring a winning side.
 // One of the most important classes at this point
@@ -15,12 +14,12 @@ public class BattleManager
 {
     private readonly System.Func<GameObject, Vector2, GameObject> _instantiateFunction; // Allows instantiation outside of MonoBehaviour, but I'd recc to just use (UnityEngine.GameObject.Instantiate())
 
-    private List<GameObject> playerCharacters = new List<GameObject>(); // All of the player character's Game Objects by reference
+    public List<GameObject> playerCharacters = new List<GameObject>(); // All of the player character's Game Objects by reference
     private GameObject boss = new GameObject(); // The boss (will need modification for multiple enemies)
 
     public TurnManager turnManager = new TurnManager(); // The turn manager handles everything regarding the turn order, delays, etc. The battle manager uses the turnManager to facilitate the turns
     public BattleVariables battleVariables = new BattleVariables();     // The important battle variables, like current targets, current abilities being used, etc. Keeps track of everything important for the round.
-    public AoeArenaData aoeArenadata = new AoeArenaData();      // Handles track of all the AoEs in the arena. Their targets, etc.
+    public AoeDictionary aoeArenadata = new AoeDictionary();      // Handles track of all the AoEs in the arena. Their targets, etc.
     
     // Dictionaries for the HP UI elements and the MP UI elements of the players and enemies (where applicable)
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
@@ -84,9 +83,16 @@ public class BattleManager
             hpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("hp"));
             mpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("mp"));
 
+            stats.OnStatusChanged += DisplayStatuses;
+            stats.OnHealthChanged += SetHPProgress;
+            stats.OnAetherChanged += SetMPProgress;
+
             debuffScrollers.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<VisualElement>("debuff"));
         }
         EntityStats bossStats = boss.GetComponent<EntityStats>();
+        bossStats.OnStatusChanged += DisplayStatuses;
+        bossStats.OnHealthChanged += SetHPProgress;
+        bossStats.OnAetherChanged += SetMPProgress;
         hpDictionary.Add(bossStats.entityName, bossHP);
         debuffScrollers.Add(bossStats.entityName, bossHP.Q<VisualElement>("debuff"));
 
@@ -126,10 +132,16 @@ public class BattleManager
         endScreen.style.display = DisplayStyle.None;
     }
 
-    public void SetMPPercent(string entityName, float percent)
+    public void SetMPProgress(EntityStats stats)
     {
-        mpDictionary[entityName].value = percent;
+        mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
     }
+
+    public void SetHPProgress(EntityStats stats)
+    {
+        hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
+    }
+
     // Place the characters down on the screen
     public void InstantiateCharacters(List<GameObject> playerCharacters, GameObject boss, bool restart)
     {
@@ -149,6 +161,9 @@ public class BattleManager
         bossSpriteRenderer.material.SetFloat("_Thickness", 0f);
 
         this.boss = bossInstantiation;
+
+        EnemyAI enemyAi = this.boss.GetComponent<EnemyAI>();
+        enemyAi.InitializeAI(this.playerCharacters); // Initialize the boss AI
     }
 
     // Handles each status an entity has upon the start of the turn. Returns the alive status of the entity by the end. For example: Poisons that may drop an Entity's HP to 0.
@@ -184,10 +199,8 @@ public class BattleManager
 
         foreach (var effect in effectsToRemove)
         {
-            stats.effectHandler.RemoveEffect(effect);
+            stats.ModifyStatus(effect);
         }
-
-        DisplayStatuses(currTurn.GetComponent<EntityStats>());
 
         return false;
     }
@@ -219,18 +232,14 @@ public class BattleManager
         else
         {
             EnemyContents contents = currTurn.GetComponent<EnemyContents>();
+            EnemyAI enemyAi = currTurn.GetComponent<EnemyAI>();
             contents.aggression.ReduceAggressionEnmity();
 
-            GameObject currTarget = contents.aggression.ReturnTargetEntity();
 
-            if (currTarget == null)
-            {
-                var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+            enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
+            enemyAi.TargetInit(); // Choose a target for the enemy ai
 
-
-                int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
-                currTarget = possibleChars[randChar];
-            }
+            GameObject currTarget = enemyAi.currTarget;
 
             // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
 
@@ -270,8 +279,7 @@ public class BattleManager
                         EnemyContents contents = boss.GetComponent<EnemyContents>();
                         contents.aggression.RemoveEntityFromAggressionList(entity.Value);
 
-                        entityStats.effectHandler.effects.Clear();
-                        DisplayStatuses(entityStats);
+                        entityStats.ModifyStatus();
                         entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");
 
                         bool isPlayer = entityStats.isPlayer;
@@ -330,7 +338,9 @@ public class BattleManager
 
         // MIsc. cleanup
         specialPanel.style.visibility = Visibility.Hidden;
-        DestroyAoe(currTurn);
+
+        DestroyAoe(currTurn);       
+        
         input.enabled = false;
 
         // Transition to next turn (requires this state)
@@ -365,7 +375,7 @@ public class BattleManager
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats stats = currTurn.GetComponent<EntityStats>();
         EntityController entityController = currTurn.GetComponent<EntityController>();
-        Skill currSkill = battleVariables.GetCurrentSkill();
+        PlayerSkill currSkill = battleVariables.GetCurrentSkill() as PlayerSkill;
 
         if (!battleVariables.isAttacking)
         {
@@ -447,9 +457,37 @@ public class BattleManager
             }
             else
             {
+                
                 Dictionary<string, GameObject> targetList = new Dictionary<string, GameObject>();
                 targetList.Add(information.target.GetComponent<EntityStats>().entityName, information.target);
                 battleVariables.targets = targetList;
+                battleVariables.currSkill = information.singleSkill;
+                EnemyAI enemyAi = currTurn.GetComponent<EnemyAI>();
+                EnemyContents contents = currTurn.GetComponent<EnemyContents>();
+                EnemySkill enemySkill = (battleVariables.currSkill as EnemySkill);
+                if (enemySkill.aoeData.Count != 0)
+                {
+                    foreach(var aoe in enemySkill.aoeData)
+                    {
+                        if (aoe.subTargetType == EntityTargetType.NONE)
+                        {
+                            aoe.objectTarget = enemyAi.ChooseEntity(enemySkill.targetType);
+                        }
+                        else
+                        {
+                            aoe.objectTarget = enemyAi.ChooseEntity(aoe.subTargetType);
+                        }
+
+                        Debug.Log(aoe.objectTarget);
+
+                        if (aoe.onSelf)
+                            aoe.objectOrigin = currTurn;
+                        else if (aoe.onTarget)
+                            aoe.objectOrigin = aoe.objectTarget;
+
+                        GameObject enemyAoe = SpawnEnemyAoe(enemySkill, aoe, currTurn);
+                    }
+                }
                 currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
             }
         }
@@ -459,16 +497,50 @@ public class BattleManager
     // Spawns an AOE telegraph for the user
     public GameObject ActivateSkillTelegraph(VisualElement element)
     {
-        return SpawnAoe((element.userData as Skill), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
+        return SpawnAoe((element.userData as PlayerSkill), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
     }
 
     // When the animation "hits" the target, this event is triggered. Does the specific attack towards this group of targets
     public void OnHit()
     {
+        GameObject currTurn = turnManager.GetCurrentTurn();
+        EntityStats stats = currTurn.GetComponent<EntityStats>();
+
+        if (!stats.isPlayer)
+        {
+            
+            EnemyContents contents = currTurn.GetComponent<EnemyContents>();
+            if (contents.aoeIndexList.Count > 0)
+                battleVariables.targets.Clear();
+
+            foreach (var aoeIndex in contents.aoeIndexList)
+            {
+                GameObject aoe = aoeArenadata.GetAoe(aoeIndex);
+                BaseAoe baseAoe = aoe.GetComponent<BaseAoe>();
+
+                var counter = 0;
+                foreach (var kvp in baseAoe.aoeData.TargetList)
+                {
+                    string newKey = kvp.Key; // Original key
+
+                    // If key already exists, generate a new one
+                    while (battleVariables.targets.ContainsKey(newKey))
+                    {
+                        newKey = $"{kvp.Key}_{counter}"; // Append suffix
+                        counter++;
+                    }
+
+                    battleVariables.targets[newKey] = kvp.Value; // Add with unique key
+                }
+            }
+        }
+
+
         Dictionary<string, GameObject> targetList = battleVariables.targets;
 
         foreach (var entity in targetList)
         {
+            Debug.Log(entity.Key);
             float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currSkill));
             DealDamage(entity.Value, entityDamage);
         }
@@ -521,11 +593,9 @@ public class BattleManager
                 float randomNum = UnityEngine.Random.Range(0, 100);
 
                 if (randomNum <= statusChance)
-                    entityStats.effectHandler.AddEffect(ExcentraDatabase.TryGetStatus(status.key), turnManager.GetCurrentTurn());
+                    entityStats.ModifyStatus(ExcentraDatabase.TryGetStatus(status.key), turnManager.GetCurrentTurn());
             }
         }
-
-        DisplayStatuses(entityStats);
     }
 
     public void DealDamage(GameObject entity, float entityDamage, GameObject attacker = null)
@@ -557,11 +627,8 @@ public class BattleManager
                 contents.aggression.AggressionEntryPoint(new AggressionElement(currAttacker, entityDamage));
             }
         }
-            
-        entityStats.currentHP = Mathf.Max(entityStats.currentHP - entityDamage, 0);
-        if (entityStats.currentHP > entityStats.maximumHP)
-            entityStats.currentHP = entityStats.maximumHP;
-        hpDictionary[entityStats.entityName].value = entityStats.CalculateHPPercentage();
+
+        entityStats.ModifyHP(Mathf.Max(entityStats.currentHP - entityDamage, 0));
     }
 
     public void ChangeState(BattleState newState)
@@ -711,7 +778,7 @@ public class BattleManager
 
         foreach (string skill in currStats.skillKeys)
         {
-            Skill currSkill = ExcentraDatabase.TryGetSkill(skill);
+            PlayerSkill currSkill = ExcentraDatabase.TryGetSkill(skill);
 
             if (currSkill != null)
             {
@@ -726,17 +793,17 @@ public class BattleManager
                     EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
                     EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
                     VisualElement element = (e.currentTarget as VisualElement);
-                    if ((element.userData as Skill).baseAether > stats.currentAether)
+                    if ((element.userData as PlayerSkill).baseAether > stats.currentAether)
                         return;
 
-                    battleVariables.currSkill = element.userData as Skill;
+                    battleVariables.currSkill = element.userData as PlayerSkill;
                     ChangeState(BattleState.PLAYER_SPECIAL);
 
-                    if ((element.userData as Skill).areaStyle == AreaStyle.SINGLE || ((element.userData as Skill).shape == Shape.CIRCLE))
+                    if ((element.userData as PlayerSkill).areaStyle == AreaStyle.SINGLE || ((element.userData as PlayerSkill).shape == Shape.CIRCLE))
                     {
                         controller.specialActive = true;
 
-                        if ((element.userData as Skill).targetMode == TargetMode.SELF)
+                        if ((element.userData as PlayerSkill).targetMode == TargetMode.SELF)
                             controller.HandleTarget(true);
                     }
                         
@@ -744,7 +811,7 @@ public class BattleManager
                     if (specialPanel.style.visibility == Visibility.Visible)
                         specialPanel.style.visibility = Visibility.Hidden;
 
-                    if (NeedsAoe(element.userData as Skill))
+                    if (NeedsAoe(element.userData as PlayerSkill))
                         ActivateSkillTelegraph(element);
 
                 });
@@ -804,30 +871,25 @@ public class BattleManager
         GameObject currEntity = turnManager.GetCurrentTurn();
         EntityStats stats = currEntity.GetComponent<EntityStats>();
         EntityController controller = currEntity.GetComponent<EntityController>();
-        Skill currSkill = battleVariables.GetCurrentSkill();
+        PlayerSkill currSkill = battleVariables.GetCurrentSkill() as PlayerSkill;
         if (currSkill.targetMode == TargetMode.SELF && currSkill.areaStyle == AreaStyle.SINGLE)
         {
             BattleClickInfo info = new BattleClickInfo();
             info.target = currEntity;
             info.singleSkill = currSkill;
             HandleEntityAction(info);
-            stats.currentAether = Mathf.Max(stats.currentAether - currSkill.baseAether, 0);
-            mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            stats.ModifyMP(Mathf.Max(stats.currentAether - currSkill.baseAether, 0));
             return;
         }
 
         try
         {
-            
-
-
-            
             GameObject currAoe = aoeArenadata.GetAoe(stats.arenaAoeIndex);
             BaseAoe aoeInit = currAoe.GetComponent<BaseAoe>();
 
-            if (aoeInit.skill.shape == Shape.CIRCLE && aoeInit.skill.targetMode == TargetMode.SELECT)
+            if ((aoeInit.skill as PlayerSkill).shape == Shape.CIRCLE && (aoeInit.skill as PlayerSkill).targetMode == TargetMode.SELECT)
             {
-                if (!CheckWithinSkillRange(currEntity, currAoe, aoeInit.skill))
+                if (!CheckWithinSkillRange(currEntity, currAoe, (aoeInit.skill as PlayerSkill)))
                     return;
             }
 
@@ -835,8 +897,7 @@ public class BattleManager
             BattleClickInfo info = new BattleClickInfo();
             info.mousePosition = aoeInit.FrozenInfo();
 
-            stats.currentAether = Mathf.Max(stats.currentAether - aoeInit.skill.baseAether, 0);
-            mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            stats.ModifyMP(Mathf.Max(stats.currentAether - (aoeInit.skill as PlayerSkill).baseAether, 0));
             controller.specialActive = false;
 
             HandleEntityAction(info);
@@ -847,7 +908,7 @@ public class BattleManager
     // ------ CLEANED UP PROPER FUNCTIONS ------------
 
     // Just spawns the AoE. Assumes all checks pass to allow the AoE to spawn
-    public GameObject SpawnAoe(Skill skill, GameObject origin, GameObject attacker)
+    public GameObject SpawnAoe(PlayerSkill skill, GameObject origin, GameObject attacker)
     {
         GameObject aoe = null;
         EntityStats stats = attacker.GetComponent<EntityStats>();
@@ -856,6 +917,7 @@ public class BattleManager
         {
             aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), origin.transform.position, Quaternion.identity);
             aoe.GetComponent<BaseAoe>().InitializeAoe(origin, attacker, skill);
+
         }
         else if (skill.shape == Shape.CIRCLE)
         {
@@ -874,6 +936,41 @@ public class BattleManager
             stats.arenaAoeIndex = index;
         }
 
+
+        Debug.Log("test!!" + aoe.GetComponent<BaseAoe>().aoeData);
+
+        return aoe;
+    }
+
+    public GameObject SpawnEnemyAoe(EnemySkill skill, EnemyAoeData aoeData, GameObject attacker)
+    {
+        GameObject aoe = null;
+        EnemyContents contents = attacker.GetComponent<EnemyContents>();
+
+        Debug.Log("Enemy Data: " + aoeData.shape);
+
+        if (aoeData.shape == Shape.CONE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), new Vector2(1000, 1000), Quaternion.identity);
+            aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
+        }
+        else if (aoeData.shape == Shape.CIRCLE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
+            aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
+        }
+        else if (aoeData.shape == Shape.LINE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), new Vector2(1000, 1000), Quaternion.identity);
+            aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
+        }
+
+        if (aoe != null)
+        {
+            int index = aoeArenadata.AddAoe(aoe);
+            contents.aoeIndexList.Add(index);
+        }
+
         return aoe;
     }
 
@@ -881,6 +978,25 @@ public class BattleManager
     public void DestroyAoe(GameObject owner)
     {
         EntityStats stats = owner.GetComponent<EntityStats>();
+
+        if (!stats.isPlayer)
+        {
+            EnemyContents contents = owner.GetComponent<EnemyContents>();
+
+            foreach (var aoeIndex in contents.aoeIndexList)
+            {
+                GameObject enemyAoe = aoeArenadata.GetAoe(aoeIndex);
+                UnityEngine.GameObject.Destroy(enemyAoe);
+            }
+
+            foreach (var aoeIndex in contents.aoeIndexList)
+            {
+                aoeArenadata.PopAoe(aoeIndex);
+            }
+
+            contents.aoeIndexList.Clear();
+        }
+        
         if (stats.arenaAoeIndex == -1)
             return;
 
@@ -889,7 +1005,7 @@ public class BattleManager
         stats.arenaAoeIndex = -1;
     }
 
-    public bool NeedsAoe(Skill skill)
+    public bool NeedsAoe(PlayerSkill skill)
     {
         if (skill.areaStyle == AreaStyle.SINGLE || skill.targetMode == TargetMode.SELECT)
             return false;
@@ -961,7 +1077,7 @@ public class BattleManager
         }
         else if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
         {
-            Skill currSkill = battleVariables.GetCurrentSkill();
+            PlayerSkill currSkill = battleVariables.GetCurrentSkill() as PlayerSkill;
 
             if (currSkill != null)
             {
@@ -999,13 +1115,19 @@ public class BattleManager
                 }
             }
         }
+        else if (battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+        {
+            EnemySkill enemySkill = battleVariables.currSkill as EnemySkill;
+            if (!sameTeam && defenderStats.currentHP > 0)
+                return true;
+        }
 
         return false;
     }
 
     // Checks within a skill or basic range (combines both types of functions into one)
     // TODO: Might be better to have a range handler that we can pass in some parameters and it auto-calculates a range. Good to centralize things.
-    public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, Skill skill = null)
+    public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, PlayerSkill skill = null)
     {
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
 

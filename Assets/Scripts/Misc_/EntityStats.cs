@@ -13,6 +13,7 @@ public class EntityStats : MonoBehaviour
 
     [Header("General Information")]
     public string entityName;
+    public string enemyKey;
     public Texture2D portrait;
     public bool isPlayer;
 
@@ -59,6 +60,46 @@ public class EntityStats : MonoBehaviour
     public bool moveDouble = false;
     [NonSerialized]
     public StatusEffectHandler effectHandler = new StatusEffectHandler();
+
+    public event Action<EntityStats> OnStatusChanged;
+    public event Action<EntityStats> OnHealthChanged;
+    public event Action<EntityStats> OnAetherChanged;
+
+    public void ModifyStatus(StatusEffect effect = null, GameObject owner = null)
+    {
+        if (owner != null && effect != null)
+            effectHandler.AddEffect(effect, owner);
+        else if (effect != null)
+            effectHandler.RemoveEffect(effect);
+        else
+            effectHandler.effects.Clear();
+
+        OnStatusChanged?.Invoke(this);
+    }
+
+    public void ModifyHP(float amount)
+    {
+        currentHP = amount;
+
+        if (currentHP > maximumHP)
+            currentHP = maximumHP;
+        else if (currentHP < 0)
+            currentHP = 0;
+
+        OnHealthChanged?.Invoke(this);
+    }
+
+    public void ModifyMP(float amount)
+    {
+        currentAether = amount;
+
+        if (currentAether > maximumAether)
+            currentAether = maximumAether;
+        else if (currentAether < 0)
+            currentAether = 0;
+
+        OnAetherChanged?.Invoke(this);
+    }
 
     // -- Calculations! Calculates various stats or important information based on stats, and status effects
     public void CalculateDelay(bool turn = false)

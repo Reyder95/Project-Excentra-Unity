@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 7379840933358803624}
   - component: {fileID: 6677466724272875593}
   - component: {fileID: 5393262343277882581}
+  - component: {fileID: 8219995647261763433}
   m_Layer: 0
   m_Name: Entity
   m_TagString: Untagged
@@ -109,6 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillKeys: []
   entityName: 
+  enemyKey: 
   portrait: {fileID: 0}
   isPlayer: 0
   maximumHP: 0
@@ -122,7 +124,7 @@ MonoBehaviour:
   move: 0
   basicRange: 0
   aggressionGen: 0
-  aggressionDropoff: 0
+  aggressionDecay: 0
   aggressionTurns: 0
   basicAttackCount: 1
 --- !u!114 &421529142559536925
@@ -555,6 +557,27 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &8219995647261763433
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5483559697954615981}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fce12c4e701a4b841a44ef4b3b5723f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  possibleTargets: []
+  currPhase:
+    skills: []
+    hpPercentageThreshold: 0
+  enemyPhases: []
+  currTarget: {fileID: 0}
+  currAttack: {fileID: 0}
+  enemyContents: {fileID: 0}
+  stats: {fileID: 0}
 --- !u!1 &9027115976683340027
 GameObject:
   m_ObjectHideFlags: 0

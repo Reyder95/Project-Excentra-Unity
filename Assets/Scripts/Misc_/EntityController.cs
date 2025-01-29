@@ -54,6 +54,8 @@ public class EntityController : MonoBehaviour
     private float skillMoveSpeed = 0f;
     private bool isSkillMoving = false;
 
+    private EnemyAI enemyAi;
+
 
     void Awake()
     {
@@ -64,6 +66,7 @@ public class EntityController : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         lineRenderer = GetComponent<LineRenderer>();
         boxCollider = GetComponent<BoxCollider2D>();
+        enemyAi = GetComponent<EnemyAI>();
 
         spriteRenderer.material.SetFloat("_Thickness", 0f); // Outline, by default should be hidden.
         localScale = gameObject.transform.localScale;
@@ -119,6 +122,7 @@ public class EntityController : MonoBehaviour
                 animator.SetBool("IsWalk", false);
                 BattleClickInfo info = new BattleClickInfo();
                 info.target = target;
+                info.singleSkill = enemyAi.currAttack;
                 ExcentraGame.battleManager.HandleEntityAction(info);
             }
         }
@@ -360,11 +364,14 @@ public class EntityController : MonoBehaviour
 
     public void OnMouseEnter()
     {
+        if (ExcentraGame.battleManager.battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         if (!ExcentraGame.battleManager.battleVariables.IsEntityAttacking())
         {
             if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
             {
-                Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
+                PlayerSkill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill() as PlayerSkill;
 
                 if (currAbility != null && currAbility.targetMode == TargetMode.SELF && currAbility.areaStyle == AreaStyle.SINGLE)
                     return;
@@ -387,12 +394,15 @@ public class EntityController : MonoBehaviour
     public void OnMouseDown()
     {
 
-        Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
+        PlayerSkill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill() as PlayerSkill;
         GameObject currAttacker = ExcentraGame.battleManager.GetCurrentAttacker();
         EntityStats currStats = currAttacker.GetComponent<EntityStats>();
 
         // If the enemy is dead, check if we are able to revive them.
         if (entityStats.currentHP <= 0 && (currAbility == null || currAbility.damageType != DamageType.REVIVE))
+            return;
+
+        if (ExcentraGame.battleManager.battleVariables.GetState() == BattleState.AWAIT_ENEMY)
             return;
 
 
@@ -411,8 +421,7 @@ public class EntityController : MonoBehaviour
                     info.mousePosition = transform.position;
                     if (currAbility != null)
                     {
-                        currStats.currentAether = Mathf.Max(currStats.currentAether - currAbility.baseAether, 0);
-                        ExcentraGame.battleManager.SetMPPercent(currStats.entityName, currStats.CalculateMPPercentage());
+                        currStats.ModifyMP(Mathf.Max(currStats.currentAether - currAbility.baseAether, 0));
                     }
 
                     ExcentraGame.battleManager.battleVariables.targets = new() { { entityStats.entityName, this.gameObject } };
@@ -425,9 +434,12 @@ public class EntityController : MonoBehaviour
 
     public void OnMouseExit()
     {
+        if (ExcentraGame.battleManager.battleVariables.GetState() == BattleState.AWAIT_ENEMY)
+            return;
+
         if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
         {
-            Skill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill();
+            PlayerSkill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill() as PlayerSkill;
 
             if (currAbility != null && currAbility.targetMode == TargetMode.SELF && currAbility.areaStyle == AreaStyle.SINGLE)
                 return;

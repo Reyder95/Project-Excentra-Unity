@@ -589,6 +589,12 @@ MonoBehaviour:
     prefab: {fileID: 8181824542807740559, guid: 38e46b65abaa63446bb78d1d346be5fc, type: 3}
   - key: line
     prefab: {fileID: 6765610906363701024, guid: 308ee99daa0efd84196078c8386bd8d9, type: 3}
+  bossPhases:
+  - key: medica
+    phases:
+    - skills:
+      - {fileID: 11400000, guid: 95355c315777d1e40bbd9e7a8147ea23, type: 2}
+      hpPercentageThreshold: 100
   damageNumberHandlerScript: {fileID: 1049321076}
 --- !u!4 &1272877064
 Transform:
