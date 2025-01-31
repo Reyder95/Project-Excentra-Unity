@@ -75,6 +75,9 @@ public class DerivedCircle : BaseAoe
 
             transform.localScale = newScale;
 
+            if (this.originObject != null)
+                circlePosition = this.originObject.transform.position;
+
             transform.position = circlePosition;
         }
     }
@@ -95,7 +98,7 @@ public class DerivedCircle : BaseAoe
 
         if (info.objectOrigin != null)
         {
-            this.circlePosition = info.objectOrigin.transform.position;
+            this.originObject = info.objectOrigin;
         }
         else
         {

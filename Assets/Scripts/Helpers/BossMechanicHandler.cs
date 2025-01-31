@@ -6,9 +6,10 @@ public static class BossMechanicHandler
 {
     public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
+        Debug.Log(mechanic.mechanicStyle);
         if (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
         {
-            return;
+            CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, null, attacker);
         }
         else
         {
@@ -60,7 +61,22 @@ public static class BossMechanicHandler
             actualTarget = target;
 
         TurnManager turnManager = battleManager.turnManager;
-        GameObject aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), new Vector2(1000, 1000), Quaternion.identity);
+
+        GameObject aoe;
+
+        if (mechanicAttack.aoeShape == Shape.CONE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), new Vector2(1000, 1000), Quaternion.identity);
+        }
+        else if (mechanicAttack.aoeShape == Shape.CIRCLE)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
+        }
+        else
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), new Vector2(1000, 1000), Quaternion.identity);
+        }
+        
         BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
 
         SkillInformation info = new SkillInformation();
@@ -113,6 +129,10 @@ public static class BossMechanicHandler
                 newSkill.baseValue = mechanicAttack.baseValue;
                 newSkill.attackCount = 1;
                 float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, attacker, newSkill));
+
+                if (mechanicAttack.isStack)
+                    entityDamage = entityDamage / aoe.aoeData.TargetList.Count;
+
                 battleManager.DealDamage(entity.Value, entityDamage, attacker);
             }
         } catch (InvalidOperationException) { }

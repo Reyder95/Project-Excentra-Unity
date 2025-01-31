@@ -9,6 +9,7 @@ public class EnemyAI : MonoBehaviour
 
     [System.NonSerialized] public EnemyPhase currPhase;   // List of attacks that the enemy can use for this phase
     [System.NonSerialized] public List<EnemyPhase> enemyPhases;   // List of phases that the enemy can go through
+    [System.NonSerialized] public InitialPhase initialPhase;
     [System.NonSerialized] public GameObject currTarget;
     [System.NonSerialized] public Vector2 moveLocation;
     [System.NonSerialized] public EnemyMechanic currAttack;
@@ -25,8 +26,9 @@ public class EnemyAI : MonoBehaviour
         enemyContents = GetComponent<EnemyContents>();
         stats = GetComponent<EntityStats>();
         this.possibleTargets = possibleTargets;
-        enemyPhases = ExcentraDatabase.TryGetBossPhases(stats.enemyKey);
-
+        BossEnemyPhases bossEnemyPhases = ExcentraDatabase.TryGetBossPhases(stats.enemyKey);
+        initialPhase = bossEnemyPhases.initialPhase;
+        enemyPhases = bossEnemyPhases.phases;
         currPhase = enemyPhases[0];
 
         Debug.Log("Initialize AI: " + currPhase.mechanics.Count);

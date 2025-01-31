@@ -42,6 +42,23 @@ public class TurnManager
         // Calculates the initial delay for all entities
         foreach (var character in turnOrder)
         {
+            if (character.isEntity)
+            {
+                EnemyAI enemyAi;
+                if (character.GetEntity().TryGetComponent<EnemyAI>(out enemyAi))
+                {
+                    if (enemyAi.enabled)
+                    {
+                        if (enemyAi.initialPhase != null)
+                        {
+                            character.CalculateDirectDelay(0);
+                            continue;
+                        }
+                    }
+                }
+            }
+
+
             character.CalculateDelay();
         }
 

@@ -15,7 +15,7 @@ public static class ExcentraDatabase
     private static Dictionary<string, PlayerSkill> skillDictionary = new Dictionary<string, PlayerSkill>();
     private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
     private static Dictionary<string, GameObject> miscPrefabDictionary = new Dictionary<string, GameObject>();
-    private static Dictionary<string, List<EnemyPhase>> bossPhaseDictionary = new Dictionary<string, List<EnemyPhase>>();
+    private static Dictionary<string, BossEnemyPhases> bossPhaseDictionary = new Dictionary<string, BossEnemyPhases>();
 
     // Potentially a poor way of doing this. Should this be in the status damage helper class? 
     // Potential future solution: In status helper, use status "effect type" in a dictionary, pointing it to various functions.
@@ -82,7 +82,7 @@ public static class ExcentraDatabase
     {
         foreach (var bossPhase in bossPhases)
         {
-            bossPhaseDictionary.Add(bossPhase.key, bossPhase.phases);
+            bossPhaseDictionary.Add(bossPhase.key, bossPhase);
         }
     }
 
@@ -143,7 +143,7 @@ public static class ExcentraDatabase
         return null;
     }
 
-    public static List<EnemyPhase> TryGetBossPhases(string key)
+    public static BossEnemyPhases TryGetBossPhases(string key)
     {
         if (bossPhaseDictionary.ContainsKey(key))
             return bossPhaseDictionary[key];

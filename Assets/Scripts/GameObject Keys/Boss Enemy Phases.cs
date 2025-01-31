@@ -6,4 +6,5 @@ public class BossEnemyPhases
 {
     public string key;
     public List<EnemyPhase> phases;
+    public InitialPhase initialPhase;
 }

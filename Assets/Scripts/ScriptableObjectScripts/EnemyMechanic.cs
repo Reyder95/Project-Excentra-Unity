@@ -18,6 +18,7 @@ public enum AttackType
 public class EnemyMechanic : ScriptableObject
 {
     public string mechanicName;
+    public string mechanicKey;
     public MechanicStyle mechanicStyle;
     public bool active = true;
     public bool untargetable = false;

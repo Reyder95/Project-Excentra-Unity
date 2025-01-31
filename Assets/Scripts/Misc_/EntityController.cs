@@ -214,16 +214,21 @@ public class EntityController : MonoBehaviour
     {
         circleBasicRangeInstance.transform.position = transform.position;
 
-        if (basicActive)
+        try
         {
-            // TODO: Need to work on centralizing range. If drawing range, should be normal. If calculating distance, should be divided by 2.
-            circleBasicRangeInstance.transform.localScale = new Vector2(entityStats.CalculateBasicRangeRadius(), entityStats.CalculateBasicRangeRadius());
+            if (basicActive)
+            {
+                // TODO: Need to work on centralizing range. If drawing range, should be normal. If calculating distance, should be divided by 2.
+                circleBasicRangeInstance.transform.localScale = new Vector2(entityStats.CalculateBasicRangeRadius(), entityStats.CalculateBasicRangeRadius());
+            }
+            else if (specialActive)
+            {
+                float range = ExcentraGame.battleManager.battleVariables.GetCurrentSkill().range;
+                circleBasicRangeInstance.transform.localScale = new Vector2(range, range);
+            }
         }
-        else if (specialActive)
-        {
-            float range = ExcentraGame.battleManager.battleVariables.GetCurrentSkill().range;
-            circleBasicRangeInstance.transform.localScale = new Vector2(range, range);
-        }
+        catch (NullReferenceException) { }
+
             
     }
 

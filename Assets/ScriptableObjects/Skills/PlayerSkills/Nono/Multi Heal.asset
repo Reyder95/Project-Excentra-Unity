@@ -13,18 +13,25 @@ MonoBehaviour:
   m_Name: Multi Heal
   m_EditorClassIdentifier: 
   skillName: Multi Heal
-  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
   areaStyle: 1
-  targetMode: 1
-  shape: 0
+  scaleMult: 1.7
   entityType: 0
   scaler: 1
-  radius: 5
+  radius: 9
   range: 10
   baseValue: 55
-  baseAether: 30
-  scaleMult: 1.7
   delayAdditive: 125
   damageType: 0
+  containsMovement: 0
+  selfMove: 0
+  offsetDistance: 0
+  selfTarget: 0
+  moveSpeed: 3
   attackCount: 1
   statusEffects: []
+  removeAll: 1
+  removeStatuses: []
+  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  targetMode: 1
+  baseAether: 30
+  shape: 0

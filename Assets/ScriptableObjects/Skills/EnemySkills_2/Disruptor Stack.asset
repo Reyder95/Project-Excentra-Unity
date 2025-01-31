@@ -10,37 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: Disruptor Array
+  m_Name: Disruptor Stack
   m_EditorClassIdentifier: 
-  mechanicName: Disruptor Array
+  mechanicName: 
   mechanicStyle: 1
   active: 1
   untargetable: 0
   mechanicAttacks:
   - attackType: 0
-    targetType: 8
+    targetType: 4
     turnOffset: 4
     originIsTarget: 1
     originIsSelf: 0
-    endpointIsTarget: 1
+    endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
     aoeShape: 0
     isProximity: 0
-    isStack: 0
+    isStack: 1
     staticDistance: 0
-    size: 5
+    size: 4
     distance: 0
-    distanceOffset: 1
+    distanceOffset: 0
     endpoint: {x: 0, y: 0}
-    aoeColor: {r: 0, g: 0.19730693, b: 0.8490566, a: 0.48235294}
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
     tetherStationary: 0
     secondTether: 0
     tetherLocation: {x: 0, y: 0}
     tetherRange: 0
     damageType: 2
     scaler: 0
-    scaleMult: 0.8
-    baseValue: 50
+    scaleMult: 3
+    baseValue: 150
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []

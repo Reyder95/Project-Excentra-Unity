@@ -45,6 +45,7 @@ public class BattleManager
     private GameObject tempBossPrefab = null;
 
     public bool overButton = false;
+    public bool initialPhaseChecker = false;
 
     public BattleManager(System.Func<GameObject, Vector2, GameObject> instantiateFunction)
     {
@@ -192,6 +193,9 @@ public class BattleManager
 
             }
 
+            if (status.Value.effect.customTurnLogic)
+                continue;
+
             status.Value.turnsRemaining -= 1;
 
             if (status.Value.turnsRemaining == 0)
@@ -241,11 +245,18 @@ public class BattleManager
                 EnemyAI enemyAi = currTurn.GetComponent<EnemyAI>();
                 contents.aggression.ReduceAggressionEnmity();
 
-
-                enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
-
-                if (enemyAi.currAttack.mechanicStyle == MechanicStyle.TURN_ORIENTED)
+                if (!initialPhaseChecker && enemyAi.initialPhase != null)
+                {
+                    BossMechanicHandler.InitializeMechanic(enemyAi.initialPhase.mechanic, this, boss);
+                    stats.nextStaticDelay = enemyAi.initialPhase.delayBonus;
+                }
+                else
+                {
+                    enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
                     BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, boss);
+                }
+
+                initialPhaseChecker = true;
 
                 //enemyAi.TargetInit(); // Choose a target for the enemy ai
 
@@ -270,6 +281,7 @@ public class BattleManager
 
     public void EndTurn()
     {
+        ChangeState(BattleState.TURN_TRANSITION);
         GameObject currTurn = turnManager.GetCurrentTurn();
         EntityStats stats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
@@ -672,7 +684,8 @@ public class BattleManager
 
         if ((battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE) || battleVariables.currSkill == null)
         {
-            entityController.animator.Play("Damage", -1, 0f);
+            if (entityStats.currentHP > 0f)
+                entityController.animator.Play("Damage", -1, 0f);
         }
 
         if (entityDamage > 0f)
@@ -1129,6 +1142,9 @@ public class BattleManager
     {
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
         EntityStats defenderStats = defender.GetComponent<EntityStats>();
+        
+        if (attackerStats == null || defenderStats == null)
+            return false;
 
         bool sameTeam = attackerStats.isPlayer == defenderStats.isPlayer;
 
