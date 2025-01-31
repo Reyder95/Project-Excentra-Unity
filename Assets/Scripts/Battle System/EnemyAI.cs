@@ -11,7 +11,7 @@ public class EnemyAI : MonoBehaviour
     [System.NonSerialized] public List<EnemyPhase> enemyPhases;   // List of phases that the enemy can go through
     [System.NonSerialized] public GameObject currTarget;
     [System.NonSerialized] public Vector2 moveLocation;
-    [System.NonSerialized] public EnemySkill currAttack;
+    [System.NonSerialized] public EnemyMechanic currAttack;
     [System.NonSerialized] public EnemyContents enemyContents;
     [System.NonSerialized] public EntityStats stats;
 
@@ -29,7 +29,7 @@ public class EnemyAI : MonoBehaviour
 
         currPhase = enemyPhases[0];
 
-        Debug.Log("Initialize AI: " + currPhase.skills.Count);
+        Debug.Log("Initialize AI: " + currPhase.mechanics.Count);
     }
 
     public void ChooseAttack()
@@ -43,10 +43,10 @@ public class EnemyAI : MonoBehaviour
         try
         {
 
-            int randomIndex = UnityEngine.Random.Range(0, currPhase.skills.Count);
+            int randomIndex = UnityEngine.Random.Range(0, currPhase.mechanics.Count);
 
-            Debug.Log(randomIndex);
-            currAttack = currPhase.skills[randomIndex];
+            Debug.Log("Count: " + currPhase.mechanics.Count);
+            currAttack = currPhase.mechanics[randomIndex];
 
             Debug.Log(currAttack);
         }
@@ -58,16 +58,6 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    public void TargetInit()
-    {
-        HandleTarget();
-    }
-
-    public void HandleTarget()
-    {
-            TargetEntity(currAttack.targetType);
-    }
-
     public void HandleMoveLocation(Vector2 moveLocation)
     {
         this.moveLocation = moveLocation;
@@ -75,7 +65,6 @@ public class EnemyAI : MonoBehaviour
 
     public void TargetEntity(EntityTargetType targetType)
     {
-        Debug.Log("ARE YOU HERE?!");
         currTarget = null;
         if (currAttack == null)
             return;

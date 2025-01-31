@@ -6,6 +6,7 @@
  * Movement only functions if playerInput is enabled, which is handled each round (only current user gets playerInput enabled).
  */
 
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -42,6 +43,7 @@ public class EntityController : MonoBehaviour
 
     // Misc.
     public GameObject charGround;   // A simple object denoting an entity's ground. Used for handling depth (displaying entities in front and behind each other)
+    public bool inEnemyAoe = false;
 
     [Header("Collider Hitboxes")]
     public Vector2 aliveOffset;
@@ -55,7 +57,6 @@ public class EntityController : MonoBehaviour
     private bool isSkillMoving = false;
 
     private EnemyAI enemyAi;
-
 
     void Awake()
     {
@@ -122,7 +123,7 @@ public class EntityController : MonoBehaviour
                 animator.SetBool("IsWalk", false);
                 BattleClickInfo info = new BattleClickInfo();
                 info.target = target;
-                info.singleSkill = enemyAi.currAttack;
+                //info.singleSkill = enemyAi.currAttack;
                 ExcentraGame.battleManager.HandleEntityAction(info);
             }
         }

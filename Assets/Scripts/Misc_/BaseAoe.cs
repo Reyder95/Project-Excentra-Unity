@@ -3,6 +3,7 @@ using UnityEngine;
 public abstract class BaseAoe : MonoBehaviour
 {
     public BaseSkill skill;
+    public MechanicAttack mechanicAttack;
     public AoeData aoeData;
     public bool enemy = false;
     public int arenaAoeIndex = -1;
@@ -21,7 +22,7 @@ public abstract class BaseAoe : MonoBehaviour
     protected virtual void Update() { }
 
     public abstract void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null);
-    public abstract void InitializeEnemyAoe(EnemyAoeData aoeData, GameObject attackerObject, BaseSkill skill);
+    public abstract void InitializeEnemyAoe(GameObject attackerObject, MechanicAttack attack, SkillInformation info);
     
     public virtual void FreezeAoe()
     {

@@ -39,8 +39,6 @@ public class EntityStats : MonoBehaviour
     public float speed;
     public float move;
     public float basicRange;
-    [NonSerialized]
-    public float delay;
 
     // Aggression is like "aggro" in mmos. currently not implemented, but will be soon
     [Header("Aggression")]
@@ -60,6 +58,8 @@ public class EntityStats : MonoBehaviour
     public bool moveDouble = false;
     [NonSerialized]
     public StatusEffectHandler effectHandler = new StatusEffectHandler();
+    [NonSerialized]
+    public float nextStaticDelay = -1f;
 
     public event Action<EntityStats> OnStatusChanged;
     public event Action<EntityStats> OnHealthChanged;
@@ -102,23 +102,11 @@ public class EntityStats : MonoBehaviour
     }
 
     // -- Calculations! Calculates various stats or important information based on stats, and status effects
-    public void CalculateDelay(bool turn = false)
-    {
-        if (!turn)
-        {
-            delay = (int)Mathf.Floor((500 + UnityEngine.Random.Range(10, 26) / (speed * 10.5f)) * UnityEngine.Random.Range(10, 26)) / speed;
-        }
-        else
-        {
-            delay = (int)Mathf.Floor(delay * 0.80f);
-        }
-    }
 
     public void InitializeCurrentStats()
     {
         currentHP = maximumHP;
         currentAether = maximumAether;
-        delay = 0;
     }
 
     public float CalculateHPPercentage()

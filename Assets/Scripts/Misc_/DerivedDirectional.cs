@@ -5,6 +5,7 @@ using UnityEngine.UIElements;
 public class DerivedDirectional : BaseAoe
 {
     public Vector2 destination;
+    public GameObject destinationObject;
 
     public GameObject triangle;
     public GameObject circle;
@@ -41,7 +42,6 @@ public class DerivedDirectional : BaseAoe
 
         if (skill is PlayerSkill)
         {
-            Debug.Log("TEST!");
             if (skill != null && ((skill as PlayerSkill).shape == Shape.CONE || (skill as PlayerSkill).shape == Shape.LINE))
             {
                 destination = mouseWorldPosition;
@@ -77,13 +77,17 @@ public class DerivedDirectional : BaseAoe
         }
         else
         {
+
+            if (destinationObject)
+                destination = destinationObject.transform.position;
+
+            Vector2 direction = (destination - (Vector2)transform.position).normalized;
+            Vector2 offsetVector = direction * mechanicAttack.distanceOffset;
+            destination = destination + offsetVector;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
             if (scaleX) newScale.x = Vector2.Distance(transform.position, destination);  // Scale along X-axis
             newScale.y = width;
-
-            //Debug.Log(destination);
-
-            Vector2 direction = (destination - (Vector2)transform.position.normalized);
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
             transform.rotation = Quaternion.Euler(0, 0, angle);
             transform.localScale = newScale;
@@ -91,37 +95,38 @@ public class DerivedDirectional : BaseAoe
 
     }
 
-    public override void InitializeEnemyAoe(EnemyAoeData aoeData, GameObject attackerObject, BaseSkill skill)
+    public override void InitializeEnemyAoe(GameObject attackerObject, MechanicAttack attack, SkillInformation info)
     {
         base.aoeData = new AoeData();
-        this.skill = skill;
+        this.mechanicAttack = attack;
         this.attackerObject = attackerObject;
-        this.destination = aoeData.endPoint;
+        this.destination = attack.endpoint;
 
-        Debug.Log(aoeData.objectOrigin);
+        Debug.Log(info.objectOrigin);
 
-        if (aoeData.objectOrigin != null)
+        // See concern in DerivedCircle.cs
+
+        if (info.objectOrigin != null)
         {
-            transform.position = aoeData.objectOrigin.transform.position;
-            Debug.Log(aoeData.objectOrigin.transform.position);
+            transform.position = info.objectOrigin.transform.position;
         }
         else
         {
-            transform.position = aoeData.origin;
+            transform.position = attack.customOrigin;
         }
 
-        if (aoeData.objectTarget != null)
+        if (info.objectTarget != null)
         {
-            this.destination = aoeData.objectTarget.transform.position;
-        }    
+            this.destinationObject = info.objectTarget;
+        }
         else
         {
-            this.destination = aoeData.endPoint;
+            this.destination = attack.endpoint;
         }
 
-        width = aoeData.size;
+        width = attack.size;
 
-        if (aoeData.shape == Shape.CONE)
+        if (attack.aoeShape == Shape.CONE)
         {
             ColorCone();
         } else
@@ -134,6 +139,7 @@ public class DerivedDirectional : BaseAoe
     {
         base.aoeData = new AoeData();
         this.skill = skill;
+        this.mechanicAttack = null;
         this.attackerObject = attackerObject;
 
         width = skill.radius;

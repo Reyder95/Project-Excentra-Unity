@@ -60,9 +60,19 @@ public class HandleDetection : MonoBehaviour
         if (aoe.tag == "aoe")
         {
             BaseAoe aoeData = aoe.GetComponent<BaseAoe>();
-
-            if (ExcentraGame.battleManager.TargetingEligible(aoeData.attackerObject, Entity)) 
+            
+            if (aoeData.mechanicAttack != null)
             {
+                if (Entity.GetComponent<EntityStats>().isPlayer && Entity.GetComponent<EntityStats>().currentHP > 0)
+                {
+                    controller.inEnemyAoe = true;
+                    //controller.HandleTarget(true);
+                    aoeData.HandleAddTarget(Entity);
+                }
+            }
+            else if (ExcentraGame.battleManager.TargetingEligible(aoeData.attackerObject, Entity)) 
+            {
+                Debug.Log("HELLO!!");
                 controller.HandleTarget(true);
                 aoeData.HandleAddTarget(Entity);
             }
@@ -76,8 +86,12 @@ public class HandleDetection : MonoBehaviour
 
         if (aoe.tag == "aoe")
         {
-            controller.HandleTarget(false);
             BaseAoe aoeData = aoe.GetComponent<BaseAoe>();
+
+            controller.inEnemyAoe = true;
+
+            if (aoeData.mechanicAttack == null)
+                controller.HandleTarget(false);
             aoeData.HandleRemoveTarget(Entity);
         }
     }

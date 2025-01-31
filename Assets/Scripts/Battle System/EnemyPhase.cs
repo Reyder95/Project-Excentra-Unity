@@ -4,6 +4,6 @@ using UnityEngine;
 [System.Serializable]
 public class EnemyPhase
 {
-    public List<EnemySkill> skills;
+    public List<EnemyMechanic> mechanics;
     public float hpPercentageThreshold;
 }

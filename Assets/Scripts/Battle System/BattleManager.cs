@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.UI.Image;
 
 // Class that runs the battle, from turn processes, to damage being dealt, to handling statuses, killing off entities, and declaring a winning side.
@@ -202,51 +203,69 @@ public class BattleManager
             stats.ModifyStatus(effect);
         }
 
+        DisplayStatuses(stats);
+
         return false;
     }
 
     public void StartTurn()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats stats = currTurn.GetComponent<EntityStats>();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-        PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
-        // Check an Entity's current set of statuses that have on turn start.
-        // If they die, immediately end the turn
-        if (HandleTurnStatuses())
+        if (currTurn.GetComponent<EntityStats>() != null)
         {
-            EndTurn();
-            return;
-        }
+            EntityStats stats = currTurn.GetComponent<EntityStats>();
+            EntityController controller = currTurn.GetComponent<EntityController>();
+            PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
-        // Handle the turn if it's a player or enemy.
-        if (stats.isPlayer)
-        {
-            // If player, enable their input and set some basic values. Change state to PLAYER_CHOICE.
-            input.enabled = true;
-            controller.turnStartPos = currTurn.transform.position;
-            controller.DrawMovementCircle();
-            ChangeState(BattleState.PLAYER_CHOICE);
+            // Check an Entity's current set of statuses that have on turn start.
+            // If they die, immediately end the turn
+            if (HandleTurnStatuses())
+            {
+                EndTurn();
+                return;
+            }
+
+            // Handle the turn if it's a player or enemy.
+            if (stats.isPlayer)
+            {
+                // If player, enable their input and set some basic values. Change state to PLAYER_CHOICE.
+                input.enabled = true;
+                controller.turnStartPos = currTurn.transform.position;
+                controller.DrawMovementCircle();
+                ChangeState(BattleState.PLAYER_CHOICE);
+            }
+            else
+            {
+                EnemyContents contents = currTurn.GetComponent<EnemyContents>();
+                EnemyAI enemyAi = currTurn.GetComponent<EnemyAI>();
+                contents.aggression.ReduceAggressionEnmity();
+
+
+                enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
+
+                if (enemyAi.currAttack.mechanicStyle == MechanicStyle.TURN_ORIENTED)
+                    BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, boss);
+
+                //enemyAi.TargetInit(); // Choose a target for the enemy ai
+
+                //GameObject currTarget = enemyAi.currTarget;
+
+                // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
+
+                //currTurn.GetComponent<EntityController>().MoveTowards(currTarget);
+                ChangeState(BattleState.AWAIT_ENEMY);
+
+                EndTurn();
+            }
         }
         else
         {
-            EnemyContents contents = currTurn.GetComponent<EnemyContents>();
-            EnemyAI enemyAi = currTurn.GetComponent<EnemyAI>();
-            contents.aggression.ReduceAggressionEnmity();
-
-
-            enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
-            enemyAi.TargetInit(); // Choose a target for the enemy ai
-
-            GameObject currTarget = enemyAi.currTarget;
-
-            // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
-
-            currTurn.GetComponent<EntityController>().MoveTowards(currTarget);
-            ChangeState(BattleState.AWAIT_ENEMY);
+            BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
+            // Find some way to store attackers of skills
+            BossMechanicHandler.ActivateAoeAttack(aoe.mechanicAttack, this, boss, aoe);
+            EndTurn();
         }
-        
     }
 
     public void EndTurn()
@@ -273,28 +292,7 @@ public class BattleManager
                 {
                     if (entityStats.currentHP <= 0)
                     {
-                        turnManager.KillEntity(entity.Value);
-
-                        // Just boss right now, modify for use with other enemies when time comes
-                        EnemyContents contents = boss.GetComponent<EnemyContents>();
-                        contents.aggression.RemoveEntityFromAggressionList(entity.Value);
-
-                        entityStats.ModifyStatus();
-                        entity.Value.GetComponent<EntityController>().animator.SetTrigger("Die");
-
-                        bool isPlayer = entityStats.isPlayer;
-
-                        if (IsLose(isPlayer))
-                        {
-                            CleanupTurn();
-                            if (isPlayer)
-                                endScreen.Q<Label>("defeat").style.display = DisplayStyle.Flex;
-                            else
-                                endScreen.Q<Label>("victory").style.display = DisplayStyle.Flex;
-                            endScreen.style.display = DisplayStyle.Flex;
-
-                            return;
-                        }
+                        KillEntity(currTurn);
 
                     }
                 }
@@ -307,41 +305,99 @@ public class BattleManager
             }
         }
 
-        // Clean up the turn, then wait a few seconds and then start the turn.
-        CleanupTurn();
-
         ExcentraGame.Instance.WaitCoroutine(0.5f, () =>
         {
-            turnManager.EndCurrentTurn();
+            // Clean up the turn, then wait a few seconds and then start the turn.
+            CleanupTurn();
+            if (stats == null || (stats != null && stats.nextStaticDelay == -1))
+                turnManager.EndCurrentTurn();
+            else
+            {
+                turnManager.EndCurrentTurn(stats.nextStaticDelay);
+                stats.nextStaticDelay = -1f;
+            }
+                
+
+            
             StartTurn();
         });
+    }
+
+    public void KillEntity(GameObject entity)
+    {
+        EntityStats stats = entity.GetComponent<EntityStats>();
+        EntityController controller = entity.GetComponent<EntityController>();
+
+        turnManager.KillEntity(entity);
+
+        // Just boss right now, modify for use with other enemies when time comes
+        EnemyContents contents = boss.GetComponent<EnemyContents>();
+        contents.aggression.RemoveEntityFromAggressionList(entity);
+
+        stats.ModifyStatus();
+        controller.animator.SetTrigger("Die");
+
+        bool isPlayer = stats.isPlayer;
+
+        if (IsLose(isPlayer))
+        {
+            CleanupTurn();
+            if (isPlayer)
+                endScreen.Q<Label>("defeat").style.display = DisplayStyle.Flex;
+            else
+                endScreen.Q<Label>("victory").style.display = DisplayStyle.Flex;
+            endScreen.style.display = DisplayStyle.Flex;
+
+            return;
+        }
+    }
+
+    public List<GameObject> GetAliveEntities()
+    {
+        var possibleChars = playerCharacters.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+
+        return possibleChars;
     }
 
     // Cleans up all the variables at the end of a turn
     public void CleanupTurn()
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats currStats = currTurn.GetComponent<EntityStats>();
-        EntityController controller = currTurn.GetComponent<EntityController>();
-        PlayerInput input = currTurn.GetComponent<PlayerInput>();
+        try
+        {
+            if (currTurn.GetComponent<EntityStats>() != null)
+            {
+                EntityStats currStats = currTurn.GetComponent<EntityStats>();
+                EntityController controller = currTurn.GetComponent<EntityController>();
+                PlayerInput input = currTurn.GetComponent<PlayerInput>();
+                currStats.moveDouble = false;
 
-        currStats.moveDouble = false;
-        controller.HandleTarget(false);
+                if (!controller.inEnemyAoe)
+                    controller.HandleTarget(false);
+
+                // Controller cleanup
+                controller.specialActive = false;
+                controller.basicActive = false;
+                controller.lineRenderer.positionCount = 0;
+
+                input.enabled = false;
+
+                DestroyAoe(currTurn);
+            }
+            else
+            {
+                BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
+                aoeArenadata.PopAoe(aoe.arenaAoeIndex);
+                GameObject.Destroy(aoe.gameObject);
+            }
+        } catch (MissingReferenceException) { }
+
 
         // Battle Variables cleanup
         battleVariables.CleanVariables();
 
-        // Controller cleanup
-        controller.specialActive = false;
-        controller.basicActive = false;
-        controller.lineRenderer.positionCount = 0;
-
         // MIsc. cleanup
         specialPanel.style.visibility = Visibility.Hidden;
-
-        DestroyAoe(currTurn);       
-        
-        input.enabled = false;
 
         // Transition to next turn (requires this state)
         ChangeState(BattleState.TURN_TRANSITION);
@@ -485,7 +541,7 @@ public class BattleManager
                         else if (aoe.onTarget)
                             aoe.objectOrigin = aoe.objectTarget;
 
-                        GameObject enemyAoe = SpawnEnemyAoe(enemySkill, aoe, currTurn);
+                        //GameObject enemyAoe = SpawnEnemyAoe(enemySkill, aoe, currTurn);
                     }
                 }
                 currTurn.GetComponent<EntityController>().animator.SetTrigger("Basic Attack");
@@ -614,7 +670,7 @@ public class BattleManager
             currAttacker = turnManager.GetCurrentTurn();
 
 
-        if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE || battleVariables.currSkill == null)
+        if ((battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE) || battleVariables.currSkill == null)
         {
             entityController.animator.Play("Damage", -1, 0f);
         }
@@ -629,6 +685,11 @@ public class BattleManager
         }
 
         entityStats.ModifyHP(Mathf.Max(entityStats.currentHP - entityDamage, 0));
+
+        if (entityStats.currentHP <= 0)
+        {
+            KillEntity(entity);
+        }
     }
 
     public void ChangeState(BattleState newState)
@@ -942,37 +1003,37 @@ public class BattleManager
         return aoe;
     }
 
-    public GameObject SpawnEnemyAoe(EnemySkill skill, EnemyAoeData aoeData, GameObject attacker)
-    {
-        GameObject aoe = null;
-        EnemyContents contents = attacker.GetComponent<EnemyContents>();
+    //public GameObject SpawnEnemyAoe(EnemySkill skill, EnemyAoeData aoeData, GameObject attacker)
+    //{
+    //    GameObject aoe = null;
+    //    EnemyContents contents = attacker.GetComponent<EnemyContents>();
 
-        Debug.Log("Enemy Data: " + aoeData.shape);
+    //    Debug.Log("Enemy Data: " + aoeData.shape);
 
-        if (aoeData.shape == Shape.CONE)
-        {
-            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), new Vector2(1000, 1000), Quaternion.identity);
-            aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
-        }
-        else if (aoeData.shape == Shape.CIRCLE)
-        {
-            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
-            aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
-        }
-        else if (aoeData.shape == Shape.LINE)
-        {
-            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), new Vector2(1000, 1000), Quaternion.identity);
-            aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
-        }
+    //    if (aoeData.shape == Shape.CONE)
+    //    {
+    //        aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), new Vector2(1000, 1000), Quaternion.identity);
+    //        aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
+    //    }
+    //    else if (aoeData.shape == Shape.CIRCLE)
+    //    {
+    //        aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
+    //        aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
+    //    }
+    //    else if (aoeData.shape == Shape.LINE)
+    //    {
+    //        aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), new Vector2(1000, 1000), Quaternion.identity);
+    //        aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
+    //    }
 
-        if (aoe != null)
-        {
-            int index = aoeArenadata.AddAoe(aoe);
-            contents.aoeIndexList.Add(index);
-        }
+    //    if (aoe != null)
+    //    {
+    //        int index = aoeArenadata.AddAoe(aoe);
+    //        contents.aoeIndexList.Add(index);
+    //    }
 
-        return aoe;
-    }
+    //    return aoe;
+    //}
 
     // Each entity should have their aoe as an index on their stats. This is done via the above function.
     public void DestroyAoe(GameObject owner)
@@ -1124,7 +1185,7 @@ public class BattleManager
 
         return false;
     }
-
+    
     // Checks within a skill or basic range (combines both types of functions into one)
     // TODO: Might be better to have a range handler that we can pass in some parameters and it auto-calculates a range. Good to centralize things.
     public bool CheckWithinSkillRange(GameObject attacker, GameObject defender, PlayerSkill skill = null)

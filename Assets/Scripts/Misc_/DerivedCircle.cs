@@ -80,24 +80,26 @@ public class DerivedCircle : BaseAoe
     }
 
     // Make a connected function between both initialization functions that prevent copy/pasted logic
-    public override void InitializeEnemyAoe(EnemyAoeData aoeData, GameObject attackerObject, BaseSkill skill)
+    public override void InitializeEnemyAoe(GameObject attackerObject, MechanicAttack attack, SkillInformation info)
     {
         base.aoeData = new AoeData();
 
-        if (skill == null && aoeData.shape != Shape.CIRCLE)
+        if (skill == null && attack.aoeShape != Shape.CIRCLE)
             return;
 
-        this.skill = skill;
+        this.mechanicAttack = attack;
         this.attackerObject = attackerObject;
-        this.radius = aoeData.size;
-        
-        if (aoeData.objectOrigin != null)
+        this.radius = attack.size;
+
+        // May need a new parameter for EnemyTargetInformation to let the aoe know what to do
+
+        if (info.objectOrigin != null)
         {
-            this.circlePosition = aoeData.objectOrigin.transform.position;
+            this.circlePosition = info.objectOrigin.transform.position;
         }
         else
         {
-            this.circlePosition = aoeData.origin;
+            this.circlePosition = attack.customOrigin;
         }
 
         Color newColor = Color.red;
@@ -121,6 +123,7 @@ public class DerivedCircle : BaseAoe
 
 
         this.skill = skill;
+        this.mechanicAttack = null;
         this.attackerObject = attackerObject;
 
         Color newColor = Color.red;

@@ -592,8 +592,9 @@ MonoBehaviour:
   bossPhases:
   - key: medica
     phases:
-    - skills:
-      - {fileID: 11400000, guid: 95355c315777d1e40bbd9e7a8147ea23, type: 2}
+    - mechanics:
+      - {fileID: 11400000, guid: 4909e30ad3daf524284928bf8f3c3aaf, type: 2}
+      - {fileID: 11400000, guid: 0eec7af5bc5e41e4880309bfc09d824f, type: 2}
       hpPercentageThreshold: 100
   damageNumberHandlerScript: {fileID: 1049321076}
 --- !u!4 &1272877064
