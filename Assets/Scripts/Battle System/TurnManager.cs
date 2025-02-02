@@ -146,6 +146,25 @@ public class TurnManager
         }
     }
 
+    public bool CheckIfMechanicOver(EnemyMechanic mechanic)
+    {
+        foreach (var entity in turnOrder)
+        {
+            if (!entity.isEntity)
+            {
+                GameObject aoe = entity.GetEntity();
+                BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
+
+                if (aoeInfo.mechanic == mechanic)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     // Calculates the delay for all entities that already exist in the turn order.
     // When an entity goes, all other entities get their delay reduced by a percentage found in the CalculateDelay function
     public void CalculateAllDelay()

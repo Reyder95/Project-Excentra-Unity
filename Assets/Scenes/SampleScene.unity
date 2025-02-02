@@ -598,6 +598,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 4909e30ad3daf524284928bf8f3c3aaf, type: 2}
       - {fileID: 11400000, guid: 0eec7af5bc5e41e4880309bfc09d824f, type: 2}
       - {fileID: 11400000, guid: e46026ace9973b74493b193ab1784bd1, type: 2}
+      - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
       hpPercentageThreshold: 100
     initialPhase:
       mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}

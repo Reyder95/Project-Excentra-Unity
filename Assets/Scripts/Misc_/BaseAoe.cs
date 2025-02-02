@@ -4,6 +4,7 @@ public abstract class BaseAoe : MonoBehaviour
 {
     public BaseSkill skill;
     public MechanicAttack mechanicAttack;
+    public EnemyMechanic mechanic;
     public AoeData aoeData;
     public bool enemy = false;
     public int arenaAoeIndex = -1;
@@ -22,7 +23,7 @@ public abstract class BaseAoe : MonoBehaviour
     protected virtual void Update() { }
 
     public abstract void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null);
-    public abstract void InitializeEnemyAoe(GameObject attackerObject, MechanicAttack attack, SkillInformation info);
+    public abstract void InitializeEnemyAoe(GameObject attackerObject, EnemyMechanic mechanic, MechanicAttack attack, SkillInformation info);
     
     public virtual void FreezeAoe()
     {

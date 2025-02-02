@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum MechanicStyle
@@ -12,6 +13,15 @@ public enum AttackType
     AOE,
     SINGLE_TARGET,
     TETHER
+}
+
+public enum MoveType
+{
+    ORIGIN,
+    ENDPOINT,
+    TARGET,
+    CENTER,
+    CUSTOM
 }
 
 [CreateAssetMenu(fileName = "EnemyMechanic", menuName = "Scriptable Objects/EnemyMechanic")]
@@ -38,6 +48,11 @@ public class MechanicAttack
     public bool originIsSelf;
     public bool endpointIsTarget;
     public Vector2 customOrigin;
+    public float requiredRange = 0f;
+
+    [Header("Movement")]
+    public bool containsMovement = false;
+    public MoveType moveType;
 
     [Header("AOE")]
     public Shape aoeShape;

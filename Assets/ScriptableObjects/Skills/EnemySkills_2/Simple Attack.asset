@@ -10,41 +10,41 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: Disruptor Array
+  m_Name: Simple Attack
   m_EditorClassIdentifier: 
-  mechanicName: Disruptor Array
-  mechanicKey: 
-  mechanicStyle: 1
+  mechanicName: Simple Attack
+  mechanicKey: simple-attack
+  mechanicStyle: 0
   active: 1
   untargetable: 0
   mechanicAttacks:
-  - attackType: 0
-    targetType: 8
-    turnOffset: 4
-    originIsTarget: 1
+  - attackType: 1
+    targetType: 0
+    turnOffset: 0
+    originIsTarget: 0
     originIsSelf: 0
-    endpointIsTarget: 1
+    endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
     requiredRange: 0
-    containsMovement: 0
-    moveType: 0
+    containsMovement: 1
+    moveType: 2
     aoeShape: 0
     isProximity: 0
     isStack: 0
     staticDistance: 0
-    size: 5
+    size: 0
     distance: 0
-    distanceOffset: 1
+    distanceOffset: 0
     endpoint: {x: 0, y: 0}
-    aoeColor: {r: 0, g: 0.19730693, b: 0.8490566, a: 0.48235294}
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
     tetherStationary: 0
     secondTether: 0
     tetherLocation: {x: 0, y: 0}
     tetherRange: 0
     damageType: 2
     scaler: 0
-    scaleMult: 0.7
-    baseValue: 50
+    scaleMult: 0.4
+    baseValue: 150
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []

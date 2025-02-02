@@ -95,10 +95,11 @@ public class DerivedDirectional : BaseAoe
 
     }
 
-    public override void InitializeEnemyAoe(GameObject attackerObject, MechanicAttack attack, SkillInformation info)
+    public override void InitializeEnemyAoe(GameObject attackerObject, EnemyMechanic mechanic, MechanicAttack attack, SkillInformation info)
     {
         base.aoeData = new AoeData();
         this.mechanicAttack = attack;
+        this.mechanic = mechanic;
         this.attackerObject = attackerObject;
         this.destination = attack.endpoint;
 
@@ -140,6 +141,7 @@ public class DerivedDirectional : BaseAoe
         base.aoeData = new AoeData();
         this.skill = skill;
         this.mechanicAttack = null;
+        this.mechanic = null;
         this.attackerObject = attackerObject;
 
         width = skill.radius;

@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Disruptor Slam
   m_EditorClassIdentifier: 
   mechanicName: 
+  mechanicKey: 
   mechanicStyle: 1
-  active: 1
+  active: 0
   untargetable: 0
   mechanicAttacks:
   - attackType: 0
@@ -24,6 +25,7 @@ MonoBehaviour:
     originIsSelf: 1
     endpointIsTarget: 1
     customOrigin: {x: 0, y: 0}
+    requiredRange: 0
     aoeShape: 1
     isProximity: 0
     isStack: 0

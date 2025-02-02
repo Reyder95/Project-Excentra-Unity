@@ -13,6 +13,7 @@ public class EnemyAI : MonoBehaviour
     [System.NonSerialized] public GameObject currTarget;
     [System.NonSerialized] public Vector2 moveLocation;
     [System.NonSerialized] public EnemyMechanic currAttack;
+    [System.NonSerialized] public EnemyMechanic currImmediateAttack;
     [System.NonSerialized] public EnemyContents enemyContents;
     [System.NonSerialized] public EntityStats stats;
 
@@ -34,28 +35,37 @@ public class EnemyAI : MonoBehaviour
         Debug.Log("Initialize AI: " + currPhase.mechanics.Count);
     }
 
-    public void ChooseAttack()
+    public EnemyMechanic ChooseAttack()
     {
         if (currPhase == null)
         {
             currAttack = null;
-            return;
+            return null;
         }
 
         try
         {
+            if (currAttack == null)
+            {
+                List<EnemyMechanic> possibleMechanics = currPhase.GetMechanicsOfType(MechanicStyle.TURN_ORIENTED);
+                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count + 1);
 
-            int randomIndex = UnityEngine.Random.Range(0, currPhase.mechanics.Count);
+                currAttack = possibleMechanics[randomIndex];
+                return null;
+            }
+            else
+            {
+                List<EnemyMechanic> possibleMechanics = currPhase.GetMechanicsOfType(MechanicStyle.IMMEDIATE);
+                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count + 1);
 
-            Debug.Log("Count: " + currPhase.mechanics.Count);
-            currAttack = currPhase.mechanics[randomIndex];
+                return possibleMechanics[randomIndex];
+            }
 
-            Debug.Log(currAttack);
         }
         catch (ArgumentOutOfRangeException)
         {
             InitializeAI(possibleTargets);
-            ChooseAttack();
+            return ChooseAttack();
         }
 
     }
@@ -109,15 +119,17 @@ public class EnemyAI : MonoBehaviour
 
         AggressionSystem aggressionList = enemyContents.aggression;
 
+        GameObject target = null;
+
         if (targetType == EntityTargetType.FIRST_AGGRESSION)
-            return aggressionList.GetFirstAggression();
+            target = aggressionList.GetFirstAggression();
         else if (targetType == EntityTargetType.SECOND_AGGRESSION)
-            return aggressionList.GetSecondAggression();
+            target = aggressionList.GetSecondAggression();
         else if (targetType == EntityTargetType.LAST_AGGRESSION)
-            return aggressionList.GetLastAggression();
+            target = aggressionList.GetLastAggression();
         else
         {
-            GameObject target = FindRole(targetType, possibleChars);
+            target = FindRole(targetType, possibleChars);
 
             if (target != null)
                 return target;

@@ -15,6 +15,6 @@ MonoBehaviour:
   mechanicName: Reprisal
   mechanicKey: reprisal
   mechanicStyle: 0
-  active: 1
+  active: 0
   untargetable: 0
   mechanicAttacks: []

@@ -83,7 +83,7 @@ public class DerivedCircle : BaseAoe
     }
 
     // Make a connected function between both initialization functions that prevent copy/pasted logic
-    public override void InitializeEnemyAoe(GameObject attackerObject, MechanicAttack attack, SkillInformation info)
+    public override void InitializeEnemyAoe(GameObject attackerObject, EnemyMechanic mechanic, MechanicAttack attack, SkillInformation info)
     {
         base.aoeData = new AoeData();
 
@@ -91,6 +91,7 @@ public class DerivedCircle : BaseAoe
             return;
 
         this.mechanicAttack = attack;
+        this.mechanic = mechanic;
         this.attackerObject = attackerObject;
         this.radius = attack.size;
 

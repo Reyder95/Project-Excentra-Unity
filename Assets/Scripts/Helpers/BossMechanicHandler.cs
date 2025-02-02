@@ -9,6 +9,16 @@ public static class BossMechanicHandler
         Debug.Log(mechanic.mechanicStyle);
         if (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
         {
+            foreach (MechanicAttack attack in mechanic.mechanicAttacks)
+            {
+                switch (attack.attackType)
+                {
+                    case AttackType.SINGLE_TARGET:
+                        InitializeSingleTargetAttack(mechanic, attack, battleManager, attacker);
+                        break;
+                }
+            }
+
             CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, null, attacker);
         }
         else
@@ -25,11 +35,11 @@ public static class BossMechanicHandler
 
                             foreach (var entity in possibleChars)
                             {
-                                delay = Mathf.Max(InitializeAOEAttack(attack, battleManager, attacker, entity), delay);
+                                delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker, entity), delay);
                             }
                         }
                         else
-                            delay = Mathf.Max(InitializeAOEAttack(attack, battleManager, attacker), delay);
+                            delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker), delay);
                         break;
                     case AttackType.SINGLE_TARGET:
                         break;
@@ -38,12 +48,15 @@ public static class BossMechanicHandler
 
                 }
             }
-            EntityStats stats = attacker.GetComponent<EntityStats>();
-            stats.nextStaticDelay = delay + 1;
+            if (!mechanic.active)
+            {
+                EntityStats stats = attacker.GetComponent<EntityStats>();
+                stats.nextStaticDelay = delay + 1;
+            }
         }
     }
 
-    public static float InitializeAOEAttack(MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target = null)
+    public static float InitializeAOEAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target = null)
     {
         if (mechanicAttack.attackType != AttackType.AOE)
             return -1f;
@@ -95,7 +108,7 @@ public static class BossMechanicHandler
             info.objectTarget = actualTarget;
         }
 
-        aoeInfo.InitializeEnemyAoe(attacker, mechanicAttack, info);
+        aoeInfo.InitializeEnemyAoe(attacker, mechanic, mechanicAttack, info);
         aoeInfo.arenaAoeIndex = battleManager.aoeArenadata.AddAoe(aoe);
 
         TurnEntity aoeEntity = new TurnEntity(aoe);
@@ -140,6 +153,30 @@ public static class BossMechanicHandler
         
     }
 
+    public static void InitializeSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker)
+    {
+        EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+        GameObject target = enemyAi.ChooseEntity(mechanicAttack.targetType);
+        enemyAi.currTarget = target;
+        enemyAi.currImmediateAttack = mechanic;
+
+        Debug.Log("TARGET!: " + target);
+
+        EntityController controller = attacker.GetComponent<EntityController>();
+        controller.MoveTowards(target);
+
+    }
+    public static void ActivateSingleTargetAttack(MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target)
+    {
+        PlayerSkill newSkill = (PlayerSkill)ScriptableObject.CreateInstance("PlayerSkill");
+        newSkill.damageType = mechanicAttack.damageType;
+        newSkill.scaler = mechanicAttack.scaler;
+        newSkill.scaleMult = mechanicAttack.scaleMult;
+        newSkill.baseValue = mechanicAttack.baseValue;
+        newSkill.attackCount = 1;
+        float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(target, attacker, newSkill));
+        battleManager.DealDamage(target, entityDamage, attacker);
+    }
     public static void ActivateTetherAttack(MechanicAttack mechanicAttack, BattleManager battleManager, GameObject tether1, GameObject tether2)
     {
         // Destroy tether

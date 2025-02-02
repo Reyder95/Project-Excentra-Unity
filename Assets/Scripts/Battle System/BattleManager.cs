@@ -230,6 +230,8 @@ public class BattleManager
                 return;
             }
 
+            bool skipEndTurn = false;
+
             // Handle the turn if it's a player or enemy.
             if (stats.isPlayer)
             {
@@ -252,8 +254,18 @@ public class BattleManager
                 }
                 else
                 {
-                    enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
-                    BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, boss);
+                    EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
+
+                    if (mechanic == null)
+                        BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, boss);
+                    else
+                    {
+                        // Do immediate attack
+                        BossMechanicHandler.InitializeMechanic(mechanic, this, boss);
+                    }
+
+                    if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
+                        skipEndTurn = true;
                 }
 
                 initialPhaseChecker = true;
@@ -267,7 +279,8 @@ public class BattleManager
                 //currTurn.GetComponent<EntityController>().MoveTowards(currTarget);
                 ChangeState(BattleState.AWAIT_ENEMY);
 
-                EndTurn();
+                if (!skipEndTurn)
+                    EndTurn();
             }
         }
         else
@@ -286,6 +299,7 @@ public class BattleManager
         EntityStats stats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
         bool isRevive = false;
+        EnemyAI enemyAi = boss.GetComponent<EnemyAI>();
 
         // Checks if we need to revive dead Entities during this EndTurn() phase
         if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.REVIVE)
@@ -329,7 +343,16 @@ public class BattleManager
                 stats.nextStaticDelay = -1f;
             }
                 
-
+            if (enemyAi.enabled)
+            {
+                if (enemyAi.currAttack != null)
+                {
+                    if (turnManager.CheckIfMechanicOver(enemyAi.currAttack))
+                    {
+                        enemyAi.currAttack = null;
+                    }
+                }
+            }
             
             StartTurn();
         });
@@ -576,30 +599,14 @@ public class BattleManager
 
         if (!stats.isPlayer)
         {
-            
-            EnemyContents contents = currTurn.GetComponent<EnemyContents>();
-            if (contents.aoeIndexList.Count > 0)
-                battleVariables.targets.Clear();
+            EnemyAI enemyAi = currTurn.GetComponent<EnemyAI>();
 
-            foreach (var aoeIndex in contents.aoeIndexList)
+            if (enemyAi.currImmediateAttack != null)
             {
-                GameObject aoe = aoeArenadata.GetAoe(aoeIndex);
-                BaseAoe baseAoe = aoe.GetComponent<BaseAoe>();
-
-                var counter = 0;
-                foreach (var kvp in baseAoe.aoeData.TargetList)
-                {
-                    string newKey = kvp.Key; // Original key
-
-                    // If key already exists, generate a new one
-                    while (battleVariables.targets.ContainsKey(newKey))
-                    {
-                        newKey = $"{kvp.Key}_{counter}"; // Append suffix
-                        counter++;
-                    }
-
-                    battleVariables.targets[newKey] = kvp.Value; // Add with unique key
-                }
+                // Need to handle a loop for movement. For each attack, move to target, then activate attack. This is temporary
+                foreach (var attack in enemyAi.currImmediateAttack.mechanicAttacks) {
+                    BossMechanicHandler.ActivateSingleTargetAttack(attack, this, currTurn, enemyAi.currTarget);
+                }   
             }
         }
 

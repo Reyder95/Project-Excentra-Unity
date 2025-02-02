@@ -121,10 +121,11 @@ public class EntityController : MonoBehaviour
             {
                 autoMove = false;
                 animator.SetBool("IsWalk", false);
-                BattleClickInfo info = new BattleClickInfo();
-                info.target = target;
+                animator.SetTrigger("Basic Attack");
+                //BattleClickInfo info = new BattleClickInfo();
+                //info.target = target;
                 //info.singleSkill = enemyAi.currAttack;
-                ExcentraGame.battleManager.HandleEntityAction(info);
+                //ExcentraGame.battleManager.HandleEntityAction(info);
             }
         }
         // If not autoMove, allows for entity to move using WASD (if playerInput is enabled)
