@@ -169,6 +169,10 @@ public class DerivedDirectional : BaseAoe
     private void ColorLine()
     {
         Color newColor = Color.red;
+
+        if (this.mechanicAttack != null && this.mechanicAttack.customColor)
+            newColor = this.mechanicAttack.aoeColor;
+
         SpriteRenderer lineRenderer = line.GetComponent<SpriteRenderer>();
 
         lineRenderer.color = newColor;
@@ -180,6 +184,9 @@ public class DerivedDirectional : BaseAoe
     private void ColorCone()
     {
         Color newColor = Color.red;
+        if (this.mechanicAttack != null && this.mechanicAttack.customColor)
+            newColor = this.mechanicAttack.aoeColor;
+
         SpriteRenderer triangleRenderer = triangle.GetComponent<SpriteRenderer>();
         SpriteRenderer circleRenderer = circle.GetComponent<SpriteRenderer>();
 

@@ -65,6 +65,7 @@ public class MechanicAttack
     public float distance;
     public float distanceOffset;
     public Vector2 endpoint;
+    public bool customColor = false;
     public Color aoeColor;
 
     [Header("Tether")]

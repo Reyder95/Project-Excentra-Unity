@@ -107,6 +107,10 @@ public class DerivedCircle : BaseAoe
         }
 
         Color newColor = Color.red;
+
+        if (this.mechanicAttack != null && this.mechanicAttack.customColor)
+            newColor = this.mechanicAttack.aoeColor;
+
         SpriteRenderer circleRenderer = circleAoe.GetComponent<SpriteRenderer>();
         circleRenderer.color = newColor;
         Color colorWithAlpha = circleRenderer.color;
@@ -131,6 +135,7 @@ public class DerivedCircle : BaseAoe
         this.attackerObject = attackerObject;
 
         Color newColor = Color.red;
+
         SpriteRenderer circleRenderer = circleAoe.GetComponent<SpriteRenderer>();
         circleRenderer.color = newColor;
         Color colorWithAlpha = circleRenderer.color;
