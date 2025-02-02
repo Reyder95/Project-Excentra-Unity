@@ -15,7 +15,6 @@ public class AoeDictionary
 
     public int AddAoe(GameObject aoe)
     {
-        Debug.Log("test!");
         lastInsertedIndex++;
         aoes.Add(lastInsertedIndex, aoe);
         return lastInsertedIndex;

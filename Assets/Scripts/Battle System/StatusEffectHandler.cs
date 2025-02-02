@@ -16,6 +16,12 @@ public class StatusEffectHandler
             effects[effect.key].turnsRemaining = effect.baseTurns;
     }
 
+    public void ForceReduceTurnCount(StatusEffect effect, int turns = 1)
+    {
+        if (effects.ContainsKey(effect.key))
+            effects[effect.key].turnsRemaining -= turns;
+    }
+
     public void RemoveEffect(StatusEffect effect)
     {
         effects.Remove(effect.key);

@@ -171,7 +171,6 @@ public class TurnManager
     {
         foreach (var character in turnOrder)
         {
-            Debug.Log(character.isEntity + " " + character.delay);
             character.CalculateDelay(true);
         }
     }

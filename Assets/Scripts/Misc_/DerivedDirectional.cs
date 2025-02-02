@@ -103,8 +103,6 @@ public class DerivedDirectional : BaseAoe
         this.attackerObject = attackerObject;
         this.destination = attack.endpoint;
 
-        Debug.Log(info.objectOrigin);
-
         // See concern in DerivedCircle.cs
 
         if (info.objectOrigin != null)

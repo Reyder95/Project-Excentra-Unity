@@ -40,6 +40,8 @@ public class MechanicAttack
 {
     [Header("General")]
     public AttackType attackType;
+    public string attackKey;
+    public string targetKey;
     public EntityTargetType targetType;
     public int turnOffset;
 

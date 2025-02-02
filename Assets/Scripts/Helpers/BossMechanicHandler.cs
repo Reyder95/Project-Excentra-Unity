@@ -6,7 +6,9 @@ public static class BossMechanicHandler
 {
     public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
-        Debug.Log(mechanic.mechanicStyle);
+        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null);
+        CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, passthrough);
+
         if (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
         {
             foreach (MechanicAttack attack in mechanic.mechanicAttacks)
@@ -19,15 +21,18 @@ public static class BossMechanicHandler
                 }
             }
 
-            CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, null, attacker);
+
+
         }
         else
         {
             float delay = -1f;
             foreach (MechanicAttack attack in mechanic.mechanicAttacks)
             {
+                MechanicLogic logic = CustomMechanicLogicHelper.ExecuteMechanic(attack.targetKey, battleManager, passthrough);
                 switch (attack.attackType)
                 {
+                    // Custom targeting logic mechanic target key
                     case AttackType.AOE:
                         if (attack.targetType == EntityTargetType.ALL)
                         {
@@ -39,7 +44,7 @@ public static class BossMechanicHandler
                             }
                         }
                         else
-                            delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker), delay);
+                            delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker, logic.overriddenTarget), delay);
                         break;
                     case AttackType.SINGLE_TARGET:
                         break;
@@ -55,7 +60,11 @@ public static class BossMechanicHandler
             }
         }
     }
-
+    public static void EndMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
+    {
+        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null);
+        CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey + "_end", battleManager, passthrough);
+    }
     public static float InitializeAOEAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target = null)
     {
         if (mechanicAttack.attackType != AttackType.AOE)
@@ -127,9 +136,11 @@ public static class BossMechanicHandler
         return delay;
     }
 
-    public static void ActivateAoeAttack(MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, BaseAoe aoe)
+    public static void ActivateAoeAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, BaseAoe aoe)
     {
         Dictionary<string, GameObject> targets = aoe.aoeData.TargetList;
+
+        CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null));
 
         try
         {
@@ -146,7 +157,18 @@ public static class BossMechanicHandler
                 if (mechanicAttack.isStack)
                     entityDamage = entityDamage / aoe.aoeData.TargetList.Count;
 
-                battleManager.DealDamage(entity.Value, entityDamage, attacker);
+                CustomLogicPassthrough passthrough = new CustomLogicPassthrough(aoe, attacker, entityDamage, entity.Value);
+
+                MechanicLogic logic = CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey, battleManager, passthrough);
+
+                if (logic.overrideDamage)
+                {
+                    battleManager.DealDamage(entity.Value, logic.overriddenDamage, attacker);
+                }
+                else
+                {
+                    battleManager.DealDamage(entity.Value, entityDamage, attacker);
+                }
             }
         } catch (InvalidOperationException) { }
 
@@ -166,7 +188,7 @@ public static class BossMechanicHandler
         controller.MoveTowards(target);
 
     }
-    public static void ActivateSingleTargetAttack(MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target)
+    public static void ActivateSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target)
     {
         PlayerSkill newSkill = (PlayerSkill)ScriptableObject.CreateInstance("PlayerSkill");
         newSkill.damageType = mechanicAttack.damageType;
@@ -176,6 +198,10 @@ public static class BossMechanicHandler
         newSkill.attackCount = 1;
         float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(target, attacker, newSkill));
         battleManager.DealDamage(target, entityDamage, attacker);
+
+        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, entityDamage, target);
+
+        CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey, battleManager, passthrough);
     }
     public static void ActivateTetherAttack(MechanicAttack mechanicAttack, BattleManager battleManager, GameObject tether1, GameObject tether2)
     {

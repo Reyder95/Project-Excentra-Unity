@@ -286,8 +286,9 @@ public class BattleManager
         else
         {
             BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
+            EnemyAI enemyAi = aoe.attackerObject.GetComponent<EnemyAI>();
             // Find some way to store attackers of skills
-            BossMechanicHandler.ActivateAoeAttack(aoe.mechanicAttack, this, boss, aoe);
+            BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, boss, aoe);
             EndTurn();
         }
     }
@@ -349,6 +350,7 @@ public class BattleManager
                 {
                     if (turnManager.CheckIfMechanicOver(enemyAi.currAttack))
                     {
+                        BossMechanicHandler.EndMechanic(enemyAi.currAttack, this, boss);
                         enemyAi.currAttack = null;
                     }
                 }
@@ -605,7 +607,7 @@ public class BattleManager
             {
                 // Need to handle a loop for movement. For each attack, move to target, then activate attack. This is temporary
                 foreach (var attack in enemyAi.currImmediateAttack.mechanicAttacks) {
-                    BossMechanicHandler.ActivateSingleTargetAttack(attack, this, currTurn, enemyAi.currTarget);
+                    BossMechanicHandler.ActivateSingleTargetAttack(enemyAi.currImmediateAttack, attack, this, currTurn, enemyAi.currTarget);
                 }   
             }
         }

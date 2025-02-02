@@ -77,6 +77,13 @@ public class EntityStats : MonoBehaviour
         OnStatusChanged?.Invoke(this);
     }
 
+    public void ReduceStatusTurns(StatusEffect effect, int turns = 1)
+    {
+        effectHandler.ForceReduceTurnCount(effect, turns);
+
+        OnStatusChanged?.Invoke(this);
+    }
+
     public void ModifyHP(float amount)
     {
         currentHP = amount;
