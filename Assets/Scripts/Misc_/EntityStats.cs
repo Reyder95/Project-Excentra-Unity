@@ -130,7 +130,7 @@ public class EntityStats : MonoBehaviour
     {
         float currMove = move;
         if (moveDouble)
-            currMove *= 1.4f;
+            currMove *= 2.5f;
         return currMove / 2f;
     }
 

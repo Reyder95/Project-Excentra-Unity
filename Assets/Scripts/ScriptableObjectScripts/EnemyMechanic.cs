@@ -12,7 +12,8 @@ public enum AttackType
 {
     AOE,
     SINGLE_TARGET,
-    TETHER
+    TETHER,
+    ADD
 }
 
 public enum MoveType
@@ -30,6 +31,7 @@ public class EnemyMechanic : ScriptableObject
     public string mechanicName;
     public string mechanicKey;
     public MechanicStyle mechanicStyle;
+    public bool dontSkipTurn = false;
     public bool active = true;
     public bool untargetable = false;
     public List<MechanicAttack> mechanicAttacks = new List<MechanicAttack>();
@@ -67,6 +69,9 @@ public class MechanicAttack
     public Vector2 endpoint;
     public bool customColor = false;
     public Color aoeColor;
+
+    [Header("Adds")]
+    public List<AddSpawner> addKeys = new List<AddSpawner>();
 
     [Header("Tether")]
     public bool tetherStationary;

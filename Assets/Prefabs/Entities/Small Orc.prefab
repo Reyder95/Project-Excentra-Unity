@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &4762145658918271949
+--- !u!1001 &1523596661786968013
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 992052720, guid: 226420cef424a8347954d16e7f786e32, type: 3}
+      objectReference: {fileID: 1856736704, guid: a873df1466cd1f84183312ece89f9215, type: 3}
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
@@ -22,39 +22,39 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 06aa30bdcccbcc94899473751f80afbb, type: 2}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: deadSize.x
-      value: 0.2289882
+      value: 0.1618157
       objectReference: {fileID: 0}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: deadSize.y
-      value: 0.1589932
+      value: 0.1086498
       objectReference: {fileID: 0}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: aliveSize.x
-      value: 0.1881034
+      value: 0.1370968
       objectReference: {fileID: 0}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: aliveSize.y
-      value: 0.2592125
+      value: 0.1572637
       objectReference: {fileID: 0}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: deadOffset.x
-      value: 0.08041916
+      value: -0.05558775
       objectReference: {fileID: 0}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: deadOffset.y
-      value: 0.005874053
+      value: -0.0185167
       objectReference: {fileID: 0}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: aliveOffset.x
-      value: 0.0042248
+      value: 0.003962327
       objectReference: {fileID: 0}
     - target: {fileID: 421529142559536925, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: aliveOffset.y
-      value: 0.04395413
+      value: 0.005790234
       objectReference: {fileID: 0}
     - target: {fileID: 2622219198015121584, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.0777
+      value: -0.07
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: move
@@ -62,19 +62,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: aegis
-      value: 80
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: speed
-      value: 85
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: armour
-      value: 400
+      value: 275
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: attack
-      value: 150
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: spirit
@@ -82,19 +82,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: evasion
-      value: 175
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: enemyKey
-      value: medica
+      value: medica_father
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: portrait
       value: 
-      objectReference: {fileID: 2800000, guid: 94420da213aea30468fc87d389499c51, type: 3}
+      objectReference: {fileID: 2800000, guid: f0148aa343ff8424faf8bf6fe5f3dae3, type: 3}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: maximumHP
-      value: 5000
+      value: 1020
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: basicRange
@@ -102,20 +102,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: entityName
-      value: Orc
+      value: Small Orc
       objectReference: {fileID: 0}
-    - target: {fileID: 5393262343277882581, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
-      propertyPath: m_Enabled
-      value: 1
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: maximumAether
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 5483559697954615981, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Name
-      value: Orc
+      value: Small Orc
       objectReference: {fileID: 0}
     - target: {fileID: 6221965226862297430, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 22100000, guid: a75497ea2383c244f8f6a63596eba9b6, type: 2}
+      objectReference: {fileID: 22100000, guid: 7f52d2711156a3643af7c463f5fd68d9, type: 2}
     - target: {fileID: 6230260085306389494, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_LocalScale.x
       value: 10
@@ -166,19 +166,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Size.x
-      value: 0.22898822
+      value: 0.16181569
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Size.y
-      value: 0.15899315
+      value: 0.108649805
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Offset.x
-      value: 0.08041916
+      value: -0.055587746
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Offset.y
-      value: 0.0058740526
+      value: -0.018516699
       objectReference: {fileID: 0}
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_SpriteTilingProperty.pivot.x

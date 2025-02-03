@@ -16,6 +16,8 @@ public class BattleManager
     private readonly System.Func<GameObject, Vector2, GameObject> _instantiateFunction; // Allows instantiation outside of MonoBehaviour, but I'd recc to just use (UnityEngine.GameObject.Instantiate())
 
     public List<GameObject> playerCharacters = new List<GameObject>(); // All of the player character's Game Objects by reference
+    public List<GameObject> enemyList = new List<GameObject>();
+    public Dictionary<string, int> nameCounts = new Dictionary<string, int>();
     private GameObject boss = new GameObject(); // The boss (will need modification for multiple enemies)
 
     public TurnManager turnManager = new TurnManager(); // The turn manager handles everything regarding the turn order, delays, etc. The battle manager uses the turnManager to facilitate the turns
@@ -163,6 +165,7 @@ public class BattleManager
         bossSpriteRenderer.material.SetFloat("_Thickness", 0f);
 
         this.boss = bossInstantiation;
+        enemyList.Add(bossInstantiation);
 
         EnemyAI enemyAi = this.boss.GetComponent<EnemyAI>();
         enemyAi.InitializeAI(this.playerCharacters); // Initialize the boss AI
@@ -254,17 +257,18 @@ public class BattleManager
                 }
                 else
                 {
+                    Debug.Log("YO!");
                     EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
 
                     if (mechanic == null)
-                        BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, boss);
+                        BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
                     else
                     {
                         // Do immediate attack
-                        BossMechanicHandler.InitializeMechanic(mechanic, this, boss);
+                        BossMechanicHandler.InitializeMechanic(mechanic, this, currTurn);
                     }
 
-                    if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
+                    if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE && !mechanic.dontSkipTurn)
                         skipEndTurn = true;
                 }
 
@@ -288,7 +292,7 @@ public class BattleManager
             BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
             EnemyAI enemyAi = aoe.attackerObject.GetComponent<EnemyAI>();
             // Find some way to store attackers of skills
-            BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, boss, aoe);
+            BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, aoe.attackerObject, aoe);
             EndTurn();
         }
     }
@@ -319,7 +323,7 @@ public class BattleManager
                 {
                     if (entityStats.currentHP <= 0)
                     {
-                        KillEntity(currTurn);
+                        KillEntity(entity.Value);
 
                     }
                 }
@@ -387,6 +391,40 @@ public class BattleManager
 
             return;
         }
+    }
+
+    public void SpawnNewEntity(GameObject entity, Vector2 pos)
+    {
+        Debug.Log("SPAWN ENTITY");
+        GameObject spawnedEntity = GameObject.Instantiate(entity, pos, Quaternion.identity);
+        EntityStats spawnedEntityStats = spawnedEntity.GetComponent<EntityStats>();
+        spawnedEntity.GetComponent<EntityStats>().InitializeCurrentStats();
+
+        if (nameCounts.ContainsKey(spawnedEntityStats.entityName))
+            nameCounts[spawnedEntityStats.entityName]++;
+        else
+            nameCounts.Add(spawnedEntityStats.entityName, 1);
+
+        spawnedEntityStats.entityName = GetVariantCharacter(spawnedEntityStats.entityName);
+        spawnedEntity.GetComponent<EnemyAI>().InitializeAI(playerCharacters);
+        TurnEntity newSpawnedEntity = new TurnEntity(spawnedEntity);
+        newSpawnedEntity.CalculateDelay();
+        bool added = turnManager.InsertUnitIntoTurn(newSpawnedEntity);
+
+        if (!added)
+            turnManager.turnOrder.Add(newSpawnedEntity);
+        turnManager.DisplayTurnOrder();
+        enemyList.Add(spawnedEntity);
+    }
+
+    public string GetVariantCharacter(string name)
+    {
+        int count = nameCounts[name];
+
+        if (count == 1)
+            return name;
+        else
+            return name + " " + count;
     }
 
     public List<GameObject> GetAliveEntities()
@@ -677,6 +715,7 @@ public class BattleManager
 
     public void DealDamage(GameObject entity, float entityDamage, GameObject attacker = null)
     {
+        Debug.Log("DEALING DAMAGE TO: " + entity);
         EntityController entityController = entity.GetComponent<EntityController>();
         EntityStats entityStats = entity.GetComponent<EntityStats>();
         EnemyContents contents = entity.GetComponent<EnemyContents>();
@@ -1025,37 +1064,6 @@ public class BattleManager
         return aoe;
     }
 
-    //public GameObject SpawnEnemyAoe(EnemySkill skill, EnemyAoeData aoeData, GameObject attacker)
-    //{
-    //    GameObject aoe = null;
-    //    EnemyContents contents = attacker.GetComponent<EnemyContents>();
-
-    //    Debug.Log("Enemy Data: " + aoeData.shape);
-
-    //    if (aoeData.shape == Shape.CONE)
-    //    {
-    //        aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("cone"), new Vector2(1000, 1000), Quaternion.identity);
-    //        aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
-    //    }
-    //    else if (aoeData.shape == Shape.CIRCLE)
-    //    {
-    //        aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
-    //        aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
-    //    }
-    //    else if (aoeData.shape == Shape.LINE)
-    //    {
-    //        aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), new Vector2(1000, 1000), Quaternion.identity);
-    //        aoe.GetComponent<BaseAoe>().InitializeEnemyAoe(aoeData, attacker, skill);
-    //    }
-
-    //    if (aoe != null)
-    //    {
-    //        int index = aoeArenadata.AddAoe(aoe);
-    //        contents.aoeIndexList.Add(index);
-    //    }
-
-    //    return aoe;
-    //}
 
     // Each entity should have their aoe as an index on their stats. This is done via the above function.
     public void DestroyAoe(GameObject owner)
@@ -1159,6 +1167,9 @@ public class BattleManager
 
         if (battleVariables.GetState() == BattleState.PLAYER_BASIC)
         {
+            if (defenderStats.currentHP <= 0)
+                return false;
+
             return !sameTeam;
         }
         else if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)

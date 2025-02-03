@@ -310,7 +310,7 @@ public class EntityController : MonoBehaviour
     {
         if (entityStats.moveDouble)
         {
-            if (Vector2.Distance(transform.position, turnStartPos) > (((entityStats.CalculateMovementRadius() / 1.4f) / 2f)))
+            if (Vector2.Distance(transform.position, turnStartPos) > (((entityStats.CalculateMovementRadius() / 2.5f) / 2f)))
             {
                 return true;
             }

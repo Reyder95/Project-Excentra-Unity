@@ -32,7 +32,6 @@ public class EnemyAI : MonoBehaviour
         enemyPhases = bossEnemyPhases.phases;
         currPhase = enemyPhases[0];
 
-        Debug.Log("Initialize AI: " + currPhase.mechanics.Count);
     }
 
     public EnemyMechanic ChooseAttack()
@@ -47,16 +46,23 @@ public class EnemyAI : MonoBehaviour
         {
             if (currAttack == null)
             {
-                List<EnemyMechanic> possibleMechanics = currPhase.GetMechanicsOfType(MechanicStyle.TURN_ORIENTED);
-                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count + 1);
+                List<EnemyMechanic> possibleMechanics = currPhase.mechanics;
+                Debug.Log("Possible Mechanics (top): " + possibleMechanics.Count);
+                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count);
 
-                currAttack = possibleMechanics[randomIndex];
-                return null;
+                if (possibleMechanics[randomIndex].mechanicStyle != MechanicStyle.IMMEDIATE)
+                {
+                    currAttack = possibleMechanics[randomIndex];
+                    return null;
+                }
+
+                return possibleMechanics[randomIndex];
             }
             else
             {
                 List<EnemyMechanic> possibleMechanics = currPhase.GetMechanicsOfType(MechanicStyle.IMMEDIATE);
-                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count + 1);
+                Debug.Log("Possible Mechanics (bottom): " + possibleMechanics.Count);
+                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count);
 
                 return possibleMechanics[randomIndex];
             }
@@ -65,7 +71,8 @@ public class EnemyAI : MonoBehaviour
         catch (ArgumentOutOfRangeException)
         {
             InitializeAI(possibleTargets);
-            return ChooseAttack();
+            Debug.Log("TEST!");
+            return null;
         }
 
     }
@@ -110,10 +117,10 @@ public class EnemyAI : MonoBehaviour
     public GameObject ChooseEntity(EntityTargetType targetType)
     {
         currTarget = null;
-        if (currAttack == null)
-            return null;
 
         var possibleChars = possibleTargets.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+
+        Debug.Log("COUNT!" + possibleChars.Count);
 
         int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
 

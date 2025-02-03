@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6260223269572154130}
   - component: {fileID: 8781561001420265976}
   - component: {fileID: -7467149112798386958}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Line
   m_TagString: aoe
   m_Icon: {fileID: 0}
@@ -149,20 +149,60 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skill: {fileID: 0}
+  mechanicAttack:
+    attackType: 0
+    attackKey: 
+    targetKey: 
+    targetType: 0
+    turnOffset: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 0, y: 0}
+    requiredRange: 0
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 0
+    isProximity: 0
+    isStack: 0
+    staticDistance: 0
+    size: 0
+    distance: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 0
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    addKeys: []
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 0
+    scaler: 0
+    scaleMult: 0
+    baseValue: 0
+    attackCount: 1
+    statusesToAdd: []
+    statusesToRemove: []
+  mechanic: {fileID: 0}
+  enemy: 0
   arenaAoeIndex: -1
   originObject: {fileID: 0}
   attackerObject: {fileID: 0}
   freezeAoe: 0
   destination: {x: 0, y: 0}
+  destinationObject: {fileID: 0}
   triangle: {fileID: 0}
   circle: {fileID: 0}
   line: {fileID: 7517542174959571764}
   scaleX: 1
   width: 4
   distance: 0
+  endPoint: {x: 0, y: 0}
   frozenScale: {x: 0, y: 0}
   frozenRotation: {x: 0, y: 0, z: 0, w: 0}
   frozenDestination: {x: 0, y: 0}
+  frozenPosition: {x: 0, y: 0}
 --- !u!1 &7517542174959571764
 GameObject:
   m_ObjectHideFlags: 0
@@ -173,7 +213,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6818381825732437246}
   - component: {fileID: 6665961410561219074}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Line
   m_TagString: aoe
   m_Icon: {fileID: 0}

@@ -102,6 +102,8 @@ public class TurnManager
             Label delayLabel = charElement.Q<Label>("delay");
             if (character.isEntity)
                 charPortrait.style.backgroundImage = character.GetEntity().GetComponent<EntityStats>().portrait;
+            else
+                charPortrait.style.backgroundImage = ExcentraDatabase.TryGetSkill("fireball").icon;
             delayLabel.text = ((int)character.delay).ToString();
             turnOrderUI.Add(charElement);
         }

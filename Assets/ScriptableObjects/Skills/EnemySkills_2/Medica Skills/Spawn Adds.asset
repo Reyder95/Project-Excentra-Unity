@@ -10,39 +10,49 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: Disruptor Slam
+  m_Name: Spawn Adds
   m_EditorClassIdentifier: 
-  mechanicName: 
-  mechanicKey: 
-  mechanicStyle: 1
-  active: 0
+  mechanicName: Spawn Adds
+  mechanicKey: spawn_adds
+  mechanicStyle: 0
+  dontSkipTurn: 1
+  active: 1
   untargetable: 0
   mechanicAttacks:
-  - attackType: 0
-    targetType: 4
-    turnOffset: 2
+  - attackType: 3
+    attackKey: spawn_adds
+    targetKey: spawn_adds_target
+    targetType: 0
+    turnOffset: 0
     originIsTarget: 0
-    originIsSelf: 1
-    endpointIsTarget: 1
+    originIsSelf: 0
+    endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
     requiredRange: 0
-    aoeShape: 1
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 0
     isProximity: 0
     isStack: 0
     staticDistance: 0
-    size: 30
+    size: 0
     distance: 0
-    distanceOffset: 10
+    distanceOffset: 0
     endpoint: {x: 0, y: 0}
+    customColor: 0
     aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    addKeys:
+    - entityKey: Small Orc
+      bottomLeft: {x: -3, y: 0}
+      topRight: {x: 0, y: 0}
     tetherStationary: 0
     secondTether: 0
     tetherLocation: {x: 0, y: 0}
     tetherRange: 0
-    damageType: 2
+    damageType: 0
     scaler: 0
-    scaleMult: 1.2
-    baseValue: 100
-    attackCount: 1
+    scaleMult: 0
+    baseValue: 0
+    attackCount: 0
     statusesToAdd: []
     statusesToRemove: []

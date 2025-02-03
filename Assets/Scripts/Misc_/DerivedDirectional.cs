@@ -89,6 +89,9 @@ public class DerivedDirectional : BaseAoe
             if (scaleX) newScale.x = Vector2.Distance(transform.position, destination);  // Scale along X-axis
             newScale.y = width;
 
+            if (originObject != null)
+                transform.position = originObject.transform.position;
+
             transform.rotation = Quaternion.Euler(0, 0, angle);
             transform.localScale = newScale;
         }
@@ -107,7 +110,7 @@ public class DerivedDirectional : BaseAoe
 
         if (info.objectOrigin != null)
         {
-            transform.position = info.objectOrigin.transform.position;
+            this.originObject = info.objectOrigin;
         }
         else
         {

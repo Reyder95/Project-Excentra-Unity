@@ -19,6 +19,8 @@ MonoBehaviour:
   untargetable: 0
   mechanicAttacks:
   - attackType: 1
+    attackKey: 
+    targetKey: 
     targetType: 0
     turnOffset: 0
     originIsTarget: 0
@@ -36,6 +38,7 @@ MonoBehaviour:
     distance: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
+    customColor: 0
     aoeColor: {r: 0, g: 0, b: 0, a: 0}
     tetherStationary: 0
     secondTether: 0
@@ -43,8 +46,8 @@ MonoBehaviour:
     tetherRange: 0
     damageType: 2
     scaler: 0
-    scaleMult: 0.4
-    baseValue: 150
+    scaleMult: 0.1
+    baseValue: 100
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []

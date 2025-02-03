@@ -512,6 +512,8 @@ MonoBehaviour:
     prefab: {fileID: 5597662053189824100, guid: e442f33f84a465443a02a478cf4527ae, type: 3}
   - key: Orc
     prefab: {fileID: 1013044122329958752, guid: 1ce94952c98c0284e829dff69d9fea21, type: 3}
+  - key: Small Orc
+    prefab: {fileID: 6430405152354848096, guid: ed6873e40a6c372478ff7f1a91a830ea, type: 3}
   uiDocs:
   - key: battle
     document: {fileID: 926336604}
@@ -595,7 +597,16 @@ MonoBehaviour:
   - key: medica
     phases:
     - mechanics:
-      - {fileID: 11400000, guid: 77168ccc90555f1439dd063cb6186e2f, type: 2}
+      - {fileID: 11400000, guid: f3b1cd408290af64da0be395242a6e2e, type: 2}
+      hpPercentageThreshold: 100
+    initialPhase:
+      mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
+      delayBonus: 100
+  - key: medica_father
+    phases:
+    - mechanics:
+      - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
+      - {fileID: 11400000, guid: 4909e30ad3daf524284928bf8f3c3aaf, type: 2}
       hpPercentageThreshold: 100
     initialPhase:
       mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}

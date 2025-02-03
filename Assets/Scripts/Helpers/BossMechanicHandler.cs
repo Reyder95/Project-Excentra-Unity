@@ -18,6 +18,9 @@ public static class BossMechanicHandler
                     case AttackType.SINGLE_TARGET:
                         InitializeSingleTargetAttack(mechanic, attack, battleManager, attacker);
                         break;
+                    case AttackType.ADD:
+                        InitializeAddAttack(mechanic, attack, battleManager, attacker);
+                        break;
                 }
             }
 
@@ -213,5 +216,13 @@ public static class BossMechanicHandler
         }
 
         // Apply damage to tethered entities
+    }
+
+    public static void InitializeAddAttack(EnemyMechanic mechanic, MechanicAttack attack, BattleManager battleManager, GameObject attacker)
+    {
+        foreach (AddSpawner add in attack.addKeys)
+        {
+            battleManager.SpawnNewEntity(ExcentraDatabase.TryGetEntity(add.entityKey), add.bottomLeft);
+        }
     }
 }
