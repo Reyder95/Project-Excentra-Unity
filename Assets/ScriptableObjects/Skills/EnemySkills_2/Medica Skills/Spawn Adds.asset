@@ -18,6 +18,7 @@ MonoBehaviour:
   dontSkipTurn: 1
   active: 1
   untargetable: 0
+  turnCooldown: 4
   mechanicAttacks:
   - attackType: 3
     attackKey: spawn_adds

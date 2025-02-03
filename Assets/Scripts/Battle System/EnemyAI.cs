@@ -46,25 +46,21 @@ public class EnemyAI : MonoBehaviour
         {
             if (currAttack == null)
             {
-                List<EnemyMechanic> possibleMechanics = currPhase.mechanics;
-                Debug.Log("Possible Mechanics (top): " + possibleMechanics.Count);
-                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count);
+                EnemyMechanic chosenMechanic = currPhase.ChooseMechanic();
 
-                if (possibleMechanics[randomIndex].mechanicStyle != MechanicStyle.IMMEDIATE)
+                if (chosenMechanic.mechanicStyle != MechanicStyle.IMMEDIATE)
                 {
-                    currAttack = possibleMechanics[randomIndex];
+                    currAttack = chosenMechanic;
                     return null;
                 }
 
-                return possibleMechanics[randomIndex];
+                return chosenMechanic;
             }
             else
             {
-                List<EnemyMechanic> possibleMechanics = currPhase.GetMechanicsOfType(MechanicStyle.IMMEDIATE);
-                Debug.Log("Possible Mechanics (bottom): " + possibleMechanics.Count);
-                int randomIndex = UnityEngine.Random.Range(0, possibleMechanics.Count);
+                EnemyMechanic chosenMechanic = currPhase.ChooseMechanic(true);
 
-                return possibleMechanics[randomIndex];
+                return chosenMechanic;
             }
 
         }
