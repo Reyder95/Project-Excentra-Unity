@@ -454,6 +454,7 @@ public class BattleManager
                 controller.specialActive = false;
                 controller.basicActive = false;
                 controller.lineRenderer.positionCount = 0;
+                controller.HandleTarget(false);
 
                 input.enabled = false;
 
