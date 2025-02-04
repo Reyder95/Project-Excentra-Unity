@@ -15,8 +15,12 @@ MonoBehaviour:
   mechanicName: Double Cone Acclimation
   mechanicKey: acclimation
   mechanicStyle: 1
-  active: 1
+  dontSkipTurn: 0
+  active: 0
   untargetable: 0
+  targetScript: 0
+  activeScript: 0
+  turnCooldown: 1
   mechanicAttacks:
   - attackType: 0
     attackKey: red_acclimation
@@ -40,6 +44,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 1
     aoeColor: {r: 1, g: 0, b: 0, a: 0.34117648}
+    addKeys: []
     tetherStationary: 0
     secondTether: 5
     tetherLocation: {x: 0, y: 0}
@@ -73,6 +78,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 1
     aoeColor: {r: 0, g: 0.09637693, b: 0.990566, a: 0.39607844}
+    addKeys: []
     tetherStationary: 0
     secondTether: 5
     tetherLocation: {x: 0, y: 0}
