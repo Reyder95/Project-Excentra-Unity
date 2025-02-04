@@ -20,7 +20,7 @@ MonoBehaviour:
   untargetable: 0
   targetScript: 0
   activeScript: 0
-  turnCooldown: 0
+  turnCooldown: 1
   mechanicAttacks:
   - attackType: 0
     attackKey: 

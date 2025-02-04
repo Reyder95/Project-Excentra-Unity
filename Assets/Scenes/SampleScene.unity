@@ -611,7 +611,7 @@ MonoBehaviour:
     - activeMechanics:
       - {fileID: 11400000, guid: 77168ccc90555f1439dd063cb6186e2f, type: 2}
       - {fileID: 11400000, guid: 8070db54b1cc43a4e9a7ef4884f45a23, type: 2}
-      - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
+      - {fileID: 11400000, guid: 0eec7af5bc5e41e4880309bfc09d824f, type: 2}
       inactiveMechanics: []
       phaseType: 0
       hpPercentageThreshold: 1
