@@ -30,7 +30,7 @@ public class EnemyAI : MonoBehaviour
         BossEnemyPhases bossEnemyPhases = ExcentraDatabase.TryGetBossPhases(stats.enemyKey);
         initialPhase = bossEnemyPhases.initialPhase;
         enemyPhases = bossEnemyPhases.phases;
-        currPhase = enemyPhases[0];
+        currPhase = GetNextValidPhase(false);
 
     }
 
@@ -38,6 +38,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (currPhase == null)
         {
+            Debug.Log("Yo!!");
             currAttack = null;
             return null;
         }
@@ -142,6 +143,50 @@ public class EnemyAI : MonoBehaviour
         
         return possibleChars[randChar];
 
+    }
+
+    public EnemyPhase GetNextValidPhase(bool force)
+    {
+        EnemyPhase selectedPhase = null;
+
+        if (force)
+        {
+            selectedPhase = enemyPhases[0];
+            enemyPhases.RemoveAt(0);
+            return selectedPhase;
+        }
+
+        while (enemyPhases.Count > 0)
+        {
+            if (stats.CalculateHPPercentage() <= enemyPhases[0].hpPercentageThreshold)
+            {
+                selectedPhase = enemyPhases[0];
+                enemyPhases.RemoveAt(0);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return selectedPhase;
+    }
+
+    public bool ChangePhase(bool force = false)
+    {
+        if (enemyPhases != null)
+        {
+            EnemyPhase nextPhase = GetNextValidPhase(force);
+            if (nextPhase != null)
+            {
+                currPhase = nextPhase;
+                Debug.Log(currPhase.activeMechanics[0]);
+                return true;
+            }
+                
+        }
+
+        return false;
     }
 
     public GameObject FindRole(EntityTargetType targetType, List<GameObject> possibleCharacters)

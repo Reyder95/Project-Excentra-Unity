@@ -15,8 +15,12 @@ MonoBehaviour:
   mechanicName: Simple Attack
   mechanicKey: simple-attack
   mechanicStyle: 0
-  active: 1
+  dontSkipTurn: 0
+  active: 0
   untargetable: 0
+  targetScript: 0
+  activeScript: 0
+  turnCooldown: 0
   mechanicAttacks:
   - attackType: 1
     attackKey: 
@@ -40,6 +44,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 0
     aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    addKeys: []
     tetherStationary: 0
     secondTether: 0
     tetherLocation: {x: 0, y: 0}

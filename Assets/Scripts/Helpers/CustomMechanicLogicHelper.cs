@@ -239,17 +239,25 @@ public static class CustomMechanicLogicHelper
                     if (enemyStats.entityKey == addKey.entityKey)
                     {
                         if (enemyStats.currentHP > 0)
+                        {
+                            Debug.Log("ENEMY ALIVE!!!");
                             return;
+
+                        }
                     }
                 }
             }
         }
 
-            GameObject owner = stats.addOwner;
+        GameObject owner = stats.addOwner;
         EntityStats ownerStats = owner.GetComponent<EntityStats>();
         ownerStats.active = true;
         ownerStats.targetable = true;
 
-        battleManager.turnManager.CalculateIndividualDelay(ownerStats.gameObject);
+        //battleManager.turnManager.CalculateIndividualDelay(ownerStats.gameObject);
+
+        EnemyAI enemyAi = owner.GetComponent<EnemyAI>();
+        enemyAi.ChangePhase(true);
+        battleManager.turnManager.CalculateIndividualDelay(owner.gameObject, battleManager.turnManager.ReturnDelayNeededForTurn(0));
     }
 }

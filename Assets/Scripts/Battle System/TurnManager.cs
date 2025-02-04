@@ -185,7 +185,7 @@ public class TurnManager
         }
     }
 
-    public void CalculateIndividualDelay(GameObject entity)
+    public void CalculateIndividualDelay(GameObject entity, float forcedDelay = -1f)
     {
         EntityStats stats = entity.GetComponent<EntityStats>();
 
@@ -201,7 +201,10 @@ public class TurnManager
             }
         }
 
-        turnEntity.CalculateDelay();
+        if (forcedDelay == -1f)
+            turnEntity.CalculateDelay();
+        else
+            turnEntity.CalculateDirectDelay(forcedDelay);
 
         bool added = InsertUnitIntoTurn(turnEntity);
 

@@ -88,14 +88,14 @@ public class BattleManager
             mpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("mp"));
 
             stats.OnStatusChanged += DisplayStatuses;
-            stats.OnHealthChanged += SetHPProgress;
+            stats.OnHealthChanged += HPChangeEvent;
             stats.OnAetherChanged += SetMPProgress;
 
             debuffScrollers.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<VisualElement>("debuff"));
         }
         EntityStats bossStats = boss.GetComponent<EntityStats>();
         bossStats.OnStatusChanged += DisplayStatuses;
-        bossStats.OnHealthChanged += SetHPProgress;
+        bossStats.OnHealthChanged += HPChangeEvent;
         bossStats.OnAetherChanged += SetMPProgress;
         hpDictionary.Add(bossStats.entityName, bossHP);
         debuffScrollers.Add(bossStats.entityName, bossHP.Q<VisualElement>("debuff"));
@@ -144,6 +144,26 @@ public class BattleManager
     public void SetHPProgress(EntityStats stats)
     {
         hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
+    }
+
+    public void HPChangeEvent(EntityStats stats)
+    {
+        SetHPProgress(stats);
+
+        EnemyAI enemyAi = stats.GetComponent<EnemyAI>();
+
+        if (enemyAi.enabled)
+        {
+            bool phaseChanged = enemyAi.ChangePhase();
+
+
+            if (phaseChanged)
+            {
+                
+                turnManager.CalculateIndividualDelay(stats.gameObject, turnManager.ReturnDelayNeededForTurn(0));
+            }
+            
+        }
     }
 
     // Place the characters down on the screen
@@ -347,8 +367,10 @@ public class BattleManager
 
         ExcentraGame.Instance.WaitCoroutine(0.5f, () =>
         {
-            if (!stats.active)
-                stats.nextStaticDelay = 1000f;
+            if (stats != null)
+                if (!stats.active)
+                    stats.nextStaticDelay = 1000f;
+
 
             // Clean up the turn, then wait a few seconds and then start the turn.
             CleanupTurn();
