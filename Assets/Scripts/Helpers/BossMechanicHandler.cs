@@ -7,7 +7,6 @@ public static class BossMechanicHandler
     public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null);
-        Debug.Log("MECHANIC: " + mechanic);
         CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, passthrough);
 
         if (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)

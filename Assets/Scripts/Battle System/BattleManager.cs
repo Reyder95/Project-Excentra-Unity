@@ -277,7 +277,6 @@ public class BattleManager
                 }
                 else
                 {
-                    Debug.Log("YO!");
                     EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
 
                     if (mechanic == null)
@@ -695,7 +694,6 @@ public class BattleManager
 
         foreach (var entity in targetList)
         {
-            Debug.Log(entity.Key);
             float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currSkill));
             DealDamage(entity.Value, entityDamage);
         }
@@ -755,7 +753,6 @@ public class BattleManager
 
     public void DealDamage(GameObject entity, float entityDamage, GameObject attacker = null)
     {
-        Debug.Log("DEALING DAMAGE TO: " + entity);
         EntityController entityController = entity.GetComponent<EntityController>();
         EntityStats entityStats = entity.GetComponent<EntityStats>();
         EnemyContents contents = entity.GetComponent<EnemyContents>();
@@ -1097,9 +1094,6 @@ public class BattleManager
             int index = aoeArenadata.AddAoe(aoe);
             stats.arenaAoeIndex = index;
         }
-
-
-        Debug.Log("test!!" + aoe.GetComponent<BaseAoe>().aoeData);
 
         return aoe;
     }

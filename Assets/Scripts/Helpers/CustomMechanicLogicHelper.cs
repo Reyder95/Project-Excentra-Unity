@@ -23,7 +23,6 @@ public static class CustomMechanicLogicHelper
 
     public static MechanicLogic ExecuteMechanic(string mechanicKey, BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
-        Debug.Log("Executing mechanic: " + mechanicKey);
         if (mechDict.ContainsKey(mechanicKey))
             return mechDict[mechanicKey](battleManager, passthrough);
 
@@ -41,8 +40,6 @@ public static class CustomMechanicLogicHelper
     public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
-
-        Debug.Log("Reprisal effect");
 
         int counter = 0;
 

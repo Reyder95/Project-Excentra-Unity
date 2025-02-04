@@ -96,6 +96,7 @@ public class AggressionSystem
         if (aggressionList.Count == 0)
             return null;
 
+        OutputAggressionList();
         AggressionElement entity = aggressionList[0] as AggressionElement;
         return entity.entity;
     }

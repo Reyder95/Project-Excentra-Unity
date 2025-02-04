@@ -72,7 +72,6 @@ public class HandleDetection : MonoBehaviour
             }
             else if (ExcentraGame.battleManager.TargetingEligible(aoeData.attackerObject, Entity)) 
             {
-                Debug.Log("HELLO!!");
                 controller.HandleTarget(true);
                 aoeData.HandleAddTarget(Entity);
             }

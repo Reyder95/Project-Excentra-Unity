@@ -16,10 +16,10 @@ public class EnemyAI : MonoBehaviour
     [System.NonSerialized] public EnemyMechanic currImmediateAttack;
     [System.NonSerialized] public EnemyContents enemyContents;
     [System.NonSerialized] public EntityStats stats;
+    [System.NonSerialized] public int phaseCount = 0;
 
     private void Awake()
     {
-        Debug.Log("TEST");
     }
 
     public void InitializeAI(List<GameObject> possibleTargets)
@@ -31,14 +31,12 @@ public class EnemyAI : MonoBehaviour
         initialPhase = bossEnemyPhases.initialPhase;
         enemyPhases = bossEnemyPhases.phases;
         currPhase = GetNextValidPhase(false);
-
     }
 
     public EnemyMechanic ChooseAttack()
     {
         if (currPhase == null)
         {
-            Debug.Log("Yo!!");
             currAttack = null;
             return null;
         }
@@ -65,10 +63,10 @@ public class EnemyAI : MonoBehaviour
             }
 
         }
-        catch (ArgumentOutOfRangeException)
+        catch (ArgumentOutOfRangeException ex)
         {
             InitializeAI(possibleTargets);
-            Debug.Log("TEST!");
+            Debug.Log("TEST!" + ex);
             return null;
         }
 
@@ -117,8 +115,6 @@ public class EnemyAI : MonoBehaviour
 
         var possibleChars = possibleTargets.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
 
-        Debug.Log("COUNT!" + possibleChars.Count);
-
         int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
 
         AggressionSystem aggressionList = enemyContents.aggression;
@@ -138,8 +134,10 @@ public class EnemyAI : MonoBehaviour
             if (target != null)
                 return target;
         }
-        
-        
+
+
+        if (target != null)
+            return target;
         
         return possibleChars[randChar];
 
@@ -151,20 +149,33 @@ public class EnemyAI : MonoBehaviour
 
         if (force)
         {
-            selectedPhase = enemyPhases[0];
-            enemyPhases.RemoveAt(0);
+            selectedPhase = enemyPhases[phaseCount];
+            phaseCount++;
             return selectedPhase;
         }
 
-        while (enemyPhases.Count > 0)
+        //while (enemyPhases.Count > 0)
+        //{
+        //    if (stats.CalculateHPPercentage() <= enemyPhases[0].hpPercentageThreshold)
+        //    {
+        //        selectedPhase = enemyPhases[0];
+        //        enemyPhases.RemoveAt(0);
+        //    }
+        //    else
+        //    {
+        //        break;
+        //    }
+        //}
+
+        for (int i = phaseCount; i < enemyPhases.Count; i++)
         {
-            if (stats.CalculateHPPercentage() <= enemyPhases[0].hpPercentageThreshold)
+            if (stats.CalculateHPPercentage() <= enemyPhases[i].hpPercentageThreshold)
             {
-                selectedPhase = enemyPhases[0];
-                enemyPhases.RemoveAt(0);
+                selectedPhase = enemyPhases[i];
             }
             else
             {
+                phaseCount = i;
                 break;
             }
         }
@@ -183,7 +194,6 @@ public class EnemyAI : MonoBehaviour
                 Debug.Log(currPhase.activeMechanics[0]);
                 return true;
             }
-                
         }
 
         return false;
