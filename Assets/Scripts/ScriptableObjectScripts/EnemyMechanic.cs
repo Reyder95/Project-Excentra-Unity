@@ -34,6 +34,8 @@ public class EnemyMechanic : ScriptableObject
     public bool dontSkipTurn = false;
     public bool active = true;
     public bool untargetable = false;
+    public bool targetScript = false;
+    public bool activeScript = false;
     public int turnCooldown = 0;
     [System.NonSerialized] public int currTurns;
     public List<MechanicAttack> mechanicAttacks = new List<MechanicAttack>();

@@ -223,7 +223,17 @@ public static class BossMechanicHandler
     {
         foreach (AddSpawner add in attack.addKeys)
         {
-            battleManager.SpawnNewEntity(ExcentraDatabase.TryGetEntity(add.entityKey), add.bottomLeft);
+            GameObject spawnedAdd = battleManager.SpawnNewEntity(ExcentraDatabase.TryGetEntity(add.entityKey), add.bottomLeft, add.entityKey);
+
+            EntityStats addStats = spawnedAdd.GetComponent<EntityStats>();
+
+            System.Action<EntityStats, BattleManager, EnemyMechanic> addAction = CustomMechanicLogicHelper.ExecuteMechanicTrigger(attack.attackKey);
+
+            if (addAction != null)
+                addStats.OnEntityKilled += addAction;
+
+            addStats.addOwner = attacker;
+            addStats.addMechanic = mechanic;
         }
     }
 }

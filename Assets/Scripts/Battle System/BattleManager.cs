@@ -270,6 +270,15 @@ public class BattleManager
 
                     if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE && !mechanic.dontSkipTurn)
                         skipEndTurn = true;
+
+                    if (mechanic != null)
+                        stats.targetable = !mechanic.untargetable;
+
+                    if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
+                    {
+                        if (mechanic.activeScript)
+                            stats.active = mechanic.active;
+                    }
                 }
 
                 initialPhaseChecker = true;
@@ -338,6 +347,9 @@ public class BattleManager
 
         ExcentraGame.Instance.WaitCoroutine(0.5f, () =>
         {
+            if (!stats.active)
+                stats.nextStaticDelay = 1000f;
+
             // Clean up the turn, then wait a few seconds and then start the turn.
             CleanupTurn();
             if (stats == null || (stats != null && stats.nextStaticDelay == -1))
@@ -393,7 +405,7 @@ public class BattleManager
         }
     }
 
-    public void SpawnNewEntity(GameObject entity, Vector2 pos)
+    public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey)
     {
         Debug.Log("SPAWN ENTITY");
         GameObject spawnedEntity = GameObject.Instantiate(entity, pos, Quaternion.identity);
@@ -413,8 +425,13 @@ public class BattleManager
 
         if (!added)
             turnManager.turnOrder.Add(newSpawnedEntity);
+
+        spawnedEntityStats.entityKey = entityKey;
+
         turnManager.DisplayTurnOrder();
         enemyList.Add(spawnedEntity);
+
+        return spawnedEntity;
     }
 
     public string GetVariantCharacter(string name)
@@ -1162,6 +1179,9 @@ public class BattleManager
         EntityStats defenderStats = defender.GetComponent<EntityStats>();
         
         if (attackerStats == null || defenderStats == null)
+            return false;
+
+        if (!defenderStats.targetable)
             return false;
 
         bool sameTeam = attackerStats.isPlayer == defenderStats.isPlayer;

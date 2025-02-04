@@ -16,6 +16,11 @@ public static class CustomMechanicLogicHelper
         { "blue_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationTarget(battleManager, passthrough) }
     };
 
+    private static Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>> mechTriggers = new Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>>()
+    {
+        { "spawn_adds", (EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic) => SpawnAddsTrigger(stats, battleManager, mechanic) }
+    };
+
     public static MechanicLogic ExecuteMechanic(string mechanicKey, BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         Debug.Log("Executing mechanic: " + mechanicKey);
@@ -23,6 +28,14 @@ public static class CustomMechanicLogicHelper
             return mechDict[mechanicKey](battleManager, passthrough);
 
         return new MechanicLogic();
+    }
+
+    public static System.Action<EntityStats, BattleManager, EnemyMechanic> ExecuteMechanicTrigger(string mechanicKey)
+    {
+        if (mechTriggers.ContainsKey(mechanicKey))
+            return mechTriggers[mechanicKey];
+
+        return null;
     }
 
     public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
@@ -212,5 +225,31 @@ public static class CustomMechanicLogicHelper
         logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
 
         return logic;
+    }
+
+    public static void SpawnAddsTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        foreach (var attack in mechanic.mechanicAttacks)
+        {
+            foreach (var addKey in attack.addKeys)
+            {
+                foreach (var enemy in battleManager.enemyList)
+                {
+                    EntityStats enemyStats = enemy.GetComponent<EntityStats>();
+                    if (enemyStats.entityKey == addKey.entityKey)
+                    {
+                        if (enemyStats.currentHP > 0)
+                            return;
+                    }
+                }
+            }
+        }
+
+            GameObject owner = stats.addOwner;
+        EntityStats ownerStats = owner.GetComponent<EntityStats>();
+        ownerStats.active = true;
+        ownerStats.targetable = true;
+
+        battleManager.turnManager.CalculateIndividualDelay(ownerStats.gameObject);
     }
 }

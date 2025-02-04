@@ -173,8 +173,42 @@ public class TurnManager
     {
         foreach (var character in turnOrder)
         {
+            if (character.isEntity)
+            {
+                EntityStats entityStats = character.GetEntity().GetComponent<EntityStats>();
+
+                if (!entityStats.active)
+                    continue;
+            }    
+
             character.CalculateDelay(true);
         }
+    }
+
+    public void CalculateIndividualDelay(GameObject entity)
+    {
+        EntityStats stats = entity.GetComponent<EntityStats>();
+
+        TurnEntity turnEntity = null;
+
+        for (int i = 0; i < turnOrder.Count; i++)
+        {
+            if (turnOrder[i].GetEntity() == entity)
+            {
+                turnEntity = turnOrder[i];
+                turnOrder.RemoveAt(i);
+                break;
+            }
+        }
+
+        turnEntity.CalculateDelay();
+
+        bool added = InsertUnitIntoTurn(turnEntity);
+
+        if (!added)
+            turnOrder.Add(turnEntity);
+
+        DisplayTurnOrder();
     }
 
     public float ReturnDelayNeededForTurn(int turnCount)

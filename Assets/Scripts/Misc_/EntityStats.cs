@@ -60,9 +60,20 @@ public class EntityStats : MonoBehaviour
     public StatusEffectHandler effectHandler = new StatusEffectHandler();
     [NonSerialized]
     public float nextStaticDelay = -1f;
+    [NonSerialized]
+    public GameObject addOwner = null;
+    [NonSerialized]
+    public bool targetable = true;
+    [NonSerialized]
+    public bool active = true;
+    [NonSerialized]
+    public string entityKey;
+    [NonSerialized]
+    public EnemyMechanic addMechanic;
 
     public event Action<EntityStats> OnStatusChanged;
     public event Action<EntityStats> OnHealthChanged;
+    public event Action<EntityStats, BattleManager, EnemyMechanic> OnEntityKilled;
     public event Action<EntityStats> OnAetherChanged;
 
     public void ModifyStatus(StatusEffect effect = null, GameObject owner = null)
@@ -94,6 +105,9 @@ public class EntityStats : MonoBehaviour
             currentHP = 0;
 
         OnHealthChanged?.Invoke(this);
+
+        if (currentHP == 0)
+            OnEntityKilled?.Invoke(this, ExcentraGame.battleManager, addMechanic);   // Temp, battleManager should come from a direct send, not from a static variable
     }
 
     public void ModifyMP(float amount)
