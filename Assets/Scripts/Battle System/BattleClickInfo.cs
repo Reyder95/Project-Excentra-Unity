@@ -9,5 +9,5 @@ public class BattleClickInfo
     public GameObject target;
     public Vector2 mousePosition;
     public bool isSingleSkill = false;
-    public Skill singleSkill;
+    public BaseSkill singleSkill;
 }

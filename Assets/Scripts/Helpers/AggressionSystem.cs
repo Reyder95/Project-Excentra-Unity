@@ -71,15 +71,6 @@ public class AggressionSystem
         //OutputAggressionList();
     }
 
-    public GameObject ReturnTargetEntity()
-    {
-        if (aggressionList.Count == 0)
-            return null;
-
-        AggressionElement entity = aggressionList[0] as AggressionElement;
-        return entity.entity;
-    }
-
     public void SortAggressionList()
     {
         var sortedByValues = new OrderedDictionary();
@@ -98,5 +89,31 @@ public class AggressionSystem
         {
             Debug.Log("Entity: " + entry.Key + " | " + "Aggression: " + (entry.Value as AggressionElement).aggressionValue);
         }
+    }
+
+    public GameObject GetFirstAggression()
+    {
+        if (aggressionList.Count == 0)
+            return null;
+
+        OutputAggressionList();
+        AggressionElement entity = aggressionList[0] as AggressionElement;
+        return entity.entity;
+    }
+
+    public GameObject GetSecondAggression()
+    {
+        if (aggressionList.Count < 2)
+            return null;
+        AggressionElement entity = aggressionList[1] as AggressionElement;
+        return entity.entity;
+    }
+
+    public GameObject GetLastAggression()
+    {
+        if (aggressionList.Count == 0)
+            return null;
+        AggressionElement entity = aggressionList[aggressionList.Count - 1] as AggressionElement;
+        return entity.entity;
     }
 }

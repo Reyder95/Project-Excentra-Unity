@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
+  m_Name: Simple Attack
+  m_EditorClassIdentifier: 
+  mechanicName: Simple Attack
+  mechanicKey: simple-attack
+  mechanicStyle: 0
+  dontSkipTurn: 0
+  active: 0
+  untargetable: 0
+  targetScript: 0
+  activeScript: 0
+  turnCooldown: 0
+  mechanicAttacks:
+  - attackType: 1
+    attackKey: 
+    targetKey: 
+    targetType: 0
+    turnOffset: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 0, y: 0}
+    requiredRange: 0
+    containsMovement: 1
+    moveType: 2
+    aoeShape: 0
+    isProximity: 0
+    isStack: 0
+    staticDistance: 0
+    size: 0
+    distance: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 0
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    addKeys: []
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 2
+    scaler: 0
+    scaleMult: 0.1
+    baseValue: 100
+    attackCount: 1
+    statusesToAdd: []
+    statusesToRemove: []

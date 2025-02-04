@@ -12,22 +12,14 @@ public static class ExcentraDatabase
     private static Dictionary<string, GameObject> entityDictionary = new Dictionary<string, GameObject>();
     private static Dictionary<string, UIDocument> documentDictionary = new Dictionary<string, UIDocument>();
     private static Dictionary<string, VisualTreeAsset> uiAssetDictionary = new Dictionary<string, VisualTreeAsset>();
-    private static Dictionary<string, Skill> skillDictionary = new Dictionary<string, Skill>();
+    private static Dictionary<string, PlayerSkill> skillDictionary = new Dictionary<string, PlayerSkill>();
     private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
     private static Dictionary<string, GameObject> miscPrefabDictionary = new Dictionary<string, GameObject>();
+    private static Dictionary<string, BossEnemyPhases> bossPhaseDictionary = new Dictionary<string, BossEnemyPhases>();
 
     // Potentially a poor way of doing this. Should this be in the status damage helper class? 
     // Potential future solution: In status helper, use status "effect type" in a dictionary, pointing it to various functions.
     private static Dictionary<StatType, List<string>> statStatusNames = new Dictionary<StatType, List<string>>();
-    //{
-    //    { "attack", new List<string> { "Physical Damage Down", "Physical Damage Up" } },
-    //    { "aegis", new List<string> { "Aegis Down", "Aegis Up" } },
-    //    { "aggressionGen", new List<string>() { "Aggression Up", "Aggression Down" } },
-    //    { "aggressionTurns", new List<string>() { "Agression Turn Up" } },
-    //    { "armour", new List<string>() { "Armour Down", "Armour Up" } },
-    //    { "evasion", new List<string>() { "Evasion Down", "Evasion Up" } },
-    //    { "spirit", new List<string>() { "Magic Damage Down", "Magic Damage Up" } }
-    //};
 
     // Our load functions. We have various "key, object" classes, which we can turn the key into the dictionary key, for ease of use across the game
     public static void LoadEntities(List<EntityPrefab> entities)
@@ -86,6 +78,14 @@ public static class ExcentraDatabase
         }
     }
 
+    public static void LoadBossPhases(List<BossEnemyPhases> bossPhases)
+    {
+        foreach (var bossPhase in bossPhases)
+        {
+            bossPhaseDictionary.Add(bossPhase.key, bossPhase);
+        }
+    }
+
     // Our tryget functions. These attempt to get a specific dictionary's contents through a key. If it fails, returns null.
     public static GameObject TryGetEntity(string key)
     {
@@ -111,7 +111,7 @@ public static class ExcentraDatabase
         return null;
     }
 
-    public static Skill TryGetSkill(string key)
+    public static PlayerSkill TryGetSkill(string key)
     {
         if (skillDictionary.ContainsKey(key))
             return skillDictionary[key];
@@ -140,6 +140,13 @@ public static class ExcentraDatabase
         if (miscPrefabDictionary.ContainsKey(key))
             return miscPrefabDictionary[key];
 
+        return null;
+    }
+
+    public static BossEnemyPhases TryGetBossPhases(string key)
+    {
+        if (bossPhaseDictionary.ContainsKey(key))
+            return bossPhaseDictionary[key];
         return null;
     }
 }

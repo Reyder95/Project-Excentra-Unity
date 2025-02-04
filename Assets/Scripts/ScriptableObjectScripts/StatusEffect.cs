@@ -42,6 +42,7 @@ public class StatusEffect : ScriptableObject
     public string key;
     public string effectName;
     public Texture2D icon;
+    public bool customTurnLogic = false;
 
     [TextArea(3,10)]
     public string description;

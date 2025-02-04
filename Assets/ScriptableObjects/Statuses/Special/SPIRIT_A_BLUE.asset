@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: 'Spirit Acclimation: Blue'
   icon: {fileID: 2800000, guid: 594c508398161e94ab5af8a1e474e87d, type: 3}
+  customTurnLogic: 1
   description: Be hit by the opposite color attack to switch this
   effectType: 10
   effectMagnitude: 0

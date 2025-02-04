@@ -13,6 +13,7 @@ public class EntityStats : MonoBehaviour
 
     [Header("General Information")]
     public string entityName;
+    public string enemyKey;
     public Texture2D portrait;
     public bool isPlayer;
 
@@ -38,8 +39,6 @@ public class EntityStats : MonoBehaviour
     public float speed;
     public float move;
     public float basicRange;
-    [NonSerialized]
-    public float delay;
 
     // Aggression is like "aggro" in mmos. currently not implemented, but will be soon
     [Header("Aggression")]
@@ -59,25 +58,76 @@ public class EntityStats : MonoBehaviour
     public bool moveDouble = false;
     [NonSerialized]
     public StatusEffectHandler effectHandler = new StatusEffectHandler();
+    [NonSerialized]
+    public float nextStaticDelay = -1f;
+    [NonSerialized]
+    public GameObject addOwner = null;
+    [NonSerialized]
+    public bool targetable = true;
+    [NonSerialized]
+    public bool active = true;
+    [NonSerialized]
+    public string entityKey;
+    [NonSerialized]
+    public EnemyMechanic addMechanic;
+
+    public event Action<EntityStats> OnStatusChanged;
+    public event Action<EntityStats> OnHealthChanged;
+    public event Action<EntityStats, BattleManager, EnemyMechanic> OnEntityKilled;
+    public event Action<EntityStats> OnAetherChanged;
+
+    public void ModifyStatus(StatusEffect effect = null, GameObject owner = null)
+    {
+        if (owner != null && effect != null)
+            effectHandler.AddEffect(effect, owner);
+        else if (effect != null)
+            effectHandler.RemoveEffect(effect);
+        else
+            effectHandler.effects.Clear();
+
+        OnStatusChanged?.Invoke(this);
+    }
+
+    public void ReduceStatusTurns(StatusEffect effect, int turns = 1)
+    {
+        effectHandler.ForceReduceTurnCount(effect, turns);
+
+        OnStatusChanged?.Invoke(this);
+    }
+
+    public void ModifyHP(float amount)
+    {
+        currentHP = amount;
+
+        if (currentHP > maximumHP)
+            currentHP = maximumHP;
+        else if (currentHP < 0)
+            currentHP = 0;
+
+        OnHealthChanged?.Invoke(this);
+
+        if (currentHP == 0)
+            OnEntityKilled?.Invoke(this, ExcentraGame.battleManager, addMechanic);   // Temp, battleManager should come from a direct send, not from a static variable
+    }
+
+    public void ModifyMP(float amount)
+    {
+        currentAether = amount;
+
+        if (currentAether > maximumAether)
+            currentAether = maximumAether;
+        else if (currentAether < 0)
+            currentAether = 0;
+
+        OnAetherChanged?.Invoke(this);
+    }
 
     // -- Calculations! Calculates various stats or important information based on stats, and status effects
-    public void CalculateDelay(bool turn = false)
-    {
-        if (!turn)
-        {
-            delay = (int)Mathf.Floor((500 + UnityEngine.Random.Range(10, 26) / (speed * 10.5f)) * UnityEngine.Random.Range(10, 26)) / speed;
-        }
-        else
-        {
-            delay = (int)Mathf.Floor(delay * 0.80f);
-        }
-    }
 
     public void InitializeCurrentStats()
     {
         currentHP = maximumHP;
         currentAether = maximumAether;
-        delay = 0;
     }
 
     public float CalculateHPPercentage()
@@ -94,7 +144,7 @@ public class EntityStats : MonoBehaviour
     {
         float currMove = move;
         if (moveDouble)
-            currMove *= 1.4f;
+            currMove *= 2.5f;
         return currMove / 2f;
     }
 

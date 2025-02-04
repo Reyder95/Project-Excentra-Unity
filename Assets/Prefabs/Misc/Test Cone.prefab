@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1631549502639433890}
   - component: {fileID: 8466984217915864524}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1614126884979612294}
   - component: {fileID: 817682463692272618}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sprite Mask (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8939725627511707609}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3479162507285765495}
   - component: {fileID: 4776414727487971485}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sprite Mask (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 7752867378141865768}
   - component: {fileID: 7020172106042971123}
   - component: {fileID: -2295671144460980890}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Test Cone
   m_TagString: aoe
   m_Icon: {fileID: 0}
@@ -418,20 +418,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skill: {fileID: 0}
+  mechanicAttack:
+    attackType: 0
+    targetType: 0
+    turnOffset: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 0, y: 0}
+    aoeShape: 0
+    isProximity: 0
+    isStack: 0
+    staticDistance: 0
+    size: 0
+    distance: 0
+    endpoint: {x: 0, y: 0}
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    statusesToAdd: []
+    statusesToRemove: []
+  enemy: 0
   arenaAoeIndex: -1
   originObject: {fileID: 0}
   attackerObject: {fileID: 0}
   freezeAoe: 0
   destination: {x: 0, y: 0}
+  destinationObject: {fileID: 0}
   triangle: {fileID: 424816598347822811}
   circle: {fileID: 8523653247466202084}
   line: {fileID: 0}
   scaleX: 1
   width: 4
   distance: 0
+  endPoint: {x: 0, y: 0}
   frozenScale: {x: 0, y: 0}
   frozenRotation: {x: 0, y: 0, z: 0, w: 0}
   frozenDestination: {x: 0, y: 0}
+  frozenPosition: {x: 0, y: 0}
 --- !u!1 &5933382030552656246
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,7 +468,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6588730597678930584}
   - component: {fileID: 361272866413390669}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sprite Mask (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -529,7 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1192002936316893010}
   - component: {fileID: 4666621230285274231}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -616,7 +642,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7288469748316164297}
   - component: {fileID: 5882223672432290019}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Sprite Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}

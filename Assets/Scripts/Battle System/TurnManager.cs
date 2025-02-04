@@ -1,5 +1,6 @@
 // TurnManager.cs
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,7 +11,7 @@ using UnityEngine.UIElements;
 // possible turns. For example, some AoEs may operate independently on a turn-by-turn basis (helps for puzzle-like mechanics)
 public class TurnManager
 {
-    List<GameObject> turnOrder = new List<GameObject>();    // A direct order of GameObjects (entities) in the battle, sorted by Delay. Lower Delay means they will be going before higher delays.
+    public List<TurnEntity> turnOrder = new List<TurnEntity>();    // A direct order of GameObjects (entities) in the battle, sorted by Delay. Lower Delay means they will be going before higher delays.
     Dictionary<string, GameObject> deadUnits = new Dictionary<string, GameObject>();    // A dictionary of all dead units. Makes it easy to bring back people into the turnOrder once they are revived
     
     // Visual Elements. One for the turn element (top left), and the turnOrderUI parent container element
@@ -31,31 +32,49 @@ public class TurnManager
         turnOrder.Clear();
 
         // Adds all entities to a single turnOrder List
-        turnOrder.AddRange(players);
-        turnOrder.Add(boss);
+
+        foreach (var player in players)
+        {
+            turnOrder.Add(new TurnEntity(player));
+        }
+        turnOrder.Add(new TurnEntity(boss));
 
         // Calculates the initial delay for all entities
         foreach (var character in turnOrder)
         {
-            character.GetComponent<EntityStats>().CalculateDelay();
+            if (character.isEntity)
+            {
+                EnemyAI enemyAi;
+                if (character.GetEntity().TryGetComponent<EnemyAI>(out enemyAi))
+                {
+                    if (enemyAi.enabled)
+                    {
+                        if (enemyAi.initialPhase != null)
+                        {
+                            character.CalculateDirectDelay(0);
+                            continue;
+                        }
+                    }
+                }
+            }
+
+
+            character.CalculateDelay();
         }
 
         // Sorts them by the delay we've just calculated
         turnOrder.Sort((a, b) =>
         {
-            return (int)a.GetComponent<EntityStats>().delay - (int)b.GetComponent<EntityStats>().delay;
+            return (int)a.delay - (int)b.delay;
         });
     }
 
     // For an entity who either gets revived, or just goes, we recalculate and insert them back
-    public bool InsertUnitIntoTurn(GameObject entity)
+    public bool InsertUnitIntoTurn(TurnEntity entity)
     {
-        EntityStats entityStats = entity.GetComponent<EntityStats>();
         for (int i = 0; i < turnOrder.Count; i++)
         {
-            EntityStats turnStats = turnOrder[i].GetComponent<EntityStats>();
-
-            if (turnStats.delay > entityStats.delay)
+            if (turnOrder[i].delay > entity.delay)
             {
                 turnOrder.Insert(i, entity);
                 return true;
@@ -81,8 +100,11 @@ public class TurnManager
             VisualElement charElement = turnElement.CloneTree();
             VisualElement charPortrait = charElement.Q<VisualElement>("portrait");
             Label delayLabel = charElement.Q<Label>("delay");
-            charPortrait.style.backgroundImage = character.GetComponent<EntityStats>().portrait;
-            delayLabel.text = ((int)character.GetComponent<EntityStats>().delay).ToString();
+            if (character.isEntity)
+                charPortrait.style.backgroundImage = character.GetEntity().GetComponent<EntityStats>().portrait;
+            else
+                charPortrait.style.backgroundImage = ExcentraDatabase.TryGetSkill("fireball").icon;
+            delayLabel.text = ((int)character.delay).ToString();
             turnOrderUI.Add(charElement);
         }
     }
@@ -90,10 +112,24 @@ public class TurnManager
     // TODO: Might need optimization
     public void KillEntity(GameObject entity)
     {
-        turnOrder.Remove(entity);
+        foreach (var loopedEntity in turnOrder)
+        {
+            if (loopedEntity.GetEntity() == entity)
+            {
+                turnOrder.Remove(loopedEntity);
+                break;
+            }
+        }
 
         EntityStats entityStats = entity.GetComponent<EntityStats>();
-        deadUnits.Add(entityStats.entityName, entity);
+
+        try
+        {
+            deadUnits.Add(entityStats.entityName, entity);
+        }
+        catch (ArgumentException)
+        {
+        }
     }
 
     public void ReviveEntity(GameObject entity)
@@ -101,14 +137,34 @@ public class TurnManager
         deadUnits.Remove(entity.GetComponent<EntityStats>().entityName);
 
         EntityStats entityStats = entity.GetComponent<EntityStats>();
-        entityStats.CalculateDelay();
+        TurnEntity newEntity = new TurnEntity(entity);
+        newEntity.CalculateDelay();
 
-        bool added = InsertUnitIntoTurn(entity);
+        bool added = InsertUnitIntoTurn(newEntity);
 
         if (!added)
         {
-            turnOrder.Add(entity);
+            turnOrder.Add(newEntity);
         }
+    }
+
+    public bool CheckIfMechanicOver(EnemyMechanic mechanic)
+    {
+        foreach (var entity in turnOrder)
+        {
+            if (!entity.isEntity)
+            {
+                GameObject aoe = entity.GetEntity();
+                BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
+
+                if (aoeInfo.mechanic == mechanic)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     // Calculates the delay for all entities that already exist in the turn order.
@@ -117,43 +173,105 @@ public class TurnManager
     {
         foreach (var character in turnOrder)
         {
-            character.GetComponent<EntityStats>().CalculateDelay(true);
+            if (character.isEntity)
+            {
+                EntityStats entityStats = character.GetEntity().GetComponent<EntityStats>();
+
+                if (!entityStats.active)
+                    continue;
+            }    
+
+            character.CalculateDelay(true);
         }
     }
 
-    // Ends the current turn, pops the unit out of the turn order, and replaces them back in with a newly fresh calculated delay
-    public void EndCurrentTurn()
+    public void CalculateIndividualDelay(GameObject entity, float forcedDelay = -1f)
     {
-        GameObject currTurn = PopCurrentTurn();
-        EntityStats currTurnStats = currTurn.GetComponent<EntityStats>();
-        currTurnStats.CalculateDelay();
-        
-        CalculateAllDelay();
+        EntityStats stats = entity.GetComponent<EntityStats>();
 
-        bool added = InsertUnitIntoTurn(currTurn);
+        TurnEntity turnEntity = null;
 
-        if (currTurnStats.isPlayer)
+        for (int i = 0; i < turnOrder.Count; i++)
         {
-            PlayerInput input = currTurn.GetComponent<PlayerInput>();
-            input.enabled = false;
+            if (turnOrder[i].GetEntity() == entity)
+            {
+                turnEntity = turnOrder[i];
+                turnOrder.RemoveAt(i);
+                break;
+            }
         }
 
+        if (forcedDelay == -1f)
+            turnEntity.CalculateDelay();
+        else
+            turnEntity.CalculateDirectDelay(forcedDelay);
+
+        bool added = InsertUnitIntoTurn(turnEntity);
+
         if (!added)
-            turnOrder.Add(currTurn);
+            turnOrder.Add(turnEntity);
+
+        DisplayTurnOrder();
+    }
+
+    public float ReturnDelayNeededForTurn(int turnCount)
+    {
+        int counter = 0;
+        foreach (var character in turnOrder)
+        {
+            if (counter == turnCount)
+            {
+                break;
+            }
+
+            counter++;
+        }
+
+        if (counter == turnOrder.Count)
+            return turnOrder[counter - 1].delay + 1;
+
+        return turnOrder[counter].delay + 1;
+    }
+
+    // Ends the current turn, pops the unit out of the turn order, and replaces them back in with a newly fresh calculated delay
+    public void EndCurrentTurn(float staticDelay = -1f)
+    {
+        TurnEntity currTurn = PopCurrentTurn();
+        if (staticDelay == -1f)
+            currTurn.CalculateDelay();
+        else
+            currTurn.CalculateDirectDelay(staticDelay);
+
+        CalculateAllDelay();
+
+        if (currTurn.isEntity)
+        {
+            bool added = InsertUnitIntoTurn(currTurn);
+
+            EntityStats currTurnStats = currTurn.GetEntity().GetComponent<EntityStats>();
+            if (currTurnStats.isPlayer)
+            {
+                PlayerInput input = currTurn.GetEntity().GetComponent<PlayerInput>();
+                input.enabled = false;
+            }
+
+            if (!added)
+                turnOrder.Add(currTurn);
+        }
 
         DisplayTurnOrder();
 
     }
 
-    public GameObject PopCurrentTurn()
+    public TurnEntity PopCurrentTurn()
     {
-        GameObject currTurn = turnOrder[0];
+        TurnEntity currTurn = turnOrder[0];
         turnOrder.RemoveAt(0);
         return currTurn;
     }
 
     public GameObject GetCurrentTurn()
     {
-        return turnOrder[0];
+        return turnOrder[0].GetEntity();
     }
 }

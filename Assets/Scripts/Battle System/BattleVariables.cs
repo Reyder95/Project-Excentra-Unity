@@ -19,7 +19,7 @@ public class BattleVariables
 {
     public BattleState battleState; // The current state of battle (as shown above). Determines player state, or if we're awaiting the enemy, or transitioning between turns.
     public Dictionary<string, GameObject> targets;  // The list of targets that will be attacked by the skill on the current turn. 
-    public Skill currSkill; // The current skill used for calculations (whether healing, damage, or what kind of healing)
+    public BaseSkill currSkill; // The current skill used for calculations (whether healing, damage, or what kind of healing)
 
     public GameObject currAoe;  // The current AoE telegraph for additional calculations
 
@@ -34,7 +34,7 @@ public class BattleVariables
         return battleState;
     }
 
-    public Skill GetCurrentSkill()
+    public BaseSkill GetCurrentSkill()
     {
         if (GetState() == BattleState.PLAYER_SPECIAL)
         {

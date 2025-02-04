@@ -6,10 +6,10 @@ public class ActionInformation
 {
     public GameObject target;
     public GameObject attacker;
-    public Skill skill;
+    public BaseSkill skill;
     public AoeData aoeData;
 
-   public ActionInformation(GameObject target, GameObject attacker, Skill skill = null, AoeData aoeData = null)
+   public ActionInformation(GameObject target, GameObject attacker, BaseSkill skill = null, AoeData aoeData = null)
     {
         this.target = target;
         this.attacker = attacker;
@@ -94,7 +94,7 @@ public class GlobalDamageHelper
 
     }
 
-    private static float IndividualSkillDamageCalculation(Skill skill, GameObject target, GameObject attacker)
+    private static float IndividualSkillDamageCalculation(BaseSkill skill, GameObject target, GameObject attacker)
     {
         EntityStats targetStats = target.GetComponent<EntityStats>();
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
@@ -115,7 +115,7 @@ public class GlobalDamageHelper
         return 1f;
     }
 
-    private static float IndividualSkillHealCalculation(Skill skill, GameObject target, GameObject healer)
+    private static float IndividualSkillHealCalculation(BaseSkill skill, GameObject target, GameObject healer)
     {
         EntityStats healerStats = healer.GetComponent<EntityStats>();
         float healValue = InitialDamageCalculation(skill.baseValue, healerStats.CalculateSpirit(), skill.scaleMult);

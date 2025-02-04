@@ -512,6 +512,8 @@ MonoBehaviour:
     prefab: {fileID: 5597662053189824100, guid: e442f33f84a465443a02a478cf4527ae, type: 3}
   - key: Orc
     prefab: {fileID: 1013044122329958752, guid: 1ce94952c98c0284e829dff69d9fea21, type: 3}
+  - key: Small Orc
+    prefab: {fileID: 6430405152354848096, guid: ed6873e40a6c372478ff7f1a91a830ea, type: 3}
   uiDocs:
   - key: battle
     document: {fileID: 926336604}
@@ -547,6 +549,8 @@ MonoBehaviour:
     skill: {fileID: 11400000, guid: 07ebab7fbe6c3324a805ca1acdaf57b8, type: 2}
   - key: bring-it-on
     skill: {fileID: 11400000, guid: 7da479b8f601c5947a028b851cc1642c, type: 2}
+  - key: multi-heal
+    skill: {fileID: 11400000, guid: b98930377ea74a543bb8d6925e4d647c, type: 2}
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}
@@ -589,6 +593,41 @@ MonoBehaviour:
     prefab: {fileID: 8181824542807740559, guid: 38e46b65abaa63446bb78d1d346be5fc, type: 3}
   - key: line
     prefab: {fileID: 6765610906363701024, guid: 308ee99daa0efd84196078c8386bd8d9, type: 3}
+  bossPhases:
+  - key: medica
+    phases:
+    - activeMechanics:
+      - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
+      - {fileID: 11400000, guid: 4909e30ad3daf524284928bf8f3c3aaf, type: 2}
+      - {fileID: 11400000, guid: e46026ace9973b74493b193ab1784bd1, type: 2}
+      inactiveMechanics: []
+      phaseType: 0
+      hpPercentageThreshold: 100
+    - activeMechanics:
+      - {fileID: 11400000, guid: f3b1cd408290af64da0be395242a6e2e, type: 2}
+      inactiveMechanics: []
+      phaseType: 0
+      hpPercentageThreshold: 50
+    - activeMechanics:
+      - {fileID: 11400000, guid: 77168ccc90555f1439dd063cb6186e2f, type: 2}
+      - {fileID: 11400000, guid: 8070db54b1cc43a4e9a7ef4884f45a23, type: 2}
+      - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
+      inactiveMechanics: []
+      phaseType: 0
+      hpPercentageThreshold: 1
+    initialPhase:
+      mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
+      delayBonus: 100
+  - key: medica_father
+    phases:
+    - activeMechanics:
+      - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
+      inactiveMechanics: []
+      phaseType: 0
+      hpPercentageThreshold: 100
+    initialPhase:
+      mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
+      delayBonus: 100
   damageNumberHandlerScript: {fileID: 1049321076}
 --- !u!4 &1272877064
 Transform:
