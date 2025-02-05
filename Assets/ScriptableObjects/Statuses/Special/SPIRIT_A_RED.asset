@@ -20,3 +20,5 @@ MonoBehaviour:
   effectMagnitude: 0
   statType: 0
   baseTurns: 2
+  enableParticles: 1
+  particleColor: {r: 1, g: 0.036188774, b: 0, a: 1}

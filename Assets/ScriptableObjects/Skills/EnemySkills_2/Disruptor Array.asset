@@ -15,10 +15,16 @@ MonoBehaviour:
   mechanicName: Disruptor Array
   mechanicKey: 
   mechanicStyle: 1
+  dontSkipTurn: 0
   active: 1
   untargetable: 0
+  targetScript: 0
+  activeScript: 0
+  turnCooldown: 1
   mechanicAttacks:
   - attackType: 0
+    attackKey: 
+    targetKey: 
     targetType: 8
     turnOffset: 4
     originIsTarget: 1
@@ -36,7 +42,9 @@ MonoBehaviour:
     distance: 0
     distanceOffset: 1
     endpoint: {x: 0, y: 0}
-    aoeColor: {r: 0, g: 0.19730693, b: 0.8490566, a: 0.48235294}
+    customColor: 1
+    aoeColor: {r: 0.8301887, g: 0.55721116, b: 0.105731584, a: 0.48235294}
+    addKeys: []
     tetherStationary: 0
     secondTether: 0
     tetherLocation: {x: 0, y: 0}

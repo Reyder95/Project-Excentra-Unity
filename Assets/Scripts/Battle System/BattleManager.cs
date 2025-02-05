@@ -270,35 +270,43 @@ public class BattleManager
                 EnemyAI enemyAi = currTurn.GetComponent<EnemyAI>();
                 contents.aggression.ReduceAggressionEnmity();
 
-                if (!initialPhaseChecker && enemyAi.initialPhase != null)
+                try
                 {
-                    BossMechanicHandler.InitializeMechanic(enemyAi.initialPhase.mechanic, this, boss);
-                    stats.nextStaticDelay = enemyAi.initialPhase.delayBonus;
-                }
-                else
-                {
-                    EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
-
-                    if (mechanic == null)
-                        BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
+                    if (!initialPhaseChecker && enemyAi.initialPhase != null)
+                    {
+                        BossMechanicHandler.InitializeMechanic(enemyAi.initialPhase.mechanic, this, boss);
+                        stats.nextStaticDelay = enemyAi.initialPhase.delayBonus;
+                    }
                     else
                     {
-                        // Do immediate attack
-                        BossMechanicHandler.InitializeMechanic(mechanic, this, currTurn);
+                        EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
+
+                        if (mechanic == null)
+                            BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
+                        else
+                        {
+                            // Do immediate attack
+                            BossMechanicHandler.InitializeMechanic(mechanic, this, currTurn);
+                        }
+
+                        if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE && !mechanic.dontSkipTurn)
+                            skipEndTurn = true;
+
+                        if (mechanic != null)
+                            stats.targetable = !mechanic.untargetable;
+
+                        if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
+                        {
+                            if (mechanic.activeScript)
+                                stats.active = mechanic.active;
+                        }
                     }
-
-                    if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE && !mechanic.dontSkipTurn)
-                        skipEndTurn = true;
-
-                    if (mechanic != null)
-                        stats.targetable = !mechanic.untargetable;
-
-                    if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
-                    {
-                        if (mechanic.activeScript)
-                            stats.active = mechanic.active;
-                    }
+                } catch (NullReferenceException)
+                {
+                    Debug.Log("Mechanic is null when it should not have been. Maybe Initialization error again?");
+                    skipEndTurn = false;
                 }
+
 
                 initialPhaseChecker = true;
 

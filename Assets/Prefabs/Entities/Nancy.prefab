@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 1220159055, guid: 990151ca149aeff4aaa45eea1b3c9495, type: 3}
+      objectReference: {fileID: 945632469, guid: 990151ca149aeff4aaa45eea1b3c9495, type: 3}
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
@@ -251,6 +251,10 @@ PrefabInstance:
     - target: {fileID: 7379840933358803624, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_SpriteTilingProperty.adaptiveTilingThreshold
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9201253995867558767, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
