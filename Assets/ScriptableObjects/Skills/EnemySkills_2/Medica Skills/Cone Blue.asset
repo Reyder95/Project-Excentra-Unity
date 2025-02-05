@@ -60,7 +60,7 @@ MonoBehaviour:
     attackKey: blue_acclimation
     targetKey: blue_acclimation_target
     targetType: 5
-    turnOffset: 2
+    turnOffset: 4
     originIsTarget: 0
     originIsSelf: 1
     endpointIsTarget: 1

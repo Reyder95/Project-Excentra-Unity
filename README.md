@@ -21,3 +21,11 @@ There will be a moderate amount of classes to choose from, each following the "t
 For itemization, I wanted to follow a style similar to the Trails series (each character having an item build, and slotting gear), but I wanted to incorporate ARPG itemization, such as randomized stats and stat-crafting. In that, there will be multiple rarities: Normal, Magic, Rare, and Unique. Other than Uniques, all items will have randomized stats depending on the rarity. But Uniques will be static in terms of stats, but they may roll randomly. Uniques will be only obtained through specific means, such as defeating a boss or opening up a specific hidden chest. 
 
 This is the main reason I'm building Excentra, honestly.
+
+## Current Progress
+- **Turn Based Functionality** - There is a complete turn based battle system with delays that calculate based on a speed stat. Faster characters act more often on average than slower ones. The delay formula definitely needs adjustment, though.
+- **Combat** - Basic attacks and special attacks both work. Health bars and Aether (resource) bars drop respectively. HP reaching zero kills an Entity, and you can revive them back to life. All respective animations play as well. Gap closers exist as well!
+- **Aggression Generation** - The tank will, on average, have more aggression generated allowing him to tank the enemies more effectively.
+- **Boss AI and Mechanics** - All enemies have fully fledged AI systems with mechanics and phases. Fully detailed trigger and custom logic system, allowing for the simplest of mechanics to work easily, and the most complex mechanics allowing full control over how it should operate. With multiple "levels" of logic. This allows for the most complex mechanics to be possible, and for insane scalability.
+- **Status Effects** - Various status effects exist, such as burning, poison, or stat modifications (increased armor, attack, etc). Allows for special status effects that have custom logic built into them based on mechanic logic.
+- **Particle System** - Fairly work in progress to work completely, but currently supports custom particles on allies when specific special debuffs are applied, allowing for clarity during the fight.
