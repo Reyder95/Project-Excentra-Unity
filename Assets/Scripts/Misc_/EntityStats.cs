@@ -50,6 +50,8 @@ public class EntityStats : MonoBehaviour
     // This divides the total damage by the # of hits. Meaning you can set a "total" damage, rather than a "damage per hit".
     [Header("Misc.")]
     public int basicAttackCount = 1;
+    public GameObject particleEmitter;
+    public StatusEffect particleStatus;
 
     // Additional useful information
     [NonSerialized]
@@ -76,12 +78,32 @@ public class EntityStats : MonoBehaviour
     public event Action<EntityStats, BattleManager, EnemyMechanic> OnEntityKilled;
     public event Action<EntityStats> OnAetherChanged;
 
+
     public void ModifyStatus(StatusEffect effect = null, GameObject owner = null)
     {
         if (owner != null && effect != null)
+        {
             effectHandler.AddEffect(effect, owner);
+
+            if (effect.enableParticles)
+            {
+                particleEmitter.SetActive(true);
+                particleStatus = effect;
+
+                var mainModule = particleEmitter.GetComponent<ParticleSystem>().main;
+                mainModule.startColor = effect.particleColor;
+            }
+        }
         else if (effect != null)
+        {
             effectHandler.RemoveEffect(effect);
+
+            if (particleStatus != null && effect.key == particleStatus.key)
+            {
+                particleEmitter.SetActive(false);
+                particleStatus = null;
+            }
+        }
         else
             effectHandler.effects.Clear();
 

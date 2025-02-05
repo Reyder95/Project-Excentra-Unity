@@ -42,8 +42,8 @@ MonoBehaviour:
     distance: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
-    customColor: 0
-    aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    customColor: 1
+    aoeColor: {r: 0.83137256, g: 0.5568628, b: 0.105882354, a: 0.48235294}
     addKeys: []
     tetherStationary: 0
     secondTether: 0

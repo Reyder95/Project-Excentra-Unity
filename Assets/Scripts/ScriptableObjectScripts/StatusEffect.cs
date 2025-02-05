@@ -50,4 +50,8 @@ public class StatusEffect : ScriptableObject
     public float effectMagnitude;
     public StatType statType;
     public int baseTurns;
+
+    [Header("Particles")]
+    public bool enableParticles = false;
+    public Color particleColor;
 }

@@ -42,16 +42,31 @@ public static class CustomMechanicLogicHelper
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
 
         int counter = 0;
-
-        foreach (var character in possibleChars)
+        while (possibleChars.Count > 0)
         {
-            EntityStats stats = character.GetComponent<EntityStats>();
+            int randomCharIndex = Random.Range(0, possibleChars.Count);
+            GameObject character = possibleChars[randomCharIndex];
+            possibleChars.RemoveAt(randomCharIndex);
+
+            EntityStats charStats = character.GetComponent<EntityStats>();
+
             if (counter % 2 == 0)
-                stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
+                charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
             else
-                stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
+                charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
+
             counter++;
         }
+
+        //foreach (var character in possibleChars)
+        //{
+        //    EntityStats stats = character.GetComponent<EntityStats>();
+        //    if (counter % 2 == 0)
+        //        stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
+        //    else
+        //        stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
+        //    counter++;
+        //}
 
         return new MechanicLogic();
     }

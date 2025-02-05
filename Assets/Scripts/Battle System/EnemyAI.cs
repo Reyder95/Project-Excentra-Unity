@@ -66,8 +66,7 @@ public class EnemyAI : MonoBehaviour
         catch (ArgumentOutOfRangeException ex)
         {
             InitializeAI(possibleTargets);
-            Debug.Log("TEST!" + ex);
-            return null;
+            return ChooseAttack();
         }
 
     }
