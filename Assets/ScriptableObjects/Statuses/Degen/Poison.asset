@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Poison
   icon: {fileID: 2800000, guid: aa27b6692c5bb174ca43d1aa57aa1989, type: 3}
-  description: Target takes a portion of health damage the beginning of each turn.
+  customTurnLogic: 0
+  description: Deals chaos damage over time
   effectType: 0
   effectMagnitude: 1
   statType: 0
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

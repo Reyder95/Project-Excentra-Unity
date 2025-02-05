@@ -14,8 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Aggression Down
   icon: {fileID: 2800000, guid: 1609818406ab5734086206b03f3ba058, type: 3}
-  description: Reduces aggression generation
+  customTurnLogic: 0
+  description: Reduces aggression generation, make it less likely for enemies to
+    target you
   effectType: 2
   effectMagnitude: 1
   statType: 13
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

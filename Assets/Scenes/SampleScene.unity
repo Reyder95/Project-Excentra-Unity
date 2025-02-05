@@ -524,6 +524,8 @@ MonoBehaviour:
     document: {fileID: 9197481963319205126, guid: 62d71ae4005f3b142a4ee96cb9df27b5, type: 3}
   - key: status-effect
     document: {fileID: 9197481963319205126, guid: ccda335b62ff46840836bc4b9e588635, type: 3}
+  - key: debuff-tooltip
+    document: {fileID: 9197481963319205126, guid: 69b8c883fa826bb4b86a851421fba464, type: 3}
   skills:
   - key: protect
     skill: {fileID: 11400000, guid: ae279a53429e1ec49ac79124cc564e6f, type: 2}

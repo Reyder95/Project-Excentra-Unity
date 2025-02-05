@@ -14,8 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Aggression Up
   icon: {fileID: 2800000, guid: 59a8a13789f44464dbc06c5632679bdd, type: 3}
-  description: Increases aggression generation
+  customTurnLogic: 0
+  description: Increases aggression generation, making it more likely for enemies
+    to target you
   effectType: 1
   effectMagnitude: 1
   statType: 13
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

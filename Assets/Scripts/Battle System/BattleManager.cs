@@ -42,6 +42,10 @@ public class BattleManager
     ProgressBar bossHP;
     Label stateLabel;
 
+    VisualElement currTooltip = null;
+    float tooltipHeight = 250;
+    float tooltipWidth = 500;
+
     // For Restarting
     private List<GameObject> tempCharacterPrefabs = new List<GameObject>();
     private GameObject tempBossPrefab = null;
@@ -101,6 +105,13 @@ public class BattleManager
         debuffScrollers.Add(bossStats.entityName, bossHP.Q<VisualElement>("debuff"));
 
         stateLabel.style.visibility = Visibility.Hidden;
+
+        currTooltip = ExcentraDatabase.TryGetSubDocument("debuff-tooltip").CloneTree();
+        battleDoc.Add(currTooltip);
+        currTooltip = currTooltip.Q<VisualElement>("root");
+        currTooltip.style.opacity = 0;
+
+        battleDoc.RegisterCallback<MouseMoveEvent>(evt => UpdateTooltipPosition(evt));
 
         ChangeState(BattleState.PLAYER_CHOICE);
         SetUIValues(restart);
@@ -736,6 +747,9 @@ public class BattleManager
 
                 statusInstance.Q<VisualElement>("image").style.backgroundImage = status.Value.effect.icon;
 
+                statusInstance.RegisterCallback<MouseEnterEvent>(evt => ShowTooltip(evt, status.Value.effect));
+                statusInstance.RegisterCallback<MouseLeaveEvent>(evt => HideTooltip());
+
                 scroller.Add(statusInstance);
             }
         }
@@ -1300,5 +1314,29 @@ public class BattleManager
     public void MouseLeaveButton(MouseLeaveEvent ev)
     {
         overButton = false;
+    }
+
+    public void ShowTooltip(MouseEnterEvent evt, StatusEffect effect)
+    {
+        currTooltip.style.left = evt.mousePosition.x + 10; // Offset to avoid overlap
+        currTooltip.style.top = Mathf.Clamp((evt.mousePosition.y - currTooltip.resolvedStyle.height) + 10, 0, 4000);
+
+        currTooltip.Q<VisualElement>("debuff-icon").style.backgroundImage = effect.icon;
+        currTooltip.Q<Label>("debuff-name").text = effect.effectName;
+        currTooltip.Q<Label>("debuff-description").text = effect.description;
+
+        currTooltip.style.opacity = 2;
+    }
+
+    public void UpdateTooltipPosition(MouseMoveEvent evt)
+    {
+        currTooltip.style.left = Mathf.Clamp(evt.mousePosition.x + 10, 0, 4000); // Offset to avoid overlap
+        currTooltip.style.top = Mathf.Clamp((evt.mousePosition.y - currTooltip.resolvedStyle.height) + 10, 0, 4000);
+        Debug.Log((evt.mousePosition.y - currTooltip.resolvedStyle.height));
+    }
+
+    public void HideTooltip()
+    {
+        currTooltip.style.opacity = 0;
     }
 }
