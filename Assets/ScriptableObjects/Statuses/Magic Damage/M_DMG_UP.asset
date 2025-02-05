@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Magical Damage Up
   icon: {fileID: 2800000, guid: 5b8c37aa0b3f9bd45846f1225893e49d, type: 3}
-  description: Increases magical damage dealt to enemies.
+  customTurnLogic: 0
+  description: Increases magical damage
   effectType: 1
   effectMagnitude: 1
   statType: 2
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

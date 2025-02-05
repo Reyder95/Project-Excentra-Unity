@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Burn
   icon: {fileID: 2800000, guid: 5554f6ba31bdbbb47bb1db8c89d8ec9d, type: 3}
-  description: 
+  customTurnLogic: 0
+  description: Deals fire damage over time
   effectType: 0
   effectMagnitude: 0.7
   statType: 0
   baseTurns: 5
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

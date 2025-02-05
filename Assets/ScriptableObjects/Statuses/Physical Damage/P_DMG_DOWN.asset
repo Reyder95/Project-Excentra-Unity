@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Physical Damage Down
   icon: {fileID: 2800000, guid: 8ede28b8ddbf7ac47ab369da1a608a73, type: 3}
-  description: Reduces physical damage dealt to enemies.
+  customTurnLogic: 0
+  description: Reduces physical damage.
   effectType: 2
   effectMagnitude: 1
   statType: 1
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

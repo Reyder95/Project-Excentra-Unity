@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Armour Down
   icon: {fileID: 2800000, guid: e77cd81b3574031459f5e63f3aa7f22e, type: 3}
+  customTurnLogic: 0
   description: Increases incoming physical damage
   effectType: 2
   effectMagnitude: 1
   statType: 5
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

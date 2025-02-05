@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Evasion Down
   icon: {fileID: 2800000, guid: 6118a5f91d4d50a47b5b7a918800a884, type: 3}
-  description: Reduces the chance of dodging an opponent's attack
+  customTurnLogic: 0
+  description: Reduces the chance of dodging an enemy attack
   effectType: 2
   effectMagnitude: 1
   statType: 12
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Physical Damage Up
   icon: {fileID: 2800000, guid: 72c779ec7b1d0744fb228dc2cfd4de26, type: 3}
-  description: Increases the targets physical damage.
+  customTurnLogic: 0
+  description: Increases physical damage.
   effectType: 1
   effectMagnitude: 1
   statType: 1
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}

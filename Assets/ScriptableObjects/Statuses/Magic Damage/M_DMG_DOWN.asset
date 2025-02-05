@@ -14,8 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectName: Magical Damage Down
   icon: {fileID: 2800000, guid: b0159f188430b2a488c3d714e7dcd4a8, type: 3}
-  description: Reduces magical damage dealt to enemies
+  customTurnLogic: 0
+  description: Reduces magical damage
   effectType: 2
   effectMagnitude: 1
   statType: 2
   baseTurns: 3
+  enableParticles: 0
+  particleColor: {r: 0, g: 0, b: 0, a: 0}
