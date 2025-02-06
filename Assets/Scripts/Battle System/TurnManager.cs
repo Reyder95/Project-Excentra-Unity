@@ -236,6 +236,20 @@ public class TurnManager
         return turnOrder[counter].delay + 1;
     }
 
+    public float ReturnDelayNeededForCharacter(GameObject entity)
+    {
+        foreach (var character in turnOrder)
+        {
+            if (character.GetEntity() == entity)
+            {
+                return character.delay + 1;
+
+            }
+        }
+
+        return -1f;
+    }
+
     // Ends the current turn, pops the unit out of the turn order, and replaces them back in with a newly fresh calculated delay
     public void EndCurrentTurn(float staticDelay = -1f)
     {

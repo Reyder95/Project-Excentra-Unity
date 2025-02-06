@@ -17,11 +17,17 @@ public static class CustomMechanicLogicHelper
         { "blue_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationTarget(battleManager, passthrough) },
         { "soul-bomb-attack", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBomb(battleManager, passthrough) },
         { "soul-bomb_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBombEnd(battleManager, passthrough) },
+        { "soul-bomb_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBombTarget(battleManager, passthrough) },
     };
 
     private static Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>> mechTriggers = new Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>>()
     {
         { "spawn_adds", (EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic) => SpawnAddsTrigger(stats, battleManager, mechanic) }
+    };
+
+    private static Dictionary<string, System.Func<BattleManager, float>> mechDelay = new Dictionary<string, System.Func<BattleManager, float>>()
+    {
+        { "soul-bomb-attack", (BattleManager battleManager) => SoulBombDelay(battleManager) },
     };
 
     public static MechanicLogic ExecuteMechanic(string mechanicKey, BattleManager battleManager, CustomLogicPassthrough passthrough)
@@ -38,6 +44,13 @@ public static class CustomMechanicLogicHelper
             return mechTriggers[mechanicKey];
 
         return null;
+    }
+
+    public static float ExecuteMechanicDelay(string mechanicKey, BattleManager battleManager)
+    {
+        if (mechDelay.ContainsKey(mechanicKey))
+            return mechDelay[mechanicKey](battleManager);
+        return -1f;
     }
 
     public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
@@ -249,12 +262,31 @@ public static class CustomMechanicLogicHelper
         return new MechanicLogic();
     }
 
+    public static MechanicLogic SoulBombTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        var possibleChars = battleManager.playerCharacters.Where(go => go.GetComponent<EntityStats>().entityName != "Rioka" && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+        int randomCharIndex = Random.Range(0, possibleChars.Count);
+
+        MechanicLogic logic = new MechanicLogic();
+        logic.overriddenTarget = possibleChars[randomCharIndex];
+
+        return logic;
+    }
+
     public static MechanicLogic SoulBombEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
 
         battleManager.KillEntity(passthrough.attacker);
 
         return new MechanicLogic();
+    }
+
+    public static float SoulBombDelay(BattleManager battleManager)
+    {
+        TurnManager turnManager = battleManager.turnManager;
+        GameObject tank = battleManager.playerCharacters.Where(go => go.GetComponent<EntityStats>().entityName == "Rioka").FirstOrDefault();
+
+        return turnManager.ReturnDelayNeededForCharacter(tank);
     }
 
     public static void SpawnAddsTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)

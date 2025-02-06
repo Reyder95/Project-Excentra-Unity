@@ -82,6 +82,8 @@ public static class BossMechanicHandler
             actualTarget = enemyAi.ChooseEntity(mechanicAttack.targetType);
         }
 
+        Debug.Log(target);
+
         if (target != null)
             actualTarget = target;
 
@@ -124,7 +126,9 @@ public static class BossMechanicHandler
         aoeInfo.arenaAoeIndex = battleManager.aoeArenadata.AddAoe(aoe);
 
         TurnEntity aoeEntity = new TurnEntity(aoe);
-        float delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+        float delay = CustomMechanicLogicHelper.ExecuteMechanicDelay(mechanicAttack.attackKey, battleManager);
+        if (delay == -1f)
+            delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
         aoeEntity.CalculateDirectDelay(delay);
 
         bool added = turnManager.InsertUnitIntoTurn(aoeEntity);

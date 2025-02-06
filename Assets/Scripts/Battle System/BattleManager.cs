@@ -328,14 +328,6 @@ public class BattleManager
 
 
                 initialPhaseChecker = true;
-
-                //enemyAi.TargetInit(); // Choose a target for the enemy ai
-
-                //GameObject currTarget = enemyAi.currTarget;
-
-                // If enemy, find "alive" entity, and set them as the boss's target this turn. Change state to AWAIT_ENEMY
-
-                //currTurn.GetComponent<EntityController>().MoveTowards(currTarget);
                 ChangeState(BattleState.AWAIT_ENEMY);
 
                 if (!skipEndTurn)

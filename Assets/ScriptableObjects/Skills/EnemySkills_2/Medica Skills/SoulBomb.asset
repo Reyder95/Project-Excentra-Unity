@@ -24,23 +24,20 @@ MonoBehaviour:
   mechanicAttacks:
   - attackType: 0
     attackKey: soul-bomb-attack
-    targetKey: 
-    targetType: 5
+    targetKey: soul-bomb_target
+    targetType: 7
     turnOffset: 4
     canBeShirked: 1
     originIsTarget: 1
     originIsSelf: 0
     endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
-    requiredRange: 0
     containsMovement: 0
     moveType: 0
     aoeShape: 0
     isProximity: 0
     isStack: 0
-    staticDistance: 0
     size: 5
-    distance: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
     customColor: 0

@@ -11,7 +11,8 @@ public enum EntityTargetType
     HEALER,
     DAMAGE,
     NONE,
-    ALL
+    ALL,
+    RANDOM
 }
 
 [CreateAssetMenu(fileName = "Enemy Skill", menuName = "Scriptable Objects/Enemy Skill")]
