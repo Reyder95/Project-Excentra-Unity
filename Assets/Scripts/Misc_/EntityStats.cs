@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using System.Linq;
 
 // Handles all the base stats of an entity. Also has calculations for calculating the base stat into the actual stat used for damage/healing/defense.
 [System.Serializable]
@@ -39,6 +40,8 @@ public class EntityStats : MonoBehaviour
     public float speed;
     public float move;
     public float basicRange;
+    public float healthRegenRate;
+    public float aetherRegenRate;
 
     // Aggression is like "aggro" in mmos. currently not implemented, but will be soon
     [Header("Aggression")]
@@ -105,7 +108,11 @@ public class EntityStats : MonoBehaviour
             }
         }
         else
-            effectHandler.effects.Clear();
+        {
+            effectHandler.effects = effectHandler.effects
+                .Where(item => item.Value.effect.effectType == EffectType.SPECIAL)
+                .ToDictionary(item => item.Key, item => item.Value);
+        }
 
         OnStatusChanged?.Invoke(this);
     }

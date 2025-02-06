@@ -10,6 +10,7 @@
             <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
+            <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/templar-portrait%20(1).png?fileID=2800000&amp;guid=a1585d9d11a7c4843a6d3a80a7a711eb&amp;type=3#templar-portrait (1)&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="nancy" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
@@ -18,6 +19,7 @@
             <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
+            <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/swordsman-portrait%20(1).png?fileID=2800000&amp;guid=44987f889d9d41c4ba9f65201f982cea&amp;type=3#swordsman-portrait (1)&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="penny" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
@@ -26,6 +28,7 @@
             <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
+            <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/archer-portrait%20(1).png?fileID=2800000&amp;guid=c81925eab6512c64a80836109fec9061&amp;type=3#archer-portrait (1)&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="nono" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" />
@@ -34,6 +37,7 @@
             <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
+            <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/priest-portrait%20(1).png?fileID=2800000&amp;guid=38fc112becbbb6b4ea7e62affdb0abe4&amp;type=3#priest-portrait (1)&quot;);" />
         </engine:VisualElement>
     </engine:VisualElement>
     <engine:VisualElement name="control-panel" focusable="true" style="flex-grow: 1; position: absolute; right: 0; bottom: 0; left: 85%; top: 60%; background-image: url(&quot;project://database/Assets/Raw/Textures/Sprite-0001.png?fileID=2800000&amp;guid=3b88a7751f1f8f243a3ab729685e99ad&amp;type=3#Sprite-0001&quot;); padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px;">

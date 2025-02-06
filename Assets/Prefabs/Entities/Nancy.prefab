@@ -117,8 +117,16 @@ PrefabInstance:
       value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: aetherRegenRate
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: aggressionDecay
       value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: healthRegenRate
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: basicAttackCount

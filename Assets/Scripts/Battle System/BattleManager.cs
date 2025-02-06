@@ -272,6 +272,10 @@ public class BattleManager
                 // If player, enable their input and set some basic values. Change state to PLAYER_CHOICE.
                 input.enabled = true;
                 controller.turnStartPos = currTurn.transform.position;
+                float percentDecimalHP = stats.healthRegenRate / 100f;
+                float percentDecimalAether = stats.aetherRegenRate / 100f;
+                stats.ModifyHP(stats.currentHP + (stats.maximumHP * percentDecimalHP));
+                stats.ModifyMP(stats.currentAether + (stats.maximumAether * percentDecimalAether));
                 controller.DrawMovementCircle();
                 ChangeState(BattleState.PLAYER_CHOICE);
             }
