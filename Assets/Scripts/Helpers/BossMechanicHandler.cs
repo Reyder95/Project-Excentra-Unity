@@ -222,7 +222,7 @@ public static class BossMechanicHandler
     {
         foreach (AddSpawner add in attack.addKeys)
         {
-            GameObject spawnedAdd = battleManager.SpawnNewEntity(ExcentraDatabase.TryGetEntity(add.entityKey), add.bottomLeft, add.entityKey);
+            GameObject spawnedAdd = battleManager.SpawnNewEntity(ExcentraDatabase.TryGetEntity(add.entityKey), add.bottomLeft, add.entityKey, add.aiKey);
 
             EntityStats addStats = spawnedAdd.GetComponent<EntityStats>();
 
@@ -233,6 +233,8 @@ public static class BossMechanicHandler
 
             addStats.addOwner = attacker;
             addStats.addMechanic = mechanic;
+
+
         }
     }
 }

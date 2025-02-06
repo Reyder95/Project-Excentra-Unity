@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public static class CustomMechanicLogicHelper
 {
@@ -250,6 +251,7 @@ public static class CustomMechanicLogicHelper
 
     public static MechanicLogic SoulBombEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
+
         battleManager.KillEntity(passthrough.attacker);
 
         return new MechanicLogic();

@@ -297,7 +297,11 @@ public class BattleManager
                         EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
 
                         if (mechanic == null)
+                        {
+                            Debug.Log(currTurn);
                             BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
+
+                        }
                         else
                         {
                             // Do immediate attack
@@ -403,15 +407,19 @@ public class BattleManager
                 turnManager.EndCurrentTurn(stats.nextStaticDelay);
                 stats.nextStaticDelay = -1f;
             }
-                
+
+            if (currTurn.GetComponent<BaseAoe>() != null)
+                enemyAi = currTurn.GetComponent<BaseAoe>().attackerObject.GetComponent<EnemyAI>();
+
             if (enemyAi.enabled)
             {
                 if (enemyAi.currAttack != null)
                 {
+                    Debug.Log("WAAAAH");
                     if (turnManager.CheckIfMechanicOver(enemyAi.currAttack))
                     {
                         Debug.Log("Hello!");
-                        BossMechanicHandler.EndMechanic(enemyAi.currAttack, this, boss);
+                        BossMechanicHandler.EndMechanic(enemyAi.currAttack, this, currTurn.GetComponent<BaseAoe>().attackerObject);
                         enemyAi.currAttack = null;
                     }
                 }
@@ -438,6 +446,8 @@ public class BattleManager
         stats.ModifyStatus();
         controller.animator.SetTrigger("Die");
 
+        turnManager.DisplayTurnOrder();
+
         bool isPlayer = stats.isPlayer;
 
         if (IsLose(isPlayer))
@@ -453,7 +463,7 @@ public class BattleManager
         }
     }
 
-    public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey)
+    public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey, string aiKey)
     {
         Debug.Log("SPAWN ENTITY");
         GameObject spawnedEntity = GameObject.Instantiate(entity, pos, Quaternion.identity);
@@ -466,6 +476,8 @@ public class BattleManager
             nameCounts.Add(spawnedEntityStats.entityName, 1);
 
         spawnedEntityStats.entityName = GetVariantCharacter(spawnedEntityStats.entityName);
+        if (aiKey != "")
+            spawnedEntityStats.enemyKey = aiKey;
         spawnedEntity.GetComponent<EnemyAI>().InitializeAI(playerCharacters);
         TurnEntity newSpawnedEntity = new TurnEntity(spawnedEntity);
         newSpawnedEntity.CalculateDelay();
@@ -723,6 +735,9 @@ public class BattleManager
         {
             float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currSkill));
             DealDamage(entity.Value, entityDamage);
+
+            if (battleVariables.currSkill == null)
+                return;
 
             if ((battleVariables.currSkill as PlayerSkill).grabAggro)
             {

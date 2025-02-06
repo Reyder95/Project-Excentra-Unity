@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: SoulBomb
+  m_Name: Spawn Soul
   m_EditorClassIdentifier: 
-  mechanicName: Soul Bomb
-  mechanicKey: soul-bomb
-  mechanicStyle: 1
-  dontSkipTurn: 0
+  mechanicName: Spawn Soul
+  mechanicKey: spawn-soul-mech
+  mechanicStyle: 0
+  dontSkipTurn: 1
   active: 0
-  untargetable: 0
-  targetScript: 0
-  activeScript: 0
+  untargetable: 1
+  targetScript: 1
+  activeScript: 1
   turnCooldown: 0
   mechanicAttacks:
-  - attackType: 0
-    attackKey: soul-bomb-attack
+  - attackType: 3
+    attackKey: spawn-soul-attack
     targetKey: 
-    targetType: 5
-    turnOffset: 4
-    canBeShirked: 1
-    originIsTarget: 1
+    targetType: 0
+    turnOffset: 0
+    canBeShirked: 0
+    originIsTarget: 0
     originIsSelf: 0
     endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
@@ -39,21 +39,25 @@ MonoBehaviour:
     isProximity: 0
     isStack: 0
     staticDistance: 0
-    size: 5
+    size: 0
     distance: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
     customColor: 0
     aoeColor: {r: 0, g: 0, b: 0, a: 0}
-    addKeys: []
+    addKeys:
+    - entityKey: Small Orc
+      aiKey: soul
+      bottomLeft: {x: 0, y: 3}
+      topRight: {x: 0, y: 0}
     tetherStationary: 0
     secondTether: 0
     tetherLocation: {x: 0, y: 0}
     tetherRange: 0
-    damageType: 2
+    damageType: 0
     scaler: 0
-    scaleMult: 2
-    baseValue: 100
+    scaleMult: 0
+    baseValue: 0
     attackCount: 0
     statusesToAdd: []
     statusesToRemove: []

@@ -635,6 +635,16 @@ MonoBehaviour:
   - key: medica
     phases:
     - activeMechanics:
+      - {fileID: 11400000, guid: 22d90a3d4fe0845429594d0ebc8690c4, type: 2}
+      inactiveMechanics: []
+      phaseType: 0
+      hpPercentageThreshold: 100
+    initialPhase:
+      mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
+      delayBonus: 100
+  - key: soul
+    phases:
+    - activeMechanics:
       - {fileID: 11400000, guid: b8d06e23630df7f4c9e17989f5b1fb32, type: 2}
       inactiveMechanics: []
       phaseType: 0
