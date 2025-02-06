@@ -13,7 +13,9 @@ public static class CustomMechanicLogicHelper
         { "acclimation_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => AcclimationEffectEnd(battleManager, passthrough)   },
         { "acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => AcclimationEffectStart(battleManager, passthrough) },
         { "red_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => RedAcclimationTarget(battleManager, passthrough) },
-        { "blue_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationTarget(battleManager, passthrough) }
+        { "blue_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationTarget(battleManager, passthrough) },
+        { "soul-bomb-attack", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBomb(battleManager, passthrough) },
+        { "soul-bomb_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBombEnd(battleManager, passthrough) },
     };
 
     private static Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>> mechTriggers = new Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>>()
@@ -237,6 +239,20 @@ public static class CustomMechanicLogicHelper
         logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
 
         return logic;
+    }
+
+    public static MechanicLogic SoulBomb(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        Debug.Log("Soul Bomb Activation");
+
+        return new MechanicLogic();
+    }
+
+    public static MechanicLogic SoulBombEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        battleManager.KillEntity(passthrough.attacker);
+
+        return new MechanicLogic();
     }
 
     public static void SpawnAddsTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)

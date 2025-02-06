@@ -553,6 +553,8 @@ MonoBehaviour:
     skill: {fileID: 11400000, guid: 7da479b8f601c5947a028b851cc1642c, type: 2}
   - key: multi-heal
     skill: {fileID: 11400000, guid: b98930377ea74a543bb8d6925e4d647c, type: 2}
+  - key: shirk
+    skill: {fileID: 11400000, guid: d3dbf08e613b4444b9537c4a6d060a30, type: 2}
   statusEffects:
   - key: aegis_down
     effect: {fileID: 11400000, guid: 525b524ec292bab4e8e9138800ae39d0, type: 2}
@@ -596,7 +598,7 @@ MonoBehaviour:
   - key: line
     prefab: {fileID: 6765610906363701024, guid: 308ee99daa0efd84196078c8386bd8d9, type: 3}
   bossPhases:
-  - key: medica
+  - key: medica2
     phases:
     - activeMechanics:
       - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
@@ -630,10 +632,10 @@ MonoBehaviour:
     initialPhase:
       mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
       delayBonus: 100
-  - key: medica2
+  - key: medica
     phases:
     - activeMechanics:
-      - {fileID: 11400000, guid: f3b1cd408290af64da0be395242a6e2e, type: 2}
+      - {fileID: 11400000, guid: b8d06e23630df7f4c9e17989f5b1fb32, type: 2}
       inactiveMechanics: []
       phaseType: 0
       hpPercentageThreshold: 100

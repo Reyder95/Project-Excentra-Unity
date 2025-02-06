@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b19bc66725335b04299133223a539dab, type: 3}
+  m_Name: Shirk
+  m_EditorClassIdentifier: 
+  skillName: Shirk
+  areaStyle: 0
+  scaleMult: 0
+  entityType: 1
+  scaler: 0
+  radius: 0
+  range: 10
+  baseValue: 0
+  delayAdditive: 0
+  damageType: 1
+  containsMovement: 0
+  selfMove: 0
+  offsetDistance: 0
+  selfTarget: 0
+  moveSpeed: 3
+  attackCount: 1
+  statusEffects: []
+  removeAll: 1
+  removeStatuses: []
+  icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  targetMode: 0
+  grabAggro: 1
+  baseAether: 25
+  shape: 0

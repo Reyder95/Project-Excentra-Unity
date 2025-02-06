@@ -24,6 +24,7 @@ public abstract class BaseAoe : MonoBehaviour
 
     public abstract void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null);
     public abstract void InitializeEnemyAoe(GameObject attackerObject, EnemyMechanic mechanic, MechanicAttack attack, SkillInformation info);
+    public abstract void ChangeTarget(GameObject target);
     
     public virtual void FreezeAoe()
     {

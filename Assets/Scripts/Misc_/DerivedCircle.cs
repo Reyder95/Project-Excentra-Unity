@@ -169,6 +169,14 @@ public class DerivedCircle : BaseAoe
         circleAoe.SetActive(true);
     }
 
+    public override void ChangeTarget(GameObject target)
+    {
+        if (target != null)
+        {
+            this.originObject = target;
+        }
+    }
+
     public override Vector2 FrozenInfo()
     {
         return this.frozenPosition;

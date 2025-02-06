@@ -201,6 +201,9 @@ public class TurnManager
             }
         }
 
+        if (turnEntity == null)
+            return;
+
         if (forcedDelay == -1f)
             turnEntity.CalculateDelay();
         else

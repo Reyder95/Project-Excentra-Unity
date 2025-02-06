@@ -203,6 +203,11 @@ public class DerivedDirectional : BaseAoe
         circleRenderer.color = colorWithAlpha;
     }
 
+    public override void ChangeTarget(GameObject target)
+    {
+        this.destinationObject = target;
+    }
+
     public override Vector2 FrozenInfo()
     {
         return this.frozenDestination;

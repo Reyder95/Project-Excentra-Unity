@@ -410,6 +410,7 @@ public class BattleManager
                 {
                     if (turnManager.CheckIfMechanicOver(enemyAi.currAttack))
                     {
+                        Debug.Log("Hello!");
                         BossMechanicHandler.EndMechanic(enemyAi.currAttack, this, boss);
                         enemyAi.currAttack = null;
                     }
@@ -430,6 +431,9 @@ public class BattleManager
         // Just boss right now, modify for use with other enemies when time comes
         EnemyContents contents = boss.GetComponent<EnemyContents>();
         contents.aggression.RemoveEntityFromAggressionList(entity);
+
+        if (stats.currentHP > 0)
+            stats.ModifyHP(0);
 
         stats.ModifyStatus();
         controller.animator.SetTrigger("Die");
@@ -719,6 +723,19 @@ public class BattleManager
         {
             float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currSkill));
             DealDamage(entity.Value, entityDamage);
+
+            if ((battleVariables.currSkill as PlayerSkill).grabAggro)
+            {
+                foreach (var aoe in aoeArenadata.aoes)
+                {
+                    BaseAoe baseAoe = aoe.Value.GetComponent<BaseAoe>();
+                    
+                    if (baseAoe.attackerObject == entity.Value)
+                    {
+                        baseAoe.ChangeTarget(currTurn);
+                    }
+                }
+            }
         }
 
     }
@@ -1335,8 +1352,7 @@ public class BattleManager
     public void UpdateTooltipPosition(MouseMoveEvent evt)
     {
         currTooltip.style.left = Mathf.Clamp(evt.mousePosition.x + 10, 0, 4000); // Offset to avoid overlap
-        currTooltip.style.top = Mathf.Clamp((evt.mousePosition.y - currTooltip.resolvedStyle.height) + 10, 0, 4000);
-        Debug.Log((evt.mousePosition.y - currTooltip.resolvedStyle.height));
+        currTooltip.style.top = Mathf.Clamp((evt.mousePosition.y - currTooltip.resolvedStyle.height) + 10, 0, 4000);    
     }
 
     public void HideTooltip()

@@ -50,6 +50,8 @@ public class PlayerSkill : BaseSkill
 
     public TargetMode targetMode;
 
+    public bool grabAggro = false;
+
     [Header("Stats")]
     public int baseAether;
 
