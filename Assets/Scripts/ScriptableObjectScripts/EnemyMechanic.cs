@@ -50,6 +50,7 @@ public class MechanicAttack
     public string targetKey;
     public EntityTargetType targetType;
     public int turnOffset;
+    public bool canBeShirked = false;
 
     [Header("Positioning")]
     public bool originIsTarget;

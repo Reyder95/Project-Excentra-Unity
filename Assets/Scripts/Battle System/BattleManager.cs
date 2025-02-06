@@ -730,7 +730,7 @@ public class BattleManager
                 {
                     BaseAoe baseAoe = aoe.Value.GetComponent<BaseAoe>();
                     
-                    if (baseAoe.attackerObject == entity.Value)
+                    if (baseAoe.attackerObject == entity.Value && baseAoe.mechanicAttack.canBeShirked)
                     {
                         baseAoe.ChangeTarget(currTurn);
                     }
