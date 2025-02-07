@@ -6,6 +6,7 @@ public class DerivedCircle : BaseAoe
     public GameObject circleAoe;
     public Vector2 circlePosition;
 
+
     public Vector2 frozenPosition;
 
     protected override void Start()
@@ -15,6 +16,7 @@ public class DerivedCircle : BaseAoe
 
     protected override void Update()
     {
+        base.Update();
         // Get the mouse position in screen coordinates (pixels)
         Vector3 mouseScreenPosition = Input.mousePosition;
 

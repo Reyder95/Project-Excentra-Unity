@@ -9,6 +9,7 @@ public abstract class BaseAoe : MonoBehaviour
     public bool enemy = false;
     public int arenaAoeIndex = -1;
     public GameObject particleEmitter;
+    public GameObject arrowContainer;
 
     public GameObject originObject;
     public GameObject attackerObject;
@@ -21,7 +22,15 @@ public abstract class BaseAoe : MonoBehaviour
         aoeData = new AoeData();
     }
 
-    protected virtual void Update() { }
+    protected virtual void Update() {
+        if (arrowContainer == null)
+            return;
+
+        if (mechanicAttack != null)
+        {
+            arrowContainer.SetActive(mechanicAttack.isStack);
+        }
+    }
 
     public abstract void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null);
     public abstract void InitializeEnemyAoe(GameObject attackerObject, EnemyMechanic mechanic, MechanicAttack attack, SkillInformation info);

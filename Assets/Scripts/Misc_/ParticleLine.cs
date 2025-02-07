@@ -24,15 +24,6 @@ public class ParticleLine : MonoBehaviour
         {
             gameObject.transform.position = attacker.transform.position;
             gameObject.transform.LookAt(target.transform.position);
-            //Vector2 direction = (Vector2)(aoe.transform.position - attacker.transform.position);
-            //gameObject.transform.position = attacker.transform.position;
-            //_particleSystem.transform.position = attacker.transform.position;
-
-            //float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            //_shapeModule.rotation = new Vector3(0, 0, angle);
-
-            //float distance = direction.magnitude;
-            //_shapeModule.scale = new Vector2(distance, _shapeModule.scale.y);
         }
     }
 

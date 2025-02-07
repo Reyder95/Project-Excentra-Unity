@@ -17,6 +17,7 @@ public class BaseSkill : ScriptableObject
 
     public int radius;
     public float range;
+    public bool mouseRange = false;
 
     public int baseValue;
 

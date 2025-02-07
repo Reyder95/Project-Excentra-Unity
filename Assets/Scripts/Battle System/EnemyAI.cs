@@ -190,7 +190,6 @@ public class EnemyAI : MonoBehaviour
             if (nextPhase != null)
             {
                 currPhase = nextPhase;
-                Debug.Log(currPhase.activeMechanics[0]);
                 return true;
             }
         }

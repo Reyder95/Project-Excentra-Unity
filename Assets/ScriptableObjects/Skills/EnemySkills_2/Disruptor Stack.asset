@@ -16,7 +16,7 @@ MonoBehaviour:
   mechanicKey: 
   mechanicStyle: 1
   dontSkipTurn: 0
-  active: 1
+  active: 0
   untargetable: 0
   targetScript: 0
   activeScript: 0
@@ -27,19 +27,17 @@ MonoBehaviour:
     targetKey: 
     targetType: 4
     turnOffset: 4
+    canBeShirked: 0
     originIsTarget: 1
     originIsSelf: 0
     endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
-    requiredRange: 0
     containsMovement: 0
     moveType: 0
     aoeShape: 0
     isProximity: 0
     isStack: 1
-    staticDistance: 0
     size: 4
-    distance: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
     customColor: 1

@@ -1,4 +1,4 @@
-using Unity.VisualScripting;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,6 +22,10 @@ public class DerivedDirectional : BaseAoe
     public Vector2 frozenDestination;
     public Vector2 frozenPosition;
 
+    public List<GameObject> bottomArrows = new List<GameObject>();
+    public List<GameObject> topArrows = new List<GameObject>();
+    public float arrowDescaler = 7.5f;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
     {
@@ -31,6 +35,17 @@ public class DerivedDirectional : BaseAoe
     // Update is called once per frame
     protected override void Update()
     {
+        base.Update();
+        foreach (GameObject arrow in bottomArrows)
+        {
+            arrow.transform.localScale = new Vector2(gameObject.transform.localScale.x / arrowDescaler, gameObject.transform.localScale.y / arrowDescaler);
+        }
+
+        foreach (GameObject arrow in topArrows)
+        {
+            arrow.transform.localScale = new Vector2(gameObject.transform.localScale.x / arrowDescaler, gameObject.transform.localScale.y / arrowDescaler);
+        }
+
         // Get the mouse position in screen coordinates (pixels)
         Vector3 mouseScreenPosition = Input.mousePosition;
 
@@ -50,6 +65,15 @@ public class DerivedDirectional : BaseAoe
 
                 // Adjust the scale of the sprite
                 newScale = transform.localScale;
+
+                if (skill.mouseRange)
+                {
+                    distance = Vector2.Distance(originObject.transform.position, destination);
+                }
+                else
+                {
+                    distance = skill.range;
+                }
 
                 if (scaleX) newScale.x = distance;  // Scale along X-axis
                 newScale.y = width;
