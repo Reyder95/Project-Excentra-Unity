@@ -174,6 +174,9 @@ public class DerivedCircle : BaseAoe
         if (target != null)
         {
             this.originObject = target;
+            particleEmitter.GetComponent<ParticleLine>().target = target;
+            particleEmitter.GetComponent<ParticleLine>().SetContents(attackerObject, target);
+            particleEmitter.GetComponent<ParticleLine>().ModifyParticleOpacity();
         }
     }
 

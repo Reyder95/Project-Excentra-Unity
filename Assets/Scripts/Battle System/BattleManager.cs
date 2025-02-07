@@ -320,8 +320,9 @@ public class BattleManager
                                 stats.active = mechanic.active;
                         }
                     }
-                } catch (NullReferenceException)
+                } catch (NullReferenceException ex)
                 {
+                    Debug.Log(ex);
                     Debug.Log("Mechanic is null when it should not have been. Maybe Initialization error again?");
                     skipEndTurn = false;
                 }

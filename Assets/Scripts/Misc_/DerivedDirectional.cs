@@ -206,6 +206,9 @@ public class DerivedDirectional : BaseAoe
     public override void ChangeTarget(GameObject target)
     {
         this.destinationObject = target;
+        particleEmitter.GetComponent<ParticleLine>().target = target;
+        particleEmitter.GetComponent<ParticleLine>().SetContents(attackerObject, target);
+        particleEmitter.GetComponent<ParticleLine>().ModifyParticleOpacity();
     }
 
     public override Vector2 FrozenInfo()

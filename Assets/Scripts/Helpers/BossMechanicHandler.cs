@@ -140,6 +140,14 @@ public static class BossMechanicHandler
 
         turnManager.DisplayTurnOrder();
 
+        if (mechanicAttack.canBeShirked)
+        {
+            GameObject particleLineSpawned = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("particle-line"), new Vector2(1000, 1000), Quaternion.identity);
+            particleLineSpawned.GetComponent<ParticleLine>().SetContents(attacker, actualTarget);
+            aoeInfo.particleEmitter = particleLineSpawned;
+        }
+
+
         return delay;
     }
 
@@ -176,6 +184,12 @@ public static class BossMechanicHandler
                 {
                     battleManager.DealDamage(entity.Value, entityDamage, attacker);
                 }
+            }
+
+            if (aoe.particleEmitter != null)
+            {
+                UnityEngine.GameObject.Destroy(aoe.particleEmitter);
+                aoe.particleEmitter = null;
             }
         } catch (InvalidOperationException) { }
 

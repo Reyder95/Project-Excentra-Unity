@@ -25,16 +25,16 @@ MonoBehaviour:
   - attackType: 0
     attackKey: soul-bomb-attack
     targetKey: soul-bomb_target
-    targetType: 7
+    targetType: 4
     turnOffset: 4
     canBeShirked: 1
-    originIsTarget: 1
-    originIsSelf: 0
-    endpointIsTarget: 0
+    originIsTarget: 0
+    originIsSelf: 1
+    endpointIsTarget: 1
     customOrigin: {x: 0, y: 0}
     containsMovement: 0
     moveType: 0
-    aoeShape: 0
+    aoeShape: 1
     isProximity: 0
     isStack: 0
     size: 5

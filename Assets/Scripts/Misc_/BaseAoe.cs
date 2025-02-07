@@ -8,6 +8,7 @@ public abstract class BaseAoe : MonoBehaviour
     public AoeData aoeData;
     public bool enemy = false;
     public int arenaAoeIndex = -1;
+    public GameObject particleEmitter;
 
     public GameObject originObject;
     public GameObject attackerObject;

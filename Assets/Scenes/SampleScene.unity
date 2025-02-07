@@ -597,6 +597,8 @@ MonoBehaviour:
     prefab: {fileID: 8181824542807740559, guid: 38e46b65abaa63446bb78d1d346be5fc, type: 3}
   - key: line
     prefab: {fileID: 6765610906363701024, guid: 308ee99daa0efd84196078c8386bd8d9, type: 3}
+  - key: particle-line
+    prefab: {fileID: 1442022078264017764, guid: f538898db8903f546847411bc9bdf1f0, type: 3}
   bossPhases:
   - key: medica2
     phases:

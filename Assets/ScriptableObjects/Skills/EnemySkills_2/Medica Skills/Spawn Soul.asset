@@ -20,7 +20,7 @@ MonoBehaviour:
   untargetable: 1
   targetScript: 1
   activeScript: 1
-  turnCooldown: 0
+  turnCooldown: -1
   mechanicAttacks:
   - attackType: 3
     attackKey: spawn-soul-attack
@@ -32,15 +32,12 @@ MonoBehaviour:
     originIsSelf: 0
     endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
-    requiredRange: 0
     containsMovement: 0
     moveType: 0
     aoeShape: 0
     isProximity: 0
     isStack: 0
-    staticDistance: 0
     size: 0
-    distance: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
     customColor: 0
