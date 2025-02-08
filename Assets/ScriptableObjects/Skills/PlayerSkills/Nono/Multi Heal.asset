@@ -19,6 +19,7 @@ MonoBehaviour:
   scaler: 1
   radius: 9
   range: 10
+  mouseRange: 0
   baseValue: 55
   delayAdditive: 125
   damageType: 0
@@ -32,6 +33,8 @@ MonoBehaviour:
   removeAll: 1
   removeStatuses: []
   icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  description: Heals allies in a radius for moderate health.
   targetMode: 1
+  grabAggro: 0
   baseAether: 30
   shape: 0

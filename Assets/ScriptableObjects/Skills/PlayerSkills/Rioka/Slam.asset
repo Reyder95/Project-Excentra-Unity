@@ -13,17 +13,14 @@ MonoBehaviour:
   m_Name: Slam
   m_EditorClassIdentifier: 
   skillName: Slam
-  icon: {fileID: 2800000, guid: 10ba8762c8ab5b347b278065c44a6ceb, type: 3}
   areaStyle: 1
-  targetMode: 1
-  shape: 0
+  scaleMult: 1.2
   entityType: 1
   scaler: 0
   radius: 7
   range: 10
+  mouseRange: 0
   baseValue: 50
-  baseAether: 45
-  scaleMult: 1.2
   delayAdditive: 150
   damageType: 2
   containsMovement: 1
@@ -35,3 +32,12 @@ MonoBehaviour:
   statusEffects:
   - key: armour_down
     chance: 100
+  removeAll: 1
+  removeStatuses: []
+  icon: {fileID: 2800000, guid: 10ba8762c8ab5b347b278065c44a6ceb, type: 3}
+  description: Leaps towards an area, slamming on the ground and dealing damage in
+    a radius, applying Armour Down (100% Chance) to all enemies.
+  targetMode: 1
+  grabAggro: 0
+  baseAether: 45
+  shape: 0

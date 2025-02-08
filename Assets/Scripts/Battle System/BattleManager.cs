@@ -1026,6 +1026,9 @@ public class BattleManager
 
                 });
 
+                newSkill.RegisterCallback<MouseEnterEvent>(evt => ShowSkillTooltip(evt, newSkill.userData as PlayerSkill));
+                newSkill.RegisterCallback<MouseLeaveEvent>(evt => HideTooltip());
+
                 skillScroller.Add(newSkill);
             }
         }
@@ -1354,6 +1357,16 @@ public class BattleManager
         currTooltip.Q<Label>("debuff-name").text = effect.effectName;
         currTooltip.Q<Label>("debuff-description").text = effect.description;
 
+        currTooltip.style.opacity = 2;
+    }
+
+    public void ShowSkillTooltip(MouseEnterEvent evt, PlayerSkill skill)
+    {
+        currTooltip.style.left = evt.mousePosition.x + 10; // Offset to avoid overlap
+        currTooltip.style.top = Mathf.Clamp((evt.mousePosition.y - currTooltip.resolvedStyle.height) + 10, 0, 4000);
+        currTooltip.Q<VisualElement>("debuff-icon").style.backgroundImage = skill.icon;
+        currTooltip.Q<Label>("debuff-name").text = skill.skillName;
+        currTooltip.Q<Label>("debuff-description").text = skill.description;
         currTooltip.style.opacity = 2;
     }
 

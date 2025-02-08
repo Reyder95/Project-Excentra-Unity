@@ -19,6 +19,7 @@ MonoBehaviour:
   scaler: 0
   radius: 0
   range: 10
+  mouseRange: 0
   baseValue: 0
   delayAdditive: 0
   damageType: 1
@@ -32,6 +33,8 @@ MonoBehaviour:
   removeAll: 1
   removeStatuses: []
   icon: {fileID: 2800000, guid: 599e42b9f7110e448b887e4fc0f5496d, type: 3}
+  description: Taunts the targeted enemy, forcing all (eligible) pending attacks
+    to target the user. Attacker must be eligible to be shirked (particle line)
   targetMode: 0
   grabAggro: 1
   baseAether: 25

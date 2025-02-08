@@ -33,6 +33,8 @@ MonoBehaviour:
   removeAll: 1
   removeStatuses: []
   icon: {fileID: 2800000, guid: 991b088f1dc15d74da6d95dc591cff1a, type: 3}
+  description: Lunges towards a target direction dealing physical damage to all enemies
+    in its path.
   targetMode: 1
   grabAggro: 0
   baseAether: 95

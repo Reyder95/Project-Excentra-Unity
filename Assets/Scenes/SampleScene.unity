@@ -687,7 +687,7 @@ MonoBehaviour:
   - key: particle-line
     prefab: {fileID: 1442022078264017764, guid: f538898db8903f546847411bc9bdf1f0, type: 3}
   bossPhases:
-  - key: medica2
+  - key: medica
     phases:
     - activeMechanics:
       - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
@@ -721,7 +721,7 @@ MonoBehaviour:
     initialPhase:
       mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
       delayBonus: 100
-  - key: medica
+  - key: medica_test
     phases:
     - activeMechanics:
       - {fileID: 11400000, guid: e46026ace9973b74493b193ab1784bd1, type: 2}

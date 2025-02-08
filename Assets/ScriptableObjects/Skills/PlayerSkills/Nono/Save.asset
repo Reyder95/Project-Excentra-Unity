@@ -13,17 +13,14 @@ MonoBehaviour:
   m_Name: Save
   m_EditorClassIdentifier: 
   skillName: Save
-  icon: {fileID: 2800000, guid: d4a930e569f083e45a4ef850c6ab1bb3, type: 3}
   areaStyle: 0
-  targetMode: 0
-  shape: 0
+  scaleMult: 0
   entityType: 0
   scaler: 0
   radius: 0
   range: 20
+  mouseRange: 0
   baseValue: 0
-  baseAether: 150
-  scaleMult: 0
   delayAdditive: 100
   damageType: 1
   containsMovement: 1
@@ -33,3 +30,11 @@ MonoBehaviour:
   moveSpeed: 15
   attackCount: 1
   statusEffects: []
+  removeAll: 1
+  removeStatuses: []
+  icon: {fileID: 2800000, guid: d4a930e569f083e45a4ef850c6ab1bb3, type: 3}
+  description: Pulls an ally towards you.
+  targetMode: 0
+  grabAggro: 0
+  baseAether: 150
+  shape: 0

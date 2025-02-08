@@ -48,6 +48,9 @@ public class PlayerSkill : BaseSkill
     [Header("Metadata")]
     public Texture2D icon;
 
+    [TextArea(3, 10)]
+    public string description;
+
     public TargetMode targetMode;
 
     public bool grabAggro = false;
