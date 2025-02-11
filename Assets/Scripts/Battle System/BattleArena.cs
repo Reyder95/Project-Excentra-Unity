@@ -6,14 +6,19 @@ public class BattleArena
     public float rightBound;
     public float topBound;
     public float bottomBound;
+    public float width;
+    public float height;
 
-    public BattleArena(Vector2 center, float size)
+    public BattleArena(Vector2 center, float width, float height)
     {
-        float halfSize = size / 2;
-        this.leftBound = center.x - halfSize;
-        this.rightBound = center.x + halfSize;
-        this.topBound = center.y + halfSize;
-        this.bottomBound = center.y - halfSize;
+        float halfWidth = width / 2;
+        float halfHeight = height / 2;
+        this.width = width;
+        this.height = height;
+        this.leftBound = center.x - halfWidth;
+        this.rightBound = center.x + halfWidth;
+        this.topBound = center.y + halfHeight;
+        this.bottomBound = center.y - halfHeight;
     }
 
     public bool IsInsideArena(Vector2 position)

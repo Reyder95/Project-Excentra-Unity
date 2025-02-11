@@ -3,6 +3,8 @@ using UnityEngine;
 public class DerivedCircle : BaseAoe
 {
     public float radius = 2f;
+    public float height = -1f;
+    public float width = -1f;
     public GameObject circleAoe;
     public Vector2 circlePosition;
 
@@ -72,8 +74,17 @@ public class DerivedCircle : BaseAoe
         {
             Vector3 newScale = transform.localScale;
 
-            newScale.y = radius;
-            newScale.x = radius;
+            if (this.mechanicAttack != null && (this.mechanicAttack.nonUniformDimensions || this.mechanicAttack.raidWide))
+            {
+                newScale.y = height;
+                newScale.x = width;
+            }
+            else
+            {
+                newScale.y = radius;
+                newScale.x = radius;
+            }
+
 
             transform.localScale = newScale;
 
@@ -89,24 +100,44 @@ public class DerivedCircle : BaseAoe
     {
         base.aoeData = new AoeData();
 
-        if (skill == null && attack.aoeShape != Shape.CIRCLE)
+        if (skill == null && (attack.aoeShape != Shape.CIRCLE && attack.aoeShape != Shape.DONUT && attack.aoeShape != Shape.BOX))
+        {
+            Debug.Log(attack.aoeShape);
             return;
+        }
 
         this.mechanicAttack = attack;
         this.mechanic = mechanic;
         this.attackerObject = attackerObject;
-        this.radius = attack.size;
+
+        if (attack.nonUniformDimensions == false)
+            this.radius = attack.size;
+        else
+        {
+            this.height = attack.dimensions.y;
+            this.width = attack.dimensions.x;
+        }
 
         // May need a new parameter for EnemyTargetInformation to let the aoe know what to do
 
-        if (info.objectOrigin != null)
+        if (!attack.raidWide)
         {
-            this.originObject = info.objectOrigin;
+            if (info.objectOrigin != null)
+            {
+                this.originObject = info.objectOrigin;
+            }
+            else
+            {
+                this.circlePosition = attack.customOrigin;
+            }
         }
         else
         {
-            this.circlePosition = attack.customOrigin;
+            this.circlePosition = ExcentraGame.battleManager.arena.GetCenter();
+            this.width = ExcentraGame.battleManager.arena.width;
+            this.height = ExcentraGame.battleManager.arena.height;
         }
+
 
         Color newColor = Color.red;
 

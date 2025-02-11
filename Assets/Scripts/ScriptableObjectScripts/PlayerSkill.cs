@@ -18,7 +18,9 @@ public enum Shape
 {
     CIRCLE,
     CONE,
-    LINE
+    LINE,
+    DONUT,
+    BOX
 }
 
 public enum EntityType
@@ -58,6 +60,6 @@ public class PlayerSkill : BaseSkill
     [Header("Stats")]
     public int baseAether;
 
-    public Shape shape;
+    
 
 }

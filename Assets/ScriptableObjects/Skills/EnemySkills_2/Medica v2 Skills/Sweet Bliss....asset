@@ -1,0 +1,200 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
+  m_Name: Sweet Bliss...
+  m_EditorClassIdentifier: 
+  mechanicName: Sweet Bliss...
+  mechanicKey: acclimation
+  mechanicStyle: 1
+  dontSkipTurn: 0
+  active: 0
+  untargetable: 0
+  targetScript: 0
+  activeScript: 0
+  goNext: 1
+  turnCooldown: 0
+  mechanicAttacks:
+  - attackType: 0
+    attackKey: red_acclimation
+    targetKey: 
+    targetType: 0
+    turnOffset: 4
+    canBeShirked: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: -8, y: 0}
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 4
+    isProximity: 0
+    isStack: 0
+    nonUniformDimensions: 0
+    size: 8
+    dimensions: {x: 0, y: 0}
+    raidWide: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 1
+    aoeColor: {r: 1, g: 0, b: 0, a: 0.34117648}
+    addKeys: []
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 2
+    scaler: 0
+    scaleMult: 4
+    baseValue: 300
+    attackCount: 1
+    statusesToAdd: []
+    statusesToRemove: []
+  - attackType: 0
+    attackKey: blue_acclimation
+    targetKey: 
+    targetType: 0
+    turnOffset: 4
+    canBeShirked: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 8, y: 0}
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 4
+    isProximity: 0
+    isStack: 0
+    nonUniformDimensions: 0
+    size: 8
+    dimensions: {x: 0, y: 0}
+    raidWide: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 1
+    aoeColor: {r: 0, g: 0.09803922, b: 0.99215686, a: 0.39607844}
+    addKeys: []
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 2
+    scaler: 0
+    scaleMult: 4
+    baseValue: 300
+    attackCount: 1
+    statusesToAdd: []
+    statusesToRemove: []
+  - attackType: 0
+    attackKey: 
+    targetKey: 
+    targetType: 0
+    turnOffset: 4
+    canBeShirked: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 0, y: 0}
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 4
+    isProximity: 0
+    isStack: 0
+    nonUniformDimensions: 0
+    size: 8
+    dimensions: {x: 16, y: 8}
+    raidWide: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 1
+    aoeColor: {r: 0.99215686, g: 0.5790311, b: 0, a: 0.39607844}
+    addKeys: []
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 2
+    scaler: 0
+    scaleMult: 4
+    baseValue: 300
+    attackCount: 1
+    statusesToAdd: []
+    statusesToRemove: []
+  - attackType: 0
+    attackKey: 
+    targetKey: 
+    targetType: 0
+    turnOffset: 4
+    canBeShirked: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 0, y: 8}
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 4
+    isProximity: 0
+    isStack: 0
+    nonUniformDimensions: 1
+    size: 8
+    dimensions: {x: 32, y: 8}
+    raidWide: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 1
+    aoeColor: {r: 0.99215686, g: 0.5790311, b: 0, a: 0.39607844}
+    addKeys: []
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 2
+    scaler: 0
+    scaleMult: 4
+    baseValue: 300
+    attackCount: 1
+    statusesToAdd: []
+    statusesToRemove: []
+  - attackType: 0
+    attackKey: 
+    targetKey: 
+    targetType: 0
+    turnOffset: 4
+    canBeShirked: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 0, y: -8}
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 4
+    isProximity: 0
+    isStack: 0
+    nonUniformDimensions: 1
+    size: 8
+    dimensions: {x: 32, y: 8}
+    raidWide: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 1
+    aoeColor: {r: 0.99215686, g: 0.5790311, b: 0, a: 0.39607844}
+    addKeys: []
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 2
+    scaler: 0
+    scaleMult: 4
+    baseValue: 300
+    attackCount: 1
+    statusesToAdd: []
+    statusesToRemove: []

@@ -17,9 +17,9 @@ MonoBehaviour:
   mechanicStyle: 0
   dontSkipTurn: 1
   active: 0
-  untargetable: 1
-  targetScript: 1
-  activeScript: 1
+  untargetable: 0
+  targetScript: 0
+  activeScript: 0
   turnCooldown: -1
   mechanicAttacks:
   - attackType: 3
@@ -43,8 +43,8 @@ MonoBehaviour:
     customColor: 0
     aoeColor: {r: 0, g: 0, b: 0, a: 0}
     addKeys:
-    - entityKey: Small Orc
-      aiKey: soul
+    - entityKey: Soul Orc
+      aiKey: 
       bottomLeft: {x: 0, y: 3}
       topRight: {x: 0, y: 0}
     tetherStationary: 0

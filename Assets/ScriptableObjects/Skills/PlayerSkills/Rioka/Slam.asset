@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Slam
   areaStyle: 1
-  scaleMult: 1.2
+  scaleMult: 1.8
   entityType: 1
   scaler: 0
   radius: 7

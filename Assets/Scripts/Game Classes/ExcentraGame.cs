@@ -67,7 +67,7 @@ public class ExcentraGame : MonoBehaviour
 
         GameObject boss = ExcentraDatabase.TryGetEntity("Orc");
 
-        battleManager.InitializeBattle(playerCharacters, boss, new BattleArena(new Vector2(0, 0), 20f));
+        battleManager.InitializeBattle(playerCharacters, boss, new BattleArena(new Vector2(0.5f, 0), 23, 16));
 
 
         DontDestroyOnLoad(this.gameObject);

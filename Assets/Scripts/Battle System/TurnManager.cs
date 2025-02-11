@@ -18,6 +18,8 @@ public class TurnManager
     VisualTreeAsset turnElement;
     VisualElement turnOrderUI;
 
+    float averageTurnDelay = 0;
+
 
     public void InitializeTurnManager(List<GameObject> players, GameObject boss)
     {
@@ -30,6 +32,9 @@ public class TurnManager
     public void InitializeTurnOrder(List<GameObject> players, GameObject boss)
     {
         turnOrder.Clear();
+
+        float totalDelay = 0;
+        int count = 0;
 
         // Adds all entities to a single turnOrder List
 
@@ -60,7 +65,11 @@ public class TurnManager
 
 
             character.CalculateDelay();
+            totalDelay += character.delay;
+            count++;
         }
+
+        averageTurnDelay = totalDelay / count;
 
         // Sorts them by the delay we've just calculated
         turnOrder.Sort((a, b) =>
@@ -162,6 +171,13 @@ public class TurnManager
                     return false;
                 }
             }
+            else
+            {
+                if (entity.GetEntity().GetComponent<EntityStats>().addMechanic == mechanic)
+                {
+                    return false;
+                }
+            }
         }
 
         return true;
@@ -220,20 +236,35 @@ public class TurnManager
     public float ReturnDelayNeededForTurn(int turnCount)
     {
         int counter = 0;
+        int countdown = 0;
         foreach (var character in turnOrder)
         {
+            if (character.isEntity)
+            {
+                if (character.GetEntity().GetComponent<EntityStats>().active == false && !character.GetEntity().GetComponent<EntityStats>().isPlayer)
+                {
+                    countdown++;
+                    continue;
+                }
+            }
             if (counter == turnCount)
             {
                 break;
             }
-
+            
             counter++;
         }
+
+        if (turnCount > turnOrder.Count)
+        {
+            return turnOrder[turnOrder.Count - 1 - countdown].delay + (averageTurnDelay * (turnCount - turnOrder.Count));
+        }
+            
 
         if (counter == turnOrder.Count)
             return turnOrder[counter - 1].delay + 1;
 
-        return turnOrder[counter].delay + 1;
+        return turnOrder[counter].delay;
     }
 
     public float ReturnDelayNeededForCharacter(GameObject entity)

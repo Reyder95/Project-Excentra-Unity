@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Fire Arrow
   areaStyle: 1
-  scaleMult: 1.8
+  scaleMult: 1
   entityType: 1
   scaler: 0
   radius: 5
   range: 10
   mouseRange: 0
-  baseValue: 130
+  baseValue: 100
   delayAdditive: 225
   damageType: 2
   containsMovement: 0

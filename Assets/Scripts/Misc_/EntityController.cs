@@ -56,6 +56,8 @@ public class EntityController : MonoBehaviour
     private float skillMoveSpeed = 0f;
     private bool isSkillMoving = false;
 
+    public LayerMask collideableMask;
+
     private EnemyAI enemyAi;
 
     void Awake()
@@ -105,6 +107,8 @@ public class EntityController : MonoBehaviour
         // Moves entity towards target at a set speed. When within range, attack target.
         if (autoMove)
         {
+            if (target == null)
+                return;
             Vector2 newPosition = Vector2.MoveTowards(transform.position, target.transform.position, Time.deltaTime * moveSpeed);
 
             if (newPosition.x > transform.position.x)
@@ -140,7 +144,27 @@ public class EntityController : MonoBehaviour
         if (isSkillMoving)
         {
             Vector2 newPosition = Vector2.MoveTowards(transform.position, targetLocation, Time.fixedDeltaTime * skillMoveSpeed);
-            rb.MovePosition(newPosition);
+            newPosition.x = Mathf.Clamp(newPosition.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
+            newPosition.y = Mathf.Clamp(newPosition.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
+
+            // Adjust the new position to account for the collider's offset
+            Vector2 colliderCenter = newPosition;
+
+            // Use the collider's size for the overlap check
+            Collider2D hitCollider = Physics2D.OverlapBox(newPosition, aliveSize, 0f, collideableMask);
+
+            DrawColliderBounds(newPosition);
+
+            // If no collision is detected, move the entity
+            if (hitCollider == null || (hitCollider != null && hitCollider.gameObject.tag != "TESTTT"))
+            {
+                rb.MovePosition(newPosition);
+            }
+            else
+            {
+                rb.MovePosition(transform.position);
+                ResetMovementSkill();
+            }
 
             if (newPosition.x > transform.position.x)
             {
@@ -181,14 +205,48 @@ public class EntityController : MonoBehaviour
             newPosition.x = Mathf.Clamp(newPosition.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
             newPosition.y = Mathf.Clamp(newPosition.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
 
-
-
+            // Check if the new position is within the movement radius
             if (Vector2.Distance(newPosition, turnStartPos) < (entityStats.CalculateMovementRadius() / 2))
             {
-                rb.MovePosition(newPosition);
+                // Adjust the new position to account for the collider's offset
+                Vector2 colliderCenter = newPosition;
+
+                // Use the collider's size for the overlap check
+                Collider2D hitCollider = Physics2D.OverlapBox(newPosition, aliveSize, 0f, collideableMask);
+
+                DrawColliderBounds(newPosition);
+
+                // If no collision is detected, move the entity
+                if (hitCollider == null || (hitCollider != null && hitCollider.gameObject.tag != "TESTTT" ))
+                {
+                    rb.MovePosition(newPosition);
+                }
+                else
+                {
+                    rb.MovePosition(transform.position);
+                }
             }
         }
 
+    }
+
+    void DrawColliderBounds(Vector2 colliderCenter)
+    {
+
+        // Calculate the half-size of the collider
+        Vector2 halfSize = aliveSize / 2f;
+
+        // Define the four corners of the collider
+        Vector2 topLeft = new Vector2(colliderCenter.x - halfSize.x, colliderCenter.y + halfSize.y);
+        Vector2 topRight = new Vector2(colliderCenter.x + halfSize.x, colliderCenter.y + halfSize.y);
+        Vector2 bottomLeft = new Vector2(colliderCenter.x - halfSize.x, colliderCenter.y - halfSize.y);
+        Vector2 bottomRight = new Vector2(colliderCenter.x + halfSize.x, colliderCenter.y - halfSize.y);
+
+        // Draw the lines to represent the collider's bounds
+        Debug.DrawLine(topLeft, topRight, Color.green); // Top edge
+        Debug.DrawLine(topRight, bottomRight, Color.green); // Right edge
+        Debug.DrawLine(bottomRight, bottomLeft, Color.green); // Bottom edge
+        Debug.DrawLine(bottomLeft, topLeft, Color.green); // Left edge
     }
 
     public void ActivateMovementSkill(float movementSpeed, Vector2 destination, float offset)

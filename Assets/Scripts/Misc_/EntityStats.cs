@@ -75,6 +75,8 @@ public class EntityStats : MonoBehaviour
     public string entityKey;
     [NonSerialized]
     public EnemyMechanic addMechanic;
+    [NonSerialized]
+    public MechanicVariables mechanicVariables = new MechanicVariables();
 
     public event Action<EntityStats> OnStatusChanged;
     public event Action<EntityStats> OnHealthChanged;

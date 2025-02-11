@@ -81,7 +81,6 @@ public class ParticleLine : MonoBehaviour
     void OnParticleTrigger()
     {
         ParticleSystem ps = _particleSystem;
-        Debug.Log("YO!");
 
         // particles
         List<ParticleSystem.Particle> enter = new List<ParticleSystem.Particle>();
@@ -107,8 +106,6 @@ public class ParticleLine : MonoBehaviour
             float attackerToParticle = Vector2.Distance(particleWorldTransform, attacker.transform.position);
             float attackerToTarget = Vector2.Distance(attacker.transform.position, target.transform.position);
 
-            Debug.Log("Attacker To Particle: " + attackerToParticle);
-            Debug.Log("Attacker To Target" + attackerToTarget);
             if (attackerToParticle < attackerToTarget)
             {
                 Color32 pColor = p.startColor;

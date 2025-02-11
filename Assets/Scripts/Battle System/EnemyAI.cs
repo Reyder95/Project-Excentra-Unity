@@ -47,6 +47,7 @@ public class EnemyAI : MonoBehaviour
             {
                 EnemyMechanic chosenMechanic = currPhase.ChooseMechanic();
 
+                Debug.Log(chosenMechanic);
                 if (chosenMechanic.mechanicStyle != MechanicStyle.IMMEDIATE)
                 {
                     currAttack = chosenMechanic;
@@ -113,6 +114,9 @@ public class EnemyAI : MonoBehaviour
         currTarget = null;
 
         var possibleChars = possibleTargets.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
+
+        if (possibleChars.Count == 0)
+            return null;
 
         int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
 
@@ -187,7 +191,7 @@ public class EnemyAI : MonoBehaviour
         if (enemyPhases != null)
         {
             EnemyPhase nextPhase = GetNextValidPhase(force);
-            if (nextPhase != null)
+            if (nextPhase != null && nextPhase != currPhase)
             {
                 currPhase = nextPhase;
                 return true;

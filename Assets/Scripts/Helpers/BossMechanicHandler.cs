@@ -53,6 +53,9 @@ public static class BossMechanicHandler
                         break;
                     case AttackType.TETHER:
                         break;
+                    case AttackType.ADD:
+                        InitializeAddAttack(mechanic, attack, battleManager, attacker);
+                        break;
 
                 }
             }
@@ -99,9 +102,17 @@ public static class BossMechanicHandler
         {
             aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle"), new Vector2(1000, 1000), Quaternion.identity);
         }
-        else
+        else if (mechanicAttack.aoeShape == Shape.LINE)
         {
             aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("line"), new Vector2(1000, 1000), Quaternion.identity);
+        }
+        else if (mechanicAttack.aoeShape == Shape.DONUT)
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("donut"), new Vector2(1000, 1000), Quaternion.identity);
+        }
+        else
+        {
+            aoe = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("box"), new Vector2(1000, 1000), Quaternion.identity);
         }
         
         BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
@@ -240,7 +251,7 @@ public static class BossMechanicHandler
     {
         foreach (AddSpawner add in attack.addKeys)
         {
-            GameObject spawnedAdd = battleManager.SpawnNewEntity(ExcentraDatabase.TryGetEntity(add.entityKey), add.bottomLeft, add.entityKey, add.aiKey);
+            GameObject spawnedAdd = battleManager.SpawnNewEntity(ExcentraDatabase.TryGetEntity(add.entityKey), add.bottomLeft, add.entityKey, add.aiKey, add.next);
 
             EntityStats addStats = spawnedAdd.GetComponent<EntityStats>();
 

@@ -54,3 +54,40 @@ MonoBehaviour:
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []
+  - attackType: 3
+    attackKey: spawn-soul-attack
+    targetKey: 
+    targetType: 0
+    turnOffset: 0
+    canBeShirked: 0
+    originIsTarget: 0
+    originIsSelf: 0
+    endpointIsTarget: 0
+    customOrigin: {x: 0, y: 0}
+    containsMovement: 0
+    moveType: 0
+    aoeShape: 0
+    isProximity: 0
+    isStack: 0
+    size: 0
+    distanceOffset: 0
+    endpoint: {x: 0, y: 0}
+    customColor: 0
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    addKeys:
+    - entityKey: Soul Orc
+      aiKey: 
+      bottomLeft: {x: 0, y: 3}
+      topRight: {x: 0, y: 0}
+      next: 1
+    tetherStationary: 0
+    secondTether: 0
+    tetherLocation: {x: 0, y: 0}
+    tetherRange: 0
+    damageType: 0
+    scaler: 0
+    scaleMult: 0
+    baseValue: 0
+    attackCount: 0
+    statusesToAdd: []
+    statusesToRemove: []

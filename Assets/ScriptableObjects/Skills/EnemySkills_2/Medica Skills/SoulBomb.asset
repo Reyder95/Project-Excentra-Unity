@@ -20,13 +20,13 @@ MonoBehaviour:
   untargetable: 0
   targetScript: 0
   activeScript: 0
-  turnCooldown: 0
+  turnCooldown: -1
   mechanicAttacks:
   - attackType: 0
     attackKey: soul-bomb-attack
     targetKey: soul-bomb_target
     targetType: 4
-    turnOffset: 4
+    turnOffset: 9
     canBeShirked: 1
     originIsTarget: 0
     originIsSelf: 1

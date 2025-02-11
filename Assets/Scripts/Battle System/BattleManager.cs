@@ -170,7 +170,8 @@ public class BattleManager
 
             if (phaseChanged)
             {
-                
+
+                Debug.Log("LOLLLL!");
                 turnManager.CalculateIndividualDelay(stats.gameObject, turnManager.ReturnDelayNeededForTurn(0));
             }
             
@@ -256,6 +257,11 @@ public class BattleManager
             EntityController controller = currTurn.GetComponent<EntityController>();
             PlayerInput input = currTurn.GetComponent<PlayerInput>();
 
+            if (controller.animator.GetCurrentAnimatorStateInfo(0).IsName("Dead"))
+            {
+                controller.animator.Play("Idle");
+            }
+
             // Check an Entity's current set of statuses that have on turn start.
             // If they die, immediately end the turn
             if (HandleTurnStatuses())
@@ -298,7 +304,7 @@ public class BattleManager
 
                         if (mechanic == null)
                         {
-                            Debug.Log(currTurn);
+                            Debug.Log("Current Attack " + enemyAi.currAttack);
                             BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
 
                         }
@@ -314,10 +320,21 @@ public class BattleManager
                         if (mechanic != null)
                             stats.targetable = !mechanic.untargetable;
 
-                        if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
+                        if (mechanic != null)
                         {
                             if (mechanic.activeScript)
+                            {
+
                                 stats.active = mechanic.active;
+                            }
+                        }
+
+                        if (enemyAi.currAttack != null)
+                        {
+                            if (enemyAi.currAttack.activeScript)
+                            {
+                                stats.active = enemyAi.currAttack.active;
+                            }
                         }
                     }
                 } catch (NullReferenceException ex)
@@ -339,6 +356,8 @@ public class BattleManager
         {
             BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
             EnemyAI enemyAi = aoe.attackerObject.GetComponent<EnemyAI>();
+            if (aoe)
+            Debug.Log("GO IN!");
             // Find some way to store attackers of skills
             BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, aoe.attackerObject, aoe);
             EndTurn();
@@ -371,12 +390,14 @@ public class BattleManager
                 {
                     if (entityStats.currentHP <= 0)
                     {
+                        Debug.Log("KILLING " + entity);
                         KillEntity(entity.Value);
 
                     }
                 }
                 else
                 {
+                    Debug.Log("REVIVING ENTITY!");
                     turnManager.ReviveEntity(entity.Value);
                     entity.Value.GetComponent<EntityController>().animator.SetTrigger("Revive");
                 }
@@ -386,37 +407,36 @@ public class BattleManager
 
         ExcentraGame.Instance.WaitCoroutine(0.5f, () =>
         {
-            if (stats != null)
-                if (!stats.active)
-                    stats.nextStaticDelay = 1000f;
-
-
-            // Clean up the turn, then wait a few seconds and then start the turn.
-            CleanupTurn();
-            if (stats == null || (stats != null && stats.nextStaticDelay == -1))
-                turnManager.EndCurrentTurn();
-            else
+            try
             {
-                turnManager.EndCurrentTurn(stats.nextStaticDelay);
-                stats.nextStaticDelay = -1f;
-            }
+                if (stats != null)
+                    if (!stats.active)
+                        stats.nextStaticDelay = 1000f;
 
-            if (currTurn.GetComponent<BaseAoe>() != null)
-                enemyAi = currTurn.GetComponent<BaseAoe>().attackerObject.GetComponent<EnemyAI>();
 
-            if (enemyAi.enabled)
-            {
-                if (enemyAi.currAttack != null)
+                // Clean up the turn, then wait a few seconds and then start the turn.
+                CleanupTurn();
+                if (stats == null || (stats != null && stats.nextStaticDelay == -1))
+                    turnManager.EndCurrentTurn();
+                else
                 {
-                    Debug.Log("WAAAAH");
-                    if (turnManager.CheckIfMechanicOver(enemyAi.currAttack))
+                    turnManager.EndCurrentTurn(stats.nextStaticDelay);
+                    stats.nextStaticDelay = -1f;
+                }
+
+                if (currTurn.GetComponent<BaseAoe>() != null)
+                {
+                    if (enemyAi.enabled)
                     {
-                        Debug.Log("Hello!");
-                        BossMechanicHandler.EndMechanic(enemyAi.currAttack, this, currTurn.GetComponent<BaseAoe>().attackerObject);
-                        enemyAi.currAttack = null;
+                        if (enemyAi.currAttack != null)
+                        {
+                            EndMechanic(currTurn.GetComponent<BaseAoe>().mechanic, currTurn.GetComponent<BaseAoe>().attackerObject);
+                        }
                     }
                 }
             }
+            catch (MissingReferenceException) { }
+
             
             StartTurn();
         });
@@ -437,6 +457,7 @@ public class BattleManager
             stats.ModifyHP(0);
 
         stats.ModifyStatus();
+        Debug.Log("Hello!");
         controller.animator.SetTrigger("Die");
 
         turnManager.DisplayTurnOrder();
@@ -456,7 +477,29 @@ public class BattleManager
         }
     }
 
-    public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey, string aiKey)
+    public void EndMechanic(EnemyMechanic mechanic, GameObject attacker)
+    {
+        if (turnManager.CheckIfMechanicOver(mechanic))
+        {
+            EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+            BossMechanicHandler.EndMechanic(mechanic, this, attacker);
+            enemyAi.currAttack = null;
+
+            if (mechanic.goNext)
+            {
+                Debug.Log("HELLO!ASDASDAD");
+                turnManager.CalculateIndividualDelay(attacker, 0);
+            }
+
+            foreach (var character in playerCharacters)
+            {
+                EntityStats stats = character.GetComponent<EntityStats>();
+                stats.mechanicVariables.targeted = false;
+            }
+        }
+    }
+
+    public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey, string aiKey, bool next)
     {
         Debug.Log("SPAWN ENTITY");
         GameObject spawnedEntity = GameObject.Instantiate(entity, pos, Quaternion.identity);
@@ -473,7 +516,12 @@ public class BattleManager
             spawnedEntityStats.enemyKey = aiKey;
         spawnedEntity.GetComponent<EnemyAI>().InitializeAI(playerCharacters);
         TurnEntity newSpawnedEntity = new TurnEntity(spawnedEntity);
-        newSpawnedEntity.CalculateDelay();
+
+        if (!next)
+            newSpawnedEntity.CalculateDelay();
+        else
+            newSpawnedEntity.CalculateDirectDelay(turnManager.ReturnDelayNeededForTurn(0));
+
         bool added = turnManager.InsertUnitIntoTurn(newSpawnedEntity);
 
         if (!added)
@@ -736,6 +784,9 @@ public class BattleManager
             {
                 foreach (var aoe in aoeArenadata.aoes)
                 {
+                    if (aoe.Value == null)
+                        continue;
+
                     BaseAoe baseAoe = aoe.Value.GetComponent<BaseAoe>();
                     
                     if (baseAoe.attackerObject == entity.Value && baseAoe.mechanicAttack.canBeShirked)
@@ -817,6 +868,14 @@ public class BattleManager
         else
             currAttacker = turnManager.GetCurrentTurn();
 
+        Debug.Log("BEFORE!");
+
+        Vector2 centerPoint = currAttacker.transform.position;
+
+        if (!HasLineOfSight(centerPoint, entity))
+            return;
+
+        Debug.Log("AFTER");
 
         if ((battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE) || battleVariables.currSkill == null)
         {
@@ -839,6 +898,26 @@ public class BattleManager
         {
             KillEntity(entity);
         }
+    }
+
+    public bool HasLineOfSight(Vector2 centerPoint, GameObject defender)
+    {
+
+        Vector2 startPosition = centerPoint;
+        Vector2 endPosition = defender.transform.position;
+
+        Vector2 direction = (endPosition - startPosition).normalized;
+
+        float distance = Vector2.Distance(startPosition, endPosition);
+
+        RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, distance, LayerMask.GetMask("Obstacles"));
+
+        Debug.Log(hit);
+
+        if (hit.collider != null)
+            return false;
+
+        return true;
     }
 
     public void ChangeState(BattleState newState)

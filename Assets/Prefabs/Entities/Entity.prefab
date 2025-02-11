@@ -124,6 +124,8 @@ MonoBehaviour:
   speed: 0
   move: 0
   basicRange: 0
+  healthRegenRate: 0
+  aetherRegenRate: 0
   aggressionGen: 0
   aggressionDecay: 0
   aggressionTurns: 0
@@ -160,6 +162,9 @@ MonoBehaviour:
   aliveSize: {x: 0, y: 0}
   deadOffset: {x: 0, y: 0}
   deadSize: {x: 0, y: 0}
+  collideableMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &1719475619647554519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,7 +258,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 0
 --- !u!61 &7379840933358803624
 BoxCollider2D:
@@ -587,7 +592,7 @@ GameObject:
   - component: {fileID: 519537046278242147}
   m_Layer: 0
   m_Name: AoEHitbox
-  m_TagString: Untagged
+  m_TagString: ignoreMove
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

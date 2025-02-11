@@ -52,6 +52,8 @@ public class EnemyMechanic : ScriptableObject
     [Tooltip("If active, sets caster delay to 1000 and prevents reduction in delay. Allows us to create a script to enable activity under specific situations")]
     public bool activeScript = false;
 
+    public bool goNext = false;
+
     [Tooltip("How many turns until casting can we re-cast this ability?")]
     public int turnCooldown = 0;
     [System.NonSerialized] public int currTurns;
@@ -110,8 +112,14 @@ public class MechanicAttack
     [Tooltip("States if this aoe attack is a stack. If it's a stack, the damage dealt to anyone would be divided by the number of entities hit.")]
     public bool isStack;
 
+    public bool nonUniformDimensions = false;
+
     [Tooltip("The size of the aoe. For circles this is the diameter. For directionals this is the width.")]
     public float size;
+
+    public Vector2 dimensions;
+
+    public bool raidWide = false;
 
     [Tooltip("Only applies to directionals. How much further or closer do you want the directional to end relative to the target")]
     public float distanceOffset;

@@ -13,6 +13,7 @@ public abstract class BaseAoe : MonoBehaviour
 
     public GameObject originObject;
     public GameObject attackerObject;
+    public GameObject targetObject;
 
     public bool freezeAoe = false;
 

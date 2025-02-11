@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 2800000, guid: 594c508398161e94ab5af8a1e474e87d, type: 3}
   customTurnLogic: 1
   description: You're acclimated to a different spiritual plane. You need to create
-    a proper balance before your soul fades!
+    a proper <color="red">balance</color> before your soul fades!
   effectType: 10
   effectMagnitude: 0
   statType: 0

@@ -35,4 +35,6 @@ public class BaseSkill : ScriptableObject
 
     public bool removeAll = true;
     public List<StatusEffect> removeStatuses;
+
+    public Shape shape;
 }
