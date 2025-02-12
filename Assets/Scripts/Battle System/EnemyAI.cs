@@ -17,6 +17,7 @@ public class EnemyAI : MonoBehaviour
     [System.NonSerialized] public EnemyContents enemyContents;
     [System.NonSerialized] public EntityStats stats;
     [System.NonSerialized] public int phaseCount = 0;
+    [System.NonSerialized] public bool isPhaseTrigger = false;
 
     private void Awake()
     {
@@ -146,7 +147,7 @@ public class EnemyAI : MonoBehaviour
 
     }
 
-    public EnemyPhase GetNextValidPhase(bool force)
+    public EnemyPhase GetNextValidPhase(bool force, bool changeHP = true)
     {
         EnemyPhase selectedPhase = null;
 
@@ -154,6 +155,8 @@ public class EnemyAI : MonoBehaviour
         {
             selectedPhase = enemyPhases[phaseCount];
             phaseCount++;
+            isPhaseTrigger = false;
+
             return selectedPhase;
         }
 
@@ -170,18 +173,39 @@ public class EnemyAI : MonoBehaviour
         //    }
         //}
 
-        for (int i = phaseCount; i < enemyPhases.Count; i++)
+        if (phaseCount >= enemyPhases.Count)
+            return null;
+
+        if (stats.CalculateHPPercentage() <= enemyPhases[phaseCount].hpPercentageThreshold && !isPhaseTrigger)
         {
-            if (stats.CalculateHPPercentage() <= enemyPhases[i].hpPercentageThreshold)
-            {
-                selectedPhase = enemyPhases[i];
-            }
-            else
-            {
-                phaseCount = i;
-                break;
-            }
+            Debug.Log(phaseCount);
+            Debug.Log(enemyPhases.Count);
+            selectedPhase = enemyPhases[phaseCount];
+            phaseCount++;
+
+            if (selectedPhase.isTriggerPhase)
+                isPhaseTrigger = true;
         }
+
+
+        if (changeHP && selectedPhase != null)
+        {
+            Debug.Log(stats.maximumHP * (selectedPhase.hpPercentageThreshold / 100));
+            stats.ModifyHP(stats.maximumHP * (selectedPhase.hpPercentageThreshold / 100));
+        }
+
+        //for (int i = phaseCount; i < enemyPhases.Count; i++)
+        //{
+        //    if (stats.CalculateHPPercentage() <= enemyPhases[i].hpPercentageThreshold)
+        //    {
+        //        selectedPhase = enemyPhases[i];
+        //    }
+        //    else
+        //    {
+        //        phaseCount = i;
+        //        break;
+        //    }
+        //}
 
         return selectedPhase;
     }

@@ -6,7 +6,7 @@ public static class BossMechanicHandler
 {
     public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
-        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null);
+        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
         CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, passthrough);
 
         if (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE)
@@ -43,11 +43,14 @@ public static class BossMechanicHandler
 
                             foreach (var entity in possibleChars)
                             {
-                                delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker, entity), delay);
+                                delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker, logic, entity), delay);
                             }
                         }
                         else
-                            delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker, logic.overriddenTarget), delay);
+                        {
+                            delay = Mathf.Max(InitializeAOEAttack(mechanic, attack, battleManager, attacker, logic, logic.overriddenTarget), delay);
+                        }
+                            
                         break;
                     case AttackType.SINGLE_TARGET:
                         break;
@@ -68,10 +71,10 @@ public static class BossMechanicHandler
     }
     public static void EndMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
-        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null);
+        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
         CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey + "_end", battleManager, passthrough);
     }
-    public static float InitializeAOEAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target = null)
+    public static float InitializeAOEAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, MechanicLogic targetedLogic, GameObject target = null)
     {
         if (mechanicAttack.attackType != AttackType.AOE)
             return -1f;
@@ -140,6 +143,10 @@ public static class BossMechanicHandler
         float delay = CustomMechanicLogicHelper.ExecuteMechanicDelay(mechanicAttack.attackKey, battleManager);
         if (delay == -1f)
             delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+
+        if (targetedLogic.overrideDelay)
+            delay = targetedLogic.overriddenDelay;
+
         aoeEntity.CalculateDirectDelay(delay);
 
         bool added = turnManager.InsertUnitIntoTurn(aoeEntity);
@@ -166,7 +173,7 @@ public static class BossMechanicHandler
     {
         Dictionary<string, GameObject> targets = aoe.aoeData.TargetList;
 
-        CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null));
+        CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null, mechanic));
 
         try
         {
@@ -183,7 +190,7 @@ public static class BossMechanicHandler
                 if (mechanicAttack.isStack)
                     entityDamage = entityDamage / aoe.aoeData.TargetList.Count;
 
-                CustomLogicPassthrough passthrough = new CustomLogicPassthrough(aoe, attacker, entityDamage, entity.Value);
+                CustomLogicPassthrough passthrough = new CustomLogicPassthrough(aoe, attacker, entityDamage, entity.Value, mechanic);
 
                 MechanicLogic logic = CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey, battleManager, passthrough);
 
@@ -202,6 +209,9 @@ public static class BossMechanicHandler
                 UnityEngine.GameObject.Destroy(aoe.particleEmitter);
                 aoe.particleEmitter = null;
             }
+
+            if (mechanic.containsTrigger)
+                ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, mechanicAttack.triggerKey);
         } catch (InvalidOperationException) { }
 
         
@@ -213,11 +223,12 @@ public static class BossMechanicHandler
         GameObject target = enemyAi.ChooseEntity(mechanicAttack.targetType);
         enemyAi.currTarget = target;
         enemyAi.currImmediateAttack = mechanic;
-
-        Debug.Log("TARGET!: " + target);
+        MechanicLogic logic = CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.targetKey, battleManager, new CustomLogicPassthrough(null, attacker, 0f, target, mechanic));
+        if (logic.overriddenTarget != null)
+            enemyAi.currTarget = logic.overriddenTarget;
 
         EntityController controller = attacker.GetComponent<EntityController>();
-        controller.MoveTowards(target);
+        controller.MoveTowards(enemyAi.currTarget);
 
     }
     public static void ActivateSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target)
@@ -231,7 +242,7 @@ public static class BossMechanicHandler
         float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(target, attacker, newSkill));
         battleManager.DealDamage(target, entityDamage, attacker);
 
-        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, entityDamage, target);
+        CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, entityDamage, target, mechanic);
 
         CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey, battleManager, passthrough);
     }

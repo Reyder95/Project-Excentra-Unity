@@ -22,7 +22,7 @@ public class ArrowMover : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         Vector3 moveDirection = Vector2.zero;
         if (direction == ArrowDirection.UP)
@@ -46,14 +46,14 @@ public class ArrowMover : MonoBehaviour
 
         if (inwards)
         {
-            gameObject.transform.localPosition += moveDirection * (speed / 5) * Time.deltaTime;
-            if (Vector2.Distance(gameObject.transform.localPosition, startPoint) > distance)
+            gameObject.transform.localPosition += moveDirection * (speed / 5) * Time.fixedDeltaTime;
+            if (Vector2.Distance(gameObject.transform.localPosition, startPoint) >= distance)
                 inwards = false;
         }
         else
         {
-            gameObject.transform.localPosition -= moveDirection * (speed / 5) * Time.deltaTime;
-            if (Vector2.Distance(gameObject.transform.localPosition, startPoint) > distance)
+            gameObject.transform.localPosition -= moveDirection * (speed / 5) * Time.fixedDeltaTime;
+            if (Vector2.Distance(gameObject.transform.localPosition, startPoint) >= distance)
                 inwards = true;
         }
 

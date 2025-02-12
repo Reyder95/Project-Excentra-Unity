@@ -32,4 +32,41 @@ public class BattleArena
         float centerY = (topBound + bottomBound) / 2;
         return new Vector2(centerX, centerY);
     }
+
+    public Vector2 GetLeftCenter()
+    {
+        return new Vector2((leftBound + GetCenter().x) / 2, GetCenter().y);
+    }
+
+    public Vector2 GetRightCenter()
+    {
+        return new Vector2((rightBound + GetCenter().x) / 2, GetCenter().y);
+    }
+
+    public Vector2 GetTopCenter()
+    {
+        return new Vector2(GetCenter().x, (topBound + GetCenter().y) / 2);
+    }
+
+    public Vector2 GetBottomCenter()
+    {
+        return new Vector2(GetCenter().x, (bottomBound + GetCenter().y) / 2);
+    }
+
+    public float GetHalfSize(ArenaPositionType positionType)
+    {
+        switch (positionType)
+        {
+            case ArenaPositionType.LEFT_HALF:
+                return Mathf.Abs(leftBound - GetCenter().x);
+            case ArenaPositionType.RIGHT_HALF:
+                return Mathf.Abs(GetCenter().x - rightBound);
+            case ArenaPositionType.TOP_HALF:
+                return Mathf.Abs(topBound - GetCenter().y);
+            case ArenaPositionType.BOTTOM_HALF:
+                return Mathf.Abs(GetCenter().y - bottomBound);
+        }
+
+        return 0f;
+    }
 }

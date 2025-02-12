@@ -193,6 +193,11 @@ public class DerivedDirectional : BaseAoe
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
+    public override void SetAoePosition(MechanicAoePositionHelper positionHelper)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private void ColorLine()
     {
         Color newColor = Color.red;

@@ -34,6 +34,8 @@ public class ExcentraGame : MonoBehaviour
 
     public DamageNumberHandler damageNumberHandlerScript;   // Needs to be on monobehaviour so we can place and delete the damage numbers
 
+    public BattleMechanicTrigger triggers;
+
     public static ExcentraGame Instance { get; private set; }   // Singleton used in very specific circumstances
 
     public static BattleManager battleManager;  // The battle manager that handles all battles
@@ -55,6 +57,8 @@ public class ExcentraGame : MonoBehaviour
         ExcentraDatabase.LoadMiscPrefabs(miscPrefabs);
         ExcentraDatabase.LoadBossPhases(bossPhases);
 
+        FindTriggers();
+
         // Initialize our battle manager (for the initial battle)
         battleManager = new BattleManager((prefab, position) => Instantiate(prefab, position, Quaternion.identity));
 
@@ -71,6 +75,12 @@ public class ExcentraGame : MonoBehaviour
 
 
         DontDestroyOnLoad(this.gameObject);
+    }
+
+    public void FindTriggers()
+    {
+        triggers = GameObject.Find("Triggers").GetComponent<BattleMechanicTrigger>();
+        triggers.LoadTriggers();
     }
 
     // Helper coroutine function for awaiting (used right now in battle manager to await in between turns)

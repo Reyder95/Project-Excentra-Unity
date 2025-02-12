@@ -31,6 +31,8 @@ public class EnemyMechanic : ScriptableObject
     [Tooltip("The name of the mechanic to be used visually in fights")]
     public string mechanicName;
 
+    public bool containsTrigger = false;
+
     [Tooltip("The key of the mechanic. For CustomMechanicLogicHelper, the addendums are: _before, and _end. To handle logic before the mechanic and after it ends.")]
     public string mechanicKey;
 
@@ -70,6 +72,8 @@ public class MechanicAttack
     [Tooltip("The key used for logical changes via dictionary. This key is used in CustomMechanicLogicHelper.")]
     public string attackKey;
 
+    public string triggerKey;
+
     [Tooltip("The key in the dictionary for changing targeting mechanics. Invalidates 'Target Type'.")]
     public string targetKey;
 
@@ -105,6 +109,10 @@ public class MechanicAttack
     [Header("AOE")]
     [Tooltip("The shape of the AoE. Like Circle, or Cone, or Line.")]
     public Shape aoeShape;
+
+    public bool hasArenaPositioning = false;
+
+    public MechanicAoePositionHelper aoePositionInformation;
 
     [Tooltip("States if this aoe attack is proximity. The further you are away from it, the less damage it will deal.")]
     public bool isProximity;

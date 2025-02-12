@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public static class Medica
@@ -17,6 +18,8 @@ public static class Medica
             stats.ReduceStatusTurns(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
 
         }
+
+        passthrough.attacker.GetComponent<EntityController>().ModifyOpacity(1f);
 
         return new MechanicLogic();
     }
@@ -193,5 +196,107 @@ public static class Medica
 
         return logic;
 
+    }
+
+    public static MechanicLogic AddTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        Debug.Log("TESTING!!");
+        MechanicLogic logic = new MechanicLogic();
+        EnemyContents enemyContents = passthrough.attacker.GetComponent<EnemyContents>();
+
+        if (enemyContents.aggression.aggressionListCount() != 0)
+            return logic;
+
+
+        List<GameObject> possibleChars = battleManager.GetAliveEntities();
+        List<GameObject> lineOfSight = new List<GameObject>();
+        foreach (var character in possibleChars)
+        {
+            Vector2 startPosition = passthrough.attacker.transform.position;
+            Vector2 endPosition = character.transform.position;
+
+            Vector2 direction = (endPosition - startPosition).normalized;
+
+            float distance = Vector2.Distance(startPosition, endPosition);
+
+            RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, distance, LayerMask.GetMask("Obstacles"));
+
+            Debug.Log("Hit!! " + hit.collider);
+
+            if (hit.collider == null)
+            {
+                Debug.Log("Add for position: " + startPosition + " may attack " + character);
+                lineOfSight.Add(character);
+            }
+        }
+
+        Debug.Log("LINE OF SIGHT: " + lineOfSight.Count);
+
+        if (lineOfSight.Count == 0)
+        {
+            ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, passthrough.mechanic, "adds");
+            return logic;
+
+        }
+
+        logic.overriddenTarget = lineOfSight[Random.Range(0, lineOfSight.Count)];
+
+        Debug.Log("OVERRIDDEN TARGET (inside): " + logic.overriddenTarget);
+
+
+
+        return logic;
+    }
+    public static void SpawnAddsTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        foreach (var attack in mechanic.mechanicAttacks)
+        {
+            foreach (var addKey in attack.addKeys)
+            {
+                foreach (var enemy in battleManager.enemyList)
+                {
+                    EntityStats enemyStats = enemy.GetComponent<EntityStats>();
+                    if (enemyStats.entityKey == addKey.entityKey)
+                    {
+                        if (enemyStats.currentHP > 0)
+                        {
+                            ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, "adds");
+                            return;
+
+                        }
+                    }
+                }
+            }
+        }
+
+        GameObject owner = stats.addOwner;
+        EntityStats ownerStats = owner.GetComponent<EntityStats>();
+        ownerStats.active = true;
+        ownerStats.targetable = true;
+
+        //battleManager.turnManager.CalculateIndividualDelay(ownerStats.gameObject);
+
+        EnemyAI enemyAi = owner.GetComponent<EnemyAI>();
+        enemyAi.ChangePhase(true);
+        battleManager.turnManager.CalculateIndividualDelay(owner.gameObject, battleManager.turnManager.ReturnDelayNeededForTurn(0));
+    }
+
+    public static MechanicLogic SweetBlissStart(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        MechanicLogic logic = AcclimationEffectStart(battleManager, passthrough);
+        GameObject attacker = passthrough.attacker;
+
+        Debug.Log("ATTACKER START IS " + attacker);
+
+        // Get the Renderer component of the attacker
+        attacker.GetComponent<EntityController>().ModifyOpacity(0f);
+
+        return logic;
+
+    }
+
+    public static MechanicLogic SweetBlissEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        return AcclimationEffectEnd(battleManager, passthrough);
     }
 }

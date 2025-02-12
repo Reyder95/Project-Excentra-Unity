@@ -14,6 +14,7 @@ public class EnemyPhase
     public List<EnemyMechanic> activeMechanics = new List<EnemyMechanic>();
     private List<EnemyMechanic> inactiveMechanics = new List<EnemyMechanic>();
     public List<EnemyMechanic> consistentMechanics = new List<EnemyMechanic>();
+    public bool isTriggerPhase = false;
     public PhaseType phaseType;
     public float hpPercentageThreshold;
 

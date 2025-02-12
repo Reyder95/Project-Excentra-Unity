@@ -37,6 +37,7 @@ public abstract class BaseAoe : MonoBehaviour
     public abstract void InitializeEnemyAoe(GameObject attackerObject, EnemyMechanic mechanic, MechanicAttack attack, SkillInformation info);
     public abstract void ChangeTarget(GameObject target);
     
+    public abstract void SetAoePosition(MechanicAoePositionHelper positionHelper);
     public virtual void FreezeAoe()
     {
         freezeAoe = true;

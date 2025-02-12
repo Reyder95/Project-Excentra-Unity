@@ -116,4 +116,9 @@ public class AggressionSystem
         AggressionElement entity = aggressionList[aggressionList.Count - 1] as AggressionElement;
         return entity.entity;
     }
+
+    public int aggressionListCount()
+    {
+        return aggressionList.Count;
+    }
 }

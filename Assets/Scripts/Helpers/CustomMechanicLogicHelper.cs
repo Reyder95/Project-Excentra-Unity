@@ -13,6 +13,8 @@ public static class CustomMechanicLogicHelper
         { "red_acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => RedAcclimationEffect(battleManager, passthrough) },
         { "acclimation_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationEffectEnd(battleManager, passthrough)   },
         { "acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationEffectStart(battleManager, passthrough) },
+        { "sweet_bliss", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.SweetBlissStart(battleManager, passthrough) },
+        { "sweet_bliss_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.SweetBlissEnd(battleManager, passthrough) },
         { "red_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => RedAcclimationTarget(battleManager, passthrough) },
         { "blue_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationTarget(battleManager, passthrough) },
         { "soul-bomb-attack", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBomb(battleManager, passthrough) },
@@ -22,18 +24,19 @@ public static class CustomMechanicLogicHelper
         { "lonely-ghost-blue-target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.LonelyGhostBlueTarget(battleManager, passthrough) },
         { "red-acclimation-hit", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.RedAcclimationHit(battleManager, passthrough) },
         { "blue-acclimation-hit", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.BlueAcclimationHit(battleManager, passthrough) },
+        { "adds-target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AddTarget(battleManager, passthrough) },
     
     };
 
     private static Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>> mechTriggers = new Dictionary<string, System.Action<EntityStats, BattleManager, EnemyMechanic>>()
     {
-        { "spawn_adds", (EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic) => SpawnAddsTrigger(stats, battleManager, mechanic) },
-        { "spawn-soul-attack", (EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic) => SpawnSoulTrigger(stats, battleManager, mechanic) }
+        { "spawn_adds", (EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic) => Medica.SpawnAddsTrigger(stats, battleManager, mechanic) },
+        { "spawn-soul-attack", (EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic) => SpawnSoulTrigger(stats, battleManager, mechanic) },
     };
 
     private static Dictionary<string, System.Func<BattleManager, float>> mechDelay = new Dictionary<string, System.Func<BattleManager, float>>()
     {
-        { "soul-bomb-attacka", (BattleManager battleManager) => SoulBombDelay(battleManager) },
+        { "soul-bomb-attack", (BattleManager battleManager) => SoulBombDelay(battleManager) },
     };
 
     public static MechanicLogic ExecuteMechanic(string mechanicKey, BattleManager battleManager, CustomLogicPassthrough passthrough)
@@ -166,6 +169,19 @@ public static class CustomMechanicLogicHelper
 
         logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
 
+        foreach (var character in battleManager.turnManager.turnOrder)
+        {
+            if (character.isEntity)
+            {
+                if (character.GetEntity().GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null)
+                {
+                    logic.overrideDelay = true;
+                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity());
+                    break;
+                }
+            }
+        }
+
         return logic;
     }
 
@@ -182,6 +198,20 @@ public static class CustomMechanicLogicHelper
             return logic;
 
         logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
+
+        foreach (var character in battleManager.turnManager.turnOrder)
+        {
+            if (character.isEntity)
+            {
+                if (character.GetEntity().GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null)
+                {
+                    logic.overrideDelay = true;
+                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity());
+                    Debug.Log("HELLO!!");
+                    break;
+                }
+            }
+        }
 
         return logic;
     }
@@ -218,40 +248,6 @@ public static class CustomMechanicLogicHelper
         GameObject tank = battleManager.playerCharacters.Where(go => go.GetComponent<EntityStats>().entityName == "Rioka").FirstOrDefault();
 
         return turnManager.ReturnDelayNeededForCharacter(tank);
-    }
-
-    public static void SpawnAddsTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)
-    {
-        foreach (var attack in mechanic.mechanicAttacks)
-        {
-            foreach (var addKey in attack.addKeys)
-            {
-                foreach (var enemy in battleManager.enemyList)
-                {
-                    EntityStats enemyStats = enemy.GetComponent<EntityStats>();
-                    if (enemyStats.entityKey == addKey.entityKey)
-                    {
-                        if (enemyStats.currentHP > 0)
-                        {
-                            Debug.Log("ENEMY ALIVE!!!");
-                            return;
-
-                        }
-                    }
-                }
-            }
-        }
-
-        GameObject owner = stats.addOwner;
-        EntityStats ownerStats = owner.GetComponent<EntityStats>();
-        ownerStats.active = true;
-        ownerStats.targetable = true;
-
-        //battleManager.turnManager.CalculateIndividualDelay(ownerStats.gameObject);
-
-        EnemyAI enemyAi = owner.GetComponent<EnemyAI>();
-        enemyAi.ChangePhase(true);
-        battleManager.turnManager.CalculateIndividualDelay(owner.gameObject, battleManager.turnManager.ReturnDelayNeededForTurn(0));
     }
 
     public static void SpawnSoulTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)

@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: Liferoot
   areaStyle: 0
   scaleMult: 1.1
+  ignoresLineOfSight: 1
   entityType: 0
   scaler: 1
   radius: 0
@@ -32,9 +33,9 @@ MonoBehaviour:
   statusEffects: []
   removeAll: 1
   removeStatuses: []
+  shape: 0
   icon: {fileID: 2800000, guid: 39797626bb1111346b245186e7ff4482, type: 3}
-  description: Heals a single ally for moderate health.
+  description: Heals a single ally for moderate health. Ignores line of sight!
   targetMode: 0
   grabAggro: 0
   baseAether: 100
-  shape: 0

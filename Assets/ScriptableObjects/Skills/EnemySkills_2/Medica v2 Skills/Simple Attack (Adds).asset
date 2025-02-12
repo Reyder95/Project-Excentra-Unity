@@ -10,33 +10,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: Disruptor Array
+  m_Name: Simple Attack (Adds)
   m_EditorClassIdentifier: 
-  mechanicName: Disruptor Array
+  mechanicName: Simple Attack
   containsTrigger: 0
-  mechanicKey: 
-  mechanicStyle: 1
+  mechanicKey: simple-attack
+  mechanicStyle: 0
   dontSkipTurn: 0
-  active: 1
+  active: 0
   untargetable: 0
   targetScript: 0
   activeScript: 0
   goNext: 0
-  turnCooldown: 1
+  turnCooldown: 0
   mechanicAttacks:
-  - attackType: 0
+  - attackType: 1
     attackKey: 
     triggerKey: 
-    targetKey: 
-    targetType: 8
-    turnOffset: 3
+    targetKey: adds-target
+    targetType: 0
+    turnOffset: 0
     canBeShirked: 0
-    originIsTarget: 1
+    originIsTarget: 0
     originIsSelf: 0
-    endpointIsTarget: 1
+    endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
-    containsMovement: 0
-    moveType: 0
+    containsMovement: 1
+    moveType: 2
     aoeShape: 0
     hasArenaPositioning: 0
     aoePositionInformation:
@@ -50,13 +50,13 @@ MonoBehaviour:
     isProximity: 0
     isStack: 0
     nonUniformDimensions: 0
-    size: 5
+    size: 0
     dimensions: {x: 0, y: 0}
     raidWide: 0
-    distanceOffset: 1
+    distanceOffset: 0
     endpoint: {x: 0, y: 0}
-    customColor: 1
-    aoeColor: {r: 0.8301887, g: 0.55721116, b: 0.105731584, a: 0.48235294}
+    customColor: 0
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
     addKeys: []
     tetherStationary: 0
     secondTether: 0
@@ -64,8 +64,8 @@ MonoBehaviour:
     tetherRange: 0
     damageType: 2
     scaler: 0
-    scaleMult: 0.7
-    baseValue: 50
+    scaleMult: 0.1
+    baseValue: 100
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []

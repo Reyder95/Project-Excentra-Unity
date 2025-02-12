@@ -130,12 +130,17 @@ public class DerivedCircle : BaseAoe
             {
                 this.circlePosition = attack.customOrigin;
             }
+
+            if (attack.hasArenaPositioning)
+            {
+                SetAoePosition(attack.aoePositionInformation);
+            }
         }
         else
         {
             this.circlePosition = ExcentraGame.battleManager.arena.GetCenter();
-            this.width = ExcentraGame.battleManager.arena.width;
-            this.height = ExcentraGame.battleManager.arena.height;
+            this.width = ExcentraGame.battleManager.arena.width / 2;
+            this.height = ExcentraGame.battleManager.arena.height / 2;
         }
 
 
@@ -200,6 +205,61 @@ public class DerivedCircle : BaseAoe
 
 
         circleAoe.SetActive(true);
+    }
+
+    public override void SetAoePosition(MechanicAoePositionHelper positionHelper)
+    {
+        BattleArena arena = ExcentraGame.battleManager.arena;
+
+        switch (positionHelper.positionType)
+        {
+            case ArenaPositionType.CENTER:
+                circlePosition = arena.GetCenter();
+                break;
+            case ArenaPositionType.LEFT_HALF:
+                circlePosition = arena.GetLeftCenter();
+                break;
+            case ArenaPositionType.RIGHT_HALF:
+                circlePosition = arena.GetRightCenter();
+                break;
+            case ArenaPositionType.TOP_HALF:
+                circlePosition = arena.GetTopCenter();
+                break;
+            case ArenaPositionType.BOTTOM_HALF:
+                circlePosition = arena.GetBottomCenter();
+                break;
+        }
+
+        if (positionHelper.isHalfSize)
+        {
+            float halfSize = arena.GetHalfSize(positionHelper.positionType);
+
+            switch (positionHelper.positionType)
+            {
+                case ArenaPositionType.LEFT_HALF:
+                    this.width = halfSize;
+                    break;
+                case ArenaPositionType.RIGHT_HALF:
+                    this.width = halfSize;
+                    break;
+                case ArenaPositionType.TOP_HALF:
+                    this.height = halfSize;
+                    break;
+                case ArenaPositionType.BOTTOM_HALF:
+                    this.height = halfSize;
+                    break;
+            }
+        }
+
+        // Adjust scale to account for padding
+        this.width -= positionHelper.leftPadding + positionHelper.rightPadding;
+        this.height -= positionHelper.bottomPadding + positionHelper.topPadding;
+
+        // Adjust position to account for padding
+        circlePosition.x += (positionHelper.leftPadding - positionHelper.rightPadding) / 2f;
+        circlePosition.y += (positionHelper.bottomPadding - positionHelper.topPadding) / 2f;
+
+        circlePosition += positionHelper.offset;
     }
 
     public override void ChangeTarget(GameObject target)

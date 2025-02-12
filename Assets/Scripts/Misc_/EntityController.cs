@@ -58,6 +58,10 @@ public class EntityController : MonoBehaviour
 
     public LayerMask collideableMask;
 
+    public bool modifyOpacity = false;
+    public float modifyOpacityTo = 0f;
+    private float modifyOpacitySpeed = 4.5f;
+
     private EnemyAI enemyAi;
 
     void Awake()
@@ -92,6 +96,25 @@ public class EntityController : MonoBehaviour
         {
             boxCollider.offset = aliveOffset;
             boxCollider.size = aliveSize;
+        }
+
+        if (modifyOpacity)
+        {
+            Color color = spriteRenderer.color;
+            if (modifyOpacityTo > color.a)
+            {
+                color.a += 0.1f * Time.deltaTime * modifyOpacitySpeed;
+                if (color.a >= modifyOpacityTo)
+                    modifyOpacity = false;
+            }
+            else
+            {
+                color.a -= 0.1f * Time.deltaTime * modifyOpacitySpeed;
+                if (color.a <= modifyOpacityTo)
+                    modifyOpacity = false;
+            }
+                
+            spriteRenderer.color = color;
         }
 
 
@@ -228,6 +251,12 @@ public class EntityController : MonoBehaviour
             }
         }
 
+    }
+
+    public void ModifyOpacity(float opacity)
+    {
+        modifyOpacityTo = opacity;
+        modifyOpacity = true;
     }
 
     void DrawColliderBounds(Vector2 colliderCenter)

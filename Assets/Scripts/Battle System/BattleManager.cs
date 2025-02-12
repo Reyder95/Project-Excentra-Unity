@@ -184,14 +184,14 @@ public class BattleManager
         this.playerCharacters.Clear();
         foreach (var character in playerCharacters) 
         {
-            float x = UnityEngine.Random.Range(arena.leftBound, arena.GetCenter().x);
-            float y = UnityEngine.Random.Range(arena.topBound, arena.GetCenter().y);
+            float x = UnityEngine.Random.Range(arena.GetCenter().x - 2, arena.GetCenter().x + 2);
+            float y = UnityEngine.Random.Range(arena.GetCenter().y - 3, arena.GetCenter().y - 2);
             GameObject instantiatedCharacter = _instantiateFunction(character, new Vector2(x, y));
             instantiatedCharacter.GetComponent<EntityStats>().InitializeCurrentStats();
             this.playerCharacters.Add(instantiatedCharacter);
         }
 
-        GameObject bossInstantiation = _instantiateFunction(boss, new Vector2(0, 0));
+        GameObject bossInstantiation = _instantiateFunction(boss, new Vector2(0, 1));
         bossInstantiation.GetComponent<EntityStats>().InitializeCurrentStats();
         SpriteRenderer bossSpriteRenderer = bossInstantiation.GetComponent<SpriteRenderer>();
         bossSpriteRenderer.material.SetFloat("_Thickness", 0f);
@@ -319,6 +319,11 @@ public class BattleManager
 
                         if (mechanic != null)
                             stats.targetable = !mechanic.untargetable;
+                        else
+                            stats.targetable = !enemyAi.currAttack.untargetable;
+
+                        if (stats.targetable == false)
+                            stats.effectHandler.effects.Clear();
 
                         if (mechanic != null)
                         {
@@ -484,6 +489,7 @@ public class BattleManager
             EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
             BossMechanicHandler.EndMechanic(mechanic, this, attacker);
             enemyAi.currAttack = null;
+            enemyAi.stats.targetable = true;
 
             if (mechanic.goNext)
             {
@@ -858,9 +864,6 @@ public class BattleManager
         EntityController entityController = entity.GetComponent<EntityController>();
         EntityStats entityStats = entity.GetComponent<EntityStats>();
         EnemyContents contents = entity.GetComponent<EnemyContents>();
-
-        AddStatusToEnemy(entityStats);
-
         GameObject currAttacker = null;
 
         if (attacker != null)
@@ -868,14 +871,12 @@ public class BattleManager
         else
             currAttacker = turnManager.GetCurrentTurn();
 
-        Debug.Log("BEFORE!");
-
         Vector2 centerPoint = currAttacker.transform.position;
 
-        if (!HasLineOfSight(centerPoint, entity))
+        if ((battleVariables.currSkill != null && !battleVariables.currSkill.ignoresLineOfSight && !HasLineOfSight(centerPoint, entity)))
             return;
 
-        Debug.Log("AFTER");
+        AddStatusToEnemy(entityStats);
 
         if ((battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.DAMAGE) || battleVariables.currSkill == null)
         {
@@ -888,6 +889,7 @@ public class BattleManager
             ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
             if (contents.enabled)
             {
+                Debug.Log("Adding Aggression: " + currAttacker);
                 contents.aggression.AggressionEntryPoint(new AggressionElement(currAttacker, entityDamage));
             }
         }
@@ -1340,7 +1342,7 @@ public class BattleManager
             if (defenderStats.currentHP <= 0)
                 return false;
 
-            return !sameTeam;
+            return !sameTeam && HasLineOfSight(attacker.transform.position, defender);
         }
         else if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
         {

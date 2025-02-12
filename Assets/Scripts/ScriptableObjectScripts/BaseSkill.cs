@@ -11,6 +11,8 @@ public class BaseSkill : ScriptableObject
 
     public float scaleMult;
 
+    public bool ignoresLineOfSight = false;
+
 
     public EntityType entityType;
     public Scaler scaler;
