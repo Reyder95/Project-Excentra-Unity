@@ -249,6 +249,11 @@ public static class Medica
     }
     public static void SpawnAddsTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)
     {
+        GameObject owner = stats.addOwner;
+        EntityController controller = stats.gameObject.GetComponent<EntityController>();
+        controller.markForDespawn = true;
+        controller.ModifyOpacity(0f);
+
         foreach (var attack in mechanic.mechanicAttacks)
         {
             foreach (var addKey in attack.addKeys)
@@ -268,8 +273,6 @@ public static class Medica
                 }
             }
         }
-
-        GameObject owner = stats.addOwner;
         EntityStats ownerStats = owner.GetComponent<EntityStats>();
         ownerStats.active = true;
         ownerStats.targetable = true;

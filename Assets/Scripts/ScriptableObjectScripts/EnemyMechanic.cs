@@ -125,6 +125,8 @@ public class MechanicAttack
     [Tooltip("The size of the aoe. For circles this is the diameter. For directionals this is the width.")]
     public float size;
 
+    public float innerDonutSize;
+
     public Vector2 dimensions;
 
     public bool raidWide = false;

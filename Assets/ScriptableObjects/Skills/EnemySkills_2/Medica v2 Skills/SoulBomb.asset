@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: Destructive Reprisal
+  m_Name: SoulBomb
   m_EditorClassIdentifier: 
-  mechanicName: Destructive Reprisal
+  mechanicName: Soul Bomb
   containsTrigger: 0
-  mechanicKey: 
+  mechanicKey: soul-bomb
   mechanicStyle: 1
   dontSkipTurn: 0
   active: 0
@@ -22,22 +22,22 @@ MonoBehaviour:
   targetScript: 0
   activeScript: 0
   goNext: 0
-  turnCooldown: 1
+  turnCooldown: -1
   mechanicAttacks:
   - attackType: 0
-    attackKey: 
+    attackKey: soul-bomb-attack
     triggerKey: 
-    targetKey: 
-    targetType: 0
-    turnOffset: 3
-    canBeShirked: 0
+    targetKey: soul-bomb_target
+    targetType: 4
+    turnOffset: 9
+    canBeShirked: 1
     originIsTarget: 0
     originIsSelf: 1
     endpointIsTarget: 1
     customOrigin: {x: 0, y: 0}
     containsMovement: 0
     moveType: 0
-    aoeShape: 1
+    aoeShape: 2
     hasArenaPositioning: 0
     aoePositionInformation:
       positionType: 0
@@ -50,13 +50,14 @@ MonoBehaviour:
     isProximity: 0
     isStack: 0
     nonUniformDimensions: 0
-    size: 30
+    size: 3
+    innerDonutSize: 0
     dimensions: {x: 0, y: 0}
     raidWide: 0
-    distanceOffset: 10
+    distanceOffset: 0
     endpoint: {x: 0, y: 0}
-    customColor: 1
-    aoeColor: {r: 1, g: 0.6551726, b: 0, a: 0}
+    customColor: 0
+    aoeColor: {r: 0, g: 0, b: 0, a: 0}
     addKeys: []
     tetherStationary: 0
     secondTether: 0
@@ -64,8 +65,8 @@ MonoBehaviour:
     tetherRange: 0
     damageType: 2
     scaler: 0
-    scaleMult: 1.2
+    scaleMult: 2
     baseValue: 100
-    attackCount: 1
+    attackCount: 0
     statusesToAdd: []
     statusesToRemove: []

@@ -51,6 +51,7 @@ MonoBehaviour:
     isStack: 0
     nonUniformDimensions: 0
     size: 5
+    innerDonutSize: 9
     dimensions: {x: 0, y: 0}
     raidWide: 1
     distanceOffset: 0
@@ -94,8 +95,9 @@ MonoBehaviour:
       isHalfSize: 0
     isProximity: 0
     isStack: 0
-    nonUniformDimensions: 1
+    nonUniformDimensions: 0
     size: 9
+    innerDonutSize: 0
     dimensions: {x: 11.4, y: 8}
     raidWide: 0
     distanceOffset: 0
