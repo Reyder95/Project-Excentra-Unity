@@ -7,6 +7,7 @@
  */
 
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -61,6 +62,7 @@ public class EntityController : MonoBehaviour
     public bool modifyOpacity = false;
     public float modifyOpacityTo = 0f;
     private float modifyOpacitySpeed = 4.5f;
+    public bool markForDespawn = false;
 
     private EnemyAI enemyAi;
 
@@ -111,7 +113,11 @@ public class EntityController : MonoBehaviour
             {
                 color.a -= 0.1f * Time.deltaTime * modifyOpacitySpeed;
                 if (color.a <= modifyOpacityTo)
+                {
+                    if (modifyOpacityTo == 0 && markForDespawn)
+                       ExcentraGame.battleManager.despawnBuffer.Add(gameObject);
                     modifyOpacity = false;
+                }
             }
                 
             spriteRenderer.color = color;

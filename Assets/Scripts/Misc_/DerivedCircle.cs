@@ -152,7 +152,7 @@ public class DerivedCircle : BaseAoe
         SpriteRenderer circleRenderer = circleAoe.GetComponent<SpriteRenderer>();
         circleRenderer.color = newColor;
         Color colorWithAlpha = circleRenderer.color;
-        colorWithAlpha.a = 0.5f;
+        colorWithAlpha.a = 0.2f;
         circleRenderer.color = colorWithAlpha;
         circleAoe.SetActive(true);
     }
@@ -177,7 +177,7 @@ public class DerivedCircle : BaseAoe
         SpriteRenderer circleRenderer = circleAoe.GetComponent<SpriteRenderer>();
         circleRenderer.color = newColor;
         Color colorWithAlpha = circleRenderer.color;
-        colorWithAlpha.a = 0.5f;
+        colorWithAlpha.a = 0.2f;
         circleRenderer.color = colorWithAlpha;
 
         this.originObject = originObject;

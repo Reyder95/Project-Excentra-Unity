@@ -17,7 +17,7 @@ MonoBehaviour:
   customTurnLogic: 0
   description: Deals fire damage over time
   effectType: 0
-  effectMagnitude: 0.7
+  effectMagnitude: 0.2
   statType: 0
   baseTurns: 5
   enableParticles: 0

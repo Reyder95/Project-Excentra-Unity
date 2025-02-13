@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3074393965010056093}
   - component: {fileID: 8145806968691308494}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 3592407673169898382}
   - component: {fileID: 1813967645423928686}
   - component: {fileID: 151719247525525053}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Box
   m_TagString: aoe
   m_Icon: {fileID: 0}
@@ -183,6 +183,7 @@ MonoBehaviour:
   mechanicAttack:
     attackType: 0
     attackKey: 
+    triggerKey: 
     targetKey: 
     targetType: 0
     turnOffset: 0
@@ -194,9 +195,21 @@ MonoBehaviour:
     containsMovement: 0
     moveType: 0
     aoeShape: 0
+    hasArenaPositioning: 0
+    aoePositionInformation:
+      positionType: 0
+      offset: {x: 0, y: 0}
+      leftPadding: 0
+      rightPadding: 0
+      topPadding: 0
+      bottomPadding: 0
+      isHalfSize: 0
     isProximity: 0
     isStack: 0
+    nonUniformDimensions: 0
     size: 0
+    innerDonutSize: 0
+    dimensions: {x: 0, y: 0}
     raidWide: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
@@ -224,6 +237,8 @@ MonoBehaviour:
   targetObject: {fileID: 0}
   freezeAoe: 0
   radius: 2
+  height: -1
+  width: -1
   circleAoe: {fileID: 3841431136025929189}
   circlePosition: {x: 0, y: 0}
   frozenPosition: {x: 0, y: 0}

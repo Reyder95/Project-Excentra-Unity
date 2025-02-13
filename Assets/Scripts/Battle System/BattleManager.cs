@@ -28,6 +28,8 @@ public class BattleManager
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
 
+    public List<GameObject> despawnBuffer = new List<GameObject>();
+
     // The debuff bar for allies or enemies. Similar vein to HP/MP
     private Dictionary<string, VisualElement> debuffScrollers = new Dictionary<string, VisualElement>();
 
@@ -345,7 +347,7 @@ public class BattleManager
                 } catch (NullReferenceException ex)
                 {
                     Debug.Log(ex);
-                    Debug.Log("Mechanic is null when it should not have been. Maybe Initialization error again?");
+                    Debug.Log("Mechanic is null when it should not have been. Maybe Initialization error again? Or check if current phase is set to proper HP threshold");
                     skipEndTurn = false;
                 }
 
@@ -409,6 +411,21 @@ public class BattleManager
 
             }
         }
+
+        foreach (var entity in despawnBuffer)
+        { 
+            foreach (var enemy in enemyList)
+            {
+                if (enemy.GetComponent<EntityStats>().entityName == entity.GetComponent<EntityStats>().entityName)
+                {
+                    enemyList.Remove(enemy);
+                    break;
+                }
+            }
+            GameObject.Destroy(entity);
+        }
+
+        despawnBuffer.Clear();
 
         ExcentraGame.Instance.WaitCoroutine(0.5f, () =>
         {

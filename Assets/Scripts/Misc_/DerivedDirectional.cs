@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -113,11 +114,11 @@ public class DerivedDirectional : BaseAoe
             if (scaleX) newScale.x = Vector2.Distance(transform.position, destination);  // Scale along X-axis
             newScale.y = width;
 
-            if (originObject != null)
-                transform.position = originObject.transform.position;
-
             transform.rotation = Quaternion.Euler(0, 0, angle);
             transform.localScale = newScale;
+
+            if (originObject != null)
+                transform.position = originObject.transform.position;
         }
 
     }
@@ -149,6 +150,16 @@ public class DerivedDirectional : BaseAoe
         {
             this.destination = attack.endpoint;
         }
+
+        if (destinationObject)
+            destination = destinationObject.transform.position;
+
+        if (originObject != null)
+            transform.position = originObject.transform.position;
+
+        Vector2 direction = (destination - (Vector2)transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
 
         width = attack.size;
 
@@ -209,7 +220,7 @@ public class DerivedDirectional : BaseAoe
 
         lineRenderer.color = newColor;
         Color colorWithAlpha = lineRenderer.color;
-        colorWithAlpha.a = 0.5f;
+        colorWithAlpha.a = 0.2f;
         lineRenderer.color = colorWithAlpha;
     }
 
@@ -224,11 +235,11 @@ public class DerivedDirectional : BaseAoe
 
         triangleRenderer.color = newColor;
         Color colorWithAlpha = triangleRenderer.color;
-        colorWithAlpha.a = 0.5f;
+        colorWithAlpha.a = 0.2f;
         triangleRenderer.color = colorWithAlpha;
         circleRenderer.color = newColor;
         colorWithAlpha = circleRenderer.color;
-        colorWithAlpha.a = 0.5f;
+        colorWithAlpha.a = 0.2f;
         circleRenderer.color = colorWithAlpha;
     }
 

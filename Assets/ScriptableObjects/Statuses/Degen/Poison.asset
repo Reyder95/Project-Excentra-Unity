@@ -17,7 +17,7 @@ MonoBehaviour:
   customTurnLogic: 0
   description: Deals chaos damage over time
   effectType: 0
-  effectMagnitude: 1
+  effectMagnitude: 0.4
   statType: 0
   baseTurns: 3
   enableParticles: 0

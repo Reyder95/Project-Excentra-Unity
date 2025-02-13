@@ -167,6 +167,11 @@ public static class CustomMechanicLogicHelper
 
         List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null).ToList();
 
+        if (targetableChars.Count == 0)
+            return logic;
+
+        Debug.Log("Red Target " + targetableChars.Count);
+
         logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
 
         foreach (var character in battleManager.turnManager.turnOrder)
@@ -190,7 +195,6 @@ public static class CustomMechanicLogicHelper
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
         Debug.Log("Blue acclimation target effect");
         MechanicLogic logic = new MechanicLogic();
-        
 
         List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null).ToList();
 
@@ -229,6 +233,9 @@ public static class CustomMechanicLogicHelper
         int randomCharIndex = Random.Range(0, possibleChars.Count);
 
         MechanicLogic logic = new MechanicLogic();
+
+        if (possibleChars.Count == 0)
+            return logic;
         logic.overriddenTarget = possibleChars[randomCharIndex];
 
         return logic;

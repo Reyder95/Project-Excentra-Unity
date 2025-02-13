@@ -77,6 +77,8 @@ public class EntityStats : MonoBehaviour
     public EnemyMechanic addMechanic;
     [NonSerialized]
     public MechanicVariables mechanicVariables = new MechanicVariables();
+    [NonSerialized]
+    public bool isDead = false;
 
     public event Action<EntityStats> OnStatusChanged;
     public event Action<EntityStats> OnHealthChanged;
@@ -128,7 +130,12 @@ public class EntityStats : MonoBehaviour
 
     public void ModifyHP(float amount)
     {
+        float prevHP = currentHP;
+
         currentHP = amount;
+
+        if (prevHP == 0 && currentHP > 0)
+            isDead = false;
 
         if (currentHP > maximumHP)
             currentHP = maximumHP;
@@ -137,8 +144,12 @@ public class EntityStats : MonoBehaviour
 
         OnHealthChanged?.Invoke(this);
 
-        if (currentHP == 0)
+        if (currentHP == 0 && !isDead)
+        {
+            isDead = true;
             OnEntityKilled?.Invoke(this, ExcentraGame.battleManager, addMechanic);   // Temp, battleManager should come from a direct send, not from a static variable
+        }
+
     }
 
     public void ModifyMP(float amount)

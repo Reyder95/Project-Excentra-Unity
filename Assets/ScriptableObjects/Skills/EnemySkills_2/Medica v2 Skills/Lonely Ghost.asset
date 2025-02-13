@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Lonely Ghost
   m_EditorClassIdentifier: 
   mechanicName: Lonely Ghost
+  containsTrigger: 1
   mechanicKey: acclimation
   mechanicStyle: 1
   dontSkipTurn: 0
@@ -20,10 +21,12 @@ MonoBehaviour:
   untargetable: 0
   targetScript: 0
   activeScript: 0
+  goNext: 0
   turnCooldown: 0
   mechanicAttacks:
   - attackType: 0
     attackKey: red-acclimation-hit
+    triggerKey: 
     targetKey: lonely-ghost-red-target
     targetType: 0
     turnOffset: 3
@@ -35,9 +38,22 @@ MonoBehaviour:
     containsMovement: 0
     moveType: 0
     aoeShape: 1
+    hasArenaPositioning: 0
+    aoePositionInformation:
+      positionType: 0
+      offset: {x: 0, y: 0}
+      leftPadding: 0
+      rightPadding: 0
+      topPadding: 0
+      bottomPadding: 0
+      isHalfSize: 0
     isProximity: 0
     isStack: 0
+    nonUniformDimensions: 0
     size: 3
+    innerDonutSize: 0
+    dimensions: {x: 0, y: 0}
+    raidWide: 0
     distanceOffset: 1
     endpoint: {x: 0, y: 0}
     customColor: 1
@@ -56,6 +72,7 @@ MonoBehaviour:
     statusesToRemove: []
   - attackType: 0
     attackKey: red-acclimation-hit
+    triggerKey: 
     targetKey: lonely-ghost-red-target
     targetType: 0
     turnOffset: 3
@@ -67,9 +84,22 @@ MonoBehaviour:
     containsMovement: 0
     moveType: 0
     aoeShape: 1
+    hasArenaPositioning: 0
+    aoePositionInformation:
+      positionType: 0
+      offset: {x: 0, y: 0}
+      leftPadding: 0
+      rightPadding: 0
+      topPadding: 0
+      bottomPadding: 0
+      isHalfSize: 0
     isProximity: 0
     isStack: 0
+    nonUniformDimensions: 0
     size: 3
+    innerDonutSize: 0
+    dimensions: {x: 0, y: 0}
+    raidWide: 0
     distanceOffset: 1
     endpoint: {x: 0, y: 0}
     customColor: 1
@@ -88,6 +118,7 @@ MonoBehaviour:
     statusesToRemove: []
   - attackType: 0
     attackKey: blue-acclimation-hit
+    triggerKey: 
     targetKey: lonely-ghost-blue-target
     targetType: 0
     turnOffset: 3
@@ -99,9 +130,22 @@ MonoBehaviour:
     containsMovement: 0
     moveType: 0
     aoeShape: 1
+    hasArenaPositioning: 0
+    aoePositionInformation:
+      positionType: 0
+      offset: {x: 0, y: 0}
+      leftPadding: 0
+      rightPadding: 0
+      topPadding: 0
+      bottomPadding: 0
+      isHalfSize: 0
     isProximity: 0
     isStack: 0
+    nonUniformDimensions: 0
     size: 3
+    innerDonutSize: 0
+    dimensions: {x: 0, y: 0}
+    raidWide: 0
     distanceOffset: 1
     endpoint: {x: 0, y: 0}
     customColor: 1
@@ -120,6 +164,7 @@ MonoBehaviour:
     statusesToRemove: []
   - attackType: 0
     attackKey: blue-acclimation-hit
+    triggerKey: 
     targetKey: lonely-ghost-blue-target
     targetType: 0
     turnOffset: 3
@@ -131,9 +176,22 @@ MonoBehaviour:
     containsMovement: 0
     moveType: 0
     aoeShape: 1
+    hasArenaPositioning: 0
+    aoePositionInformation:
+      positionType: 0
+      offset: {x: 0, y: 0}
+      leftPadding: 0
+      rightPadding: 0
+      topPadding: 0
+      bottomPadding: 0
+      isHalfSize: 0
     isProximity: 0
     isStack: 0
+    nonUniformDimensions: 0
     size: 3
+    innerDonutSize: 0
+    dimensions: {x: 0, y: 0}
+    raidWide: 0
     distanceOffset: 1
     endpoint: {x: 0, y: 0}
     customColor: 1
