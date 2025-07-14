@@ -80,14 +80,16 @@ public class EnemyAI : MonoBehaviour
 
     public void TargetEntity(EntityTargetType targetType)
     {
+        Debug.Log("AHAHAHDKLSDJFLKSDFJGLK");
         currTarget = null;
         if (currAttack == null)
             return;
 
+        Debug.Log("AHAHAHDKLSDJFLKSDFJGLK TWO");
+
         var possibleChars = possibleTargets.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
 
         int randChar = UnityEngine.Random.Range(0, possibleChars.Count);
-
         AggressionSystem aggressionList = enemyContents.aggression;
 
         if (targetType == EntityTargetType.FIRST_AGGRESSION)
@@ -107,12 +109,15 @@ public class EnemyAI : MonoBehaviour
                     return;
         }
         
+        
         currTarget = possibleChars[randChar];
     }
 
     public GameObject ChooseEntity(EntityTargetType targetType)
     {
         currTarget = null;
+
+        
 
         var possibleChars = possibleTargets.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
 
@@ -139,6 +144,7 @@ public class EnemyAI : MonoBehaviour
                 return target;
         }
 
+        Debug.Log("TESTING: " + target);
 
         if (target != null)
             return target;

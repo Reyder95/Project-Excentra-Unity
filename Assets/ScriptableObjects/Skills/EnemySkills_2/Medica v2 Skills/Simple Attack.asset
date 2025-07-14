@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Simple Attack
   m_EditorClassIdentifier: 
   mechanicName: Simple Attack
+  containsTrigger: 0
   mechanicKey: simple-attack
   mechanicStyle: 0
   dontSkipTurn: 0
@@ -20,26 +21,40 @@ MonoBehaviour:
   untargetable: 0
   targetScript: 0
   activeScript: 0
+  goNext: 0
+  animationTrigger: Basic Attack
   turnCooldown: 0
   mechanicAttacks:
   - attackType: 1
     attackKey: 
+    triggerKey: 
     targetKey: 
     targetType: 0
     turnOffset: 0
+    canBeShirked: 0
     originIsTarget: 0
     originIsSelf: 0
     endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
-    requiredRange: 0
     containsMovement: 1
     moveType: 2
     aoeShape: 0
+    hasArenaPositioning: 0
+    aoePositionInformation:
+      positionType: 0
+      offset: {x: 0, y: 0}
+      leftPadding: 0
+      rightPadding: 0
+      topPadding: 0
+      bottomPadding: 0
+      isHalfSize: 0
     isProximity: 0
     isStack: 0
-    staticDistance: 0
+    nonUniformDimensions: 0
     size: 0
-    distance: 0
+    innerDonutSize: 0
+    dimensions: {x: 0, y: 0}
+    raidWide: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
     customColor: 0

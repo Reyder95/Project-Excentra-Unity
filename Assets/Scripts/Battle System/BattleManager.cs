@@ -253,6 +253,8 @@ public class BattleManager
     {
         GameObject currTurn = turnManager.GetCurrentTurn();
 
+        
+
         if (currTurn.GetComponent<EntityStats>() != null)
         {
             EntityStats stats = currTurn.GetComponent<EntityStats>();
@@ -297,11 +299,13 @@ public class BattleManager
                 {
                     if (!initialPhaseChecker && enemyAi.initialPhase != null)
                     {
+                        
                         BossMechanicHandler.InitializeMechanic(enemyAi.initialPhase.mechanic, this, boss);
                         stats.nextStaticDelay = enemyAi.initialPhase.delayBonus;
                     }
                     else
                     {
+                        
                         EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
 
                         if (mechanic == null)
@@ -906,6 +910,9 @@ public class BattleManager
             ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
             if (contents.enabled)
             {
+                if (currAttacker.GetComponent<EntityStats>().currentHP <= 0)
+                    return;
+
                 Debug.Log("Adding Aggression: " + currAttacker);
                 contents.aggression.AggressionEntryPoint(new AggressionElement(currAttacker, entityDamage));
             }
