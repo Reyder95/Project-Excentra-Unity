@@ -178,10 +178,10 @@ public static class CustomMechanicLogicHelper
         {
             if (character.isEntity)
             {
-                if (character.GetEntity().GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null)
+                if (character.GetEntity().entityTurn.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null)
                 {
                     logic.overrideDelay = true;
-                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity());
+                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity().entityTurn);
                     break;
                 }
             }
@@ -207,10 +207,10 @@ public static class CustomMechanicLogicHelper
         {
             if (character.isEntity)
             {
-                if (character.GetEntity().GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null)
+                if (character.GetEntity().entityTurn.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null)
                 {
                     logic.overrideDelay = true;
-                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity());
+                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity().entityTurn);
                     Debug.Log("HELLO!!");
                     break;
                 }
@@ -243,8 +243,11 @@ public static class CustomMechanicLogicHelper
 
     public static MechanicLogic SoulBombEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
+        Debug.Log("Before!" + battleManager.boss.GetComponent<EnemyAI>().currAttack);
 
         battleManager.KillEntity(passthrough.attacker);
+
+        Debug.Log("After! " + battleManager.boss.GetComponent<EnemyAI>().currAttack);
 
         return new MechanicLogic();
     }
@@ -261,9 +264,9 @@ public static class CustomMechanicLogicHelper
     {
         Debug.Log("ENDING MECH");
         GameObject owner = stats.addOwner;
-        battleManager.EndMechanic(mechanic, stats.addOwner);
+        //battleManager.EndMechanic(mechanic, stats.addOwner);
 
         owner.GetComponent<EntityStats>().active = true;
-        battleManager.turnManager.CalculateIndividualDelay(owner.gameObject);
+        battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(owner));
     }
 }

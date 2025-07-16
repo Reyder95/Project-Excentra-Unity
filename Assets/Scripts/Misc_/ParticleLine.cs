@@ -56,8 +56,6 @@ public class ParticleLine : MonoBehaviour
         ParticleSystem.Particle[] particles = new ParticleSystem.Particle[ps.main.maxParticles];
         int numParticles = ps.GetParticles(particles);
 
-        Debug.Log(numParticles);
-
         for (int i = 0; i < numParticles; i++)
         {
             ParticleSystem.Particle p = particles[i];

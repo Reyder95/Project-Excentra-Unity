@@ -66,14 +66,11 @@ public class EnemyPhase
                     if (activeMechanics.Count == 0)
                         ReinsertMechanics();
 
-                    Debug.Log("henlo" + activeMechanics[0]);
-
                     chosenMechanic = activeMechanics[0];
 
                     inactiveMechanics.Add(chosenMechanic);
                     activeMechanics.RemoveAt(0);
                 }
-                Debug.Log("henlo2" + chosenMechanic);
                 return chosenMechanic;
             }
             catch

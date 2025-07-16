@@ -281,7 +281,7 @@ public static class Medica
 
         EnemyAI enemyAi = owner.GetComponent<EnemyAI>();
         enemyAi.ChangePhase(true);
-        battleManager.turnManager.CalculateIndividualDelay(owner.gameObject, battleManager.turnManager.ReturnDelayNeededForTurn(0));
+        battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(owner), battleManager.turnManager.ReturnDelayNeededForTurn(0));
     }
 
     public static MechanicLogic SweetBlissStart(BattleManager battleManager, CustomLogicPassthrough passthrough)

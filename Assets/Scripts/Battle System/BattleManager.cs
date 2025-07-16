@@ -18,7 +18,7 @@ public class BattleManager
     public List<GameObject> playerCharacters = new List<GameObject>(); // All of the player character's Game Objects by reference
     public List<GameObject> enemyList = new List<GameObject>();
     public Dictionary<string, int> nameCounts = new Dictionary<string, int>();
-    private GameObject boss = new GameObject(); // The boss (will need modification for multiple enemies)
+    public GameObject boss = new GameObject(); // The boss (will need modification for multiple enemies)
 
     public TurnManager turnManager = new TurnManager(); // The turn manager handles everything regarding the turn order, delays, etc. The battle manager uses the turnManager to facilitate the turns
     public BattleVariables battleVariables = new BattleVariables();     // The important battle variables, like current targets, current abilities being used, etc. Keeps track of everything important for the round.
@@ -174,7 +174,7 @@ public class BattleManager
             {
 
                 Debug.Log("LOLLLL!");
-                turnManager.CalculateIndividualDelay(stats.gameObject, turnManager.ReturnDelayNeededForTurn(0));
+                turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(stats.gameObject), turnManager.ReturnDelayNeededForTurn(0));
             }
             
         }
@@ -209,7 +209,12 @@ public class BattleManager
     // Removes a turn (or the entire status) each time it "triggers"
     public bool HandleTurnStatuses()
     {
-        GameObject currTurn = turnManager.GetCurrentTurn();
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
+
+        if (!turnEntity.isEntity)
+            return false;
+
+        GameObject currTurn = turnEntity.GetEntity().entityTurn;
         EntityStats stats = currTurn.GetComponent<EntityStats>();
 
         List<StatusEffect> effectsToRemove = new List<StatusEffect>();
@@ -251,12 +256,14 @@ public class BattleManager
 
     public void StartTurn()
     {
-        GameObject currTurn = turnManager.GetCurrentTurn();
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
 
         
 
-        if (currTurn.GetComponent<EntityStats>() != null)
+        if (turnEntity.GetEntity().entityTurn != null)
         {
+            GameObject currTurn = turnEntity.GetEntity().entityTurn;
+
             EntityStats stats = currTurn.GetComponent<EntityStats>();
             EntityController controller = currTurn.GetComponent<EntityController>();
             PlayerInput input = currTurn.GetComponent<PlayerInput>();
@@ -310,7 +317,7 @@ public class BattleManager
 
                         if (mechanic == null)
                         {
-                            Debug.Log("Current Attack " + enemyAi.currAttack);
+                            Debug.Log(enemyAi.currAttack);
                             BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
 
                         }
@@ -365,12 +372,27 @@ public class BattleManager
         }
         else
         {
-            BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
-            EnemyAI enemyAi = aoe.attackerObject.GetComponent<EnemyAI>();
-            if (aoe)
-            Debug.Log("GO IN!");
-            // Find some way to store attackers of skills
-            BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, aoe.attackerObject, aoe);
+            // TODO: FIX THIS TO WORK WITH MULTIPLE AOEs AT ONCE!
+
+            AoeTurn aoeTurn = turnEntity.GetEntity().aoeTurn;
+
+            foreach (GameObject aoe in aoeTurn.aoes)
+            {
+                BaseAoe baseAoe = aoe.GetComponent<BaseAoe>();
+                EnemyAI enemyAi = baseAoe.attackerObject.GetComponent<EnemyAI>();
+
+                Debug.Log("TEST!!" + enemyAi.currAttack);
+
+                BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, baseAoe.mechanicAttack, this, baseAoe.attackerObject, baseAoe);
+            }
+
+
+            //BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
+            //EnemyAI enemyAi = aoe.attackerObject.GetComponent<EnemyAI>();
+            //if (aoe)
+            //Debug.Log("GO IN!");
+            //// Find some way to store attackers of skills
+            //BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, aoe.attackerObject, aoe);
             EndTurn();
         }
     }
@@ -378,9 +400,16 @@ public class BattleManager
     public void EndTurn()
     {
         ChangeState(BattleState.TURN_TRANSITION);
-        GameObject currTurn = turnManager.GetCurrentTurn();
-        EntityStats stats = currTurn.GetComponent<EntityStats>();
-        EntityController controller = currTurn.GetComponent<EntityController>();
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
+        GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
+        EntityStats stats = null;
+        EntityController controller = null;
+        if (currTurn != null)
+        {
+            stats = currTurn.GetComponent<EntityStats>();
+            controller = currTurn.GetComponent<EntityController>();
+        }
+
         bool isRevive = false;
         EnemyAI enemyAi = boss.GetComponent<EnemyAI>();
 
@@ -450,13 +479,13 @@ public class BattleManager
                     stats.nextStaticDelay = -1f;
                 }
 
-                if (currTurn.GetComponent<BaseAoe>() != null)
+                if (turnEntity.turnData.aoeTurn != null)
                 {
                     if (enemyAi.enabled)
                     {
                         if (enemyAi.currAttack != null)
                         {
-                            EndMechanic(currTurn.GetComponent<BaseAoe>().mechanic, currTurn.GetComponent<BaseAoe>().attackerObject);
+                            EndMechanic(turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().mechanic, turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
                         }
                     }
                 }
@@ -503,32 +532,29 @@ public class BattleManager
         }
     }
 
+    // May not need this anymore, depends how I handle mechanics that have multiple parts
     public void EndMechanic(EnemyMechanic mechanic, GameObject attacker)
     {
-        if (turnManager.CheckIfMechanicOver(mechanic))
+        EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+        BossMechanicHandler.EndMechanic(mechanic, this, attacker);
+        enemyAi.currAttack = null;
+        enemyAi.stats.targetable = true;
+
+        if (mechanic.goNext)
         {
-            EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
-            BossMechanicHandler.EndMechanic(mechanic, this, attacker);
-            enemyAi.currAttack = null;
-            enemyAi.stats.targetable = true;
+            Debug.Log("HELLO!ASDASDAD");
+            turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(attacker), 0);
+        }
 
-            if (mechanic.goNext)
-            {
-                Debug.Log("HELLO!ASDASDAD");
-                turnManager.CalculateIndividualDelay(attacker, 0);
-            }
-
-            foreach (var character in playerCharacters)
-            {
-                EntityStats stats = character.GetComponent<EntityStats>();
-                stats.mechanicVariables.targeted = false;
-            }
+        foreach (var character in playerCharacters)
+        {
+            EntityStats stats = character.GetComponent<EntityStats>();
+            stats.mechanicVariables.targeted = false;
         }
     }
 
     public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey, string aiKey, bool next)
     {
-        Debug.Log("SPAWN ENTITY");
         GameObject spawnedEntity = GameObject.Instantiate(entity, pos, Quaternion.identity);
         EntityStats spawnedEntityStats = spawnedEntity.GetComponent<EntityStats>();
         spawnedEntity.GetComponent<EntityStats>().InitializeCurrentStats();
@@ -582,11 +608,12 @@ public class BattleManager
     // Cleans up all the variables at the end of a turn
     public void CleanupTurn()
     {
-        GameObject currTurn = turnManager.GetCurrentTurn();
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
         try
         {
-            if (currTurn.GetComponent<EntityStats>() != null)
+            if (turnEntity.GetEntity().entityTurn != null)
             {
+                GameObject currTurn = turnEntity.GetEntity().entityTurn;
                 EntityStats currStats = currTurn.GetComponent<EntityStats>();
                 EntityController controller = currTurn.GetComponent<EntityController>();
                 PlayerInput input = currTurn.GetComponent<PlayerInput>();
@@ -607,9 +634,17 @@ public class BattleManager
             }
             else
             {
-                BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
-                aoeArenadata.PopAoe(aoe.arenaAoeIndex);
-                GameObject.Destroy(aoe.gameObject);
+                AoeTurn aoeTurn = turnEntity.GetEntity().aoeTurn;
+                foreach (GameObject aoe in aoeTurn.aoes)
+                {
+                    BaseAoe baseAoe = aoe.GetComponent<BaseAoe>();
+                    aoeArenadata.PopAoe(baseAoe.arenaAoeIndex);
+                    GameObject.Destroy(aoe);
+                }
+
+                //BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
+                //aoeArenadata.PopAoe(aoe.arenaAoeIndex);
+                //GameObject.Destroy(aoe.gameObject);
             }
         } catch (MissingReferenceException) { }
 
@@ -649,7 +684,7 @@ public class BattleManager
     // aoes don't usually have one.
     public void HandleEntityAction(BattleClickInfo information = null)
     {
-        GameObject currTurn = turnManager.GetCurrentTurn();
+        GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
         EntityStats stats = currTurn.GetComponent<EntityStats>();
         EntityController entityController = currTurn.GetComponent<EntityController>();
         PlayerSkill currSkill = battleVariables.GetCurrentSkill() as PlayerSkill;
@@ -774,13 +809,13 @@ public class BattleManager
     // Spawns an AOE telegraph for the user
     public GameObject ActivateSkillTelegraph(VisualElement element)
     {
-        return SpawnAoe((element.userData as PlayerSkill), turnManager.GetCurrentTurn(), turnManager.GetCurrentTurn());
+        return SpawnAoe((element.userData as PlayerSkill), turnManager.GetCurrentTurn().GetEntity().entityTurn, turnManager.GetCurrentTurn().GetEntity().entityTurn);
     }
 
     // When the animation "hits" the target, this event is triggered. Does the specific attack towards this group of targets
     public void OnHit()
     {
-        GameObject currTurn = turnManager.GetCurrentTurn();
+        GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
         EntityStats stats = currTurn.GetComponent<EntityStats>();
 
         if (!stats.isPlayer)
@@ -801,7 +836,7 @@ public class BattleManager
 
         foreach (var entity in targetList)
         {
-            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn(), battleVariables.currSkill));
+            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(entity.Value, turnManager.GetCurrentTurn().GetEntity().entityTurn, battleVariables.currSkill));
             DealDamage(entity.Value, entityDamage);
 
             if (battleVariables.currSkill == null)
@@ -875,7 +910,7 @@ public class BattleManager
                 float randomNum = UnityEngine.Random.Range(0, 100);
 
                 if (randomNum <= statusChance)
-                    entityStats.ModifyStatus(ExcentraDatabase.TryGetStatus(status.key), turnManager.GetCurrentTurn());
+                    entityStats.ModifyStatus(ExcentraDatabase.TryGetStatus(status.key), turnManager.GetCurrentTurn().GetEntity().entityTurn);
             }
         }
     }
@@ -890,7 +925,7 @@ public class BattleManager
         if (attacker != null)
             currAttacker = attacker;
         else
-            currAttacker = turnManager.GetCurrentTurn();
+            currAttacker = turnManager.GetCurrentTurn().GetEntity().entityTurn;
 
         Vector2 centerPoint = currAttacker.transform.position;
 
@@ -937,8 +972,6 @@ public class BattleManager
         float distance = Vector2.Distance(startPosition, endPosition);
 
         RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, distance, LayerMask.GetMask("Obstacles"));
-
-        Debug.Log(hit);
 
         if (hit.collider != null)
             return false;
@@ -1005,8 +1038,8 @@ public class BattleManager
     {
         if (battleVariables.GetState() == BattleState.PLAYER_SPECIAL)
         {
-            EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
-            DestroyAoe(turnManager.GetCurrentTurn());
+            EntityController controller = turnManager.GetCurrentTurn().GetEntity().entityTurn.GetComponent<EntityController>();
+            DestroyAoe(turnManager.GetCurrentTurn().GetEntity().entityTurn);
             battleVariables.currSkill = null;
             controller.specialActive = false;
             ChangeState(BattleState.PLAYER_CHOICE);
@@ -1041,7 +1074,7 @@ public class BattleManager
         if (battleVariables.GetState() == BattleState.TURN_TRANSITION || battleVariables.GetState() == BattleState.AWAIT_ENEMY)
             return;
 
-        GameObject currTurn = turnManager.GetCurrentTurn();
+        GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
         EntityController controller = currTurn.GetComponent<EntityController>();
 
@@ -1072,7 +1105,7 @@ public class BattleManager
 
         RightClickPressed();
 
-        GameObject currTurn = turnManager.GetCurrentTurn();
+        GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
         EntityController controller = currTurn.GetComponent<EntityController>();
         EntityStats currStats = currTurn.GetComponent<EntityStats>();
 
@@ -1105,8 +1138,8 @@ public class BattleManager
 
                 newSkill.RegisterCallback<ClickEvent>(e =>
                 {
-                    EntityStats stats = turnManager.GetCurrentTurn().GetComponent<EntityStats>();
-                    EntityController controller = turnManager.GetCurrentTurn().GetComponent<EntityController>();
+                    EntityStats stats = turnManager.GetCurrentTurn().GetEntity().entityTurn.GetComponent<EntityStats>();
+                    EntityController controller = turnManager.GetCurrentTurn().GetEntity().entityTurn.GetComponent<EntityController>();
                     VisualElement element = (e.currentTarget as VisualElement);
                     if ((element.userData as PlayerSkill).baseAether > stats.currentAether)
                         return;
@@ -1149,7 +1182,7 @@ public class BattleManager
             if (specialPanel.style.visibility == Visibility.Visible)
                 specialPanel.style.visibility = Visibility.Hidden;
 
-            GameObject currTurn = turnManager.GetCurrentTurn();
+            GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
             EntityStats stats = currTurn.GetComponent<EntityStats>();
             EntityController entityController = currTurn.GetComponent<EntityController>();
 
@@ -1186,7 +1219,7 @@ public class BattleManager
     {
         if (overButton)
             return;
-        GameObject currEntity = turnManager.GetCurrentTurn();
+        GameObject currEntity = turnManager.GetCurrentTurn().GetEntity().entityTurn;
         EntityStats stats = currEntity.GetComponent<EntityStats>();
         EntityController controller = currEntity.GetComponent<EntityController>();
         PlayerSkill currSkill = battleVariables.GetCurrentSkill() as PlayerSkill;
@@ -1440,7 +1473,7 @@ public class BattleManager
 
     public GameObject GetCurrentAttacker()
     {
-        return turnManager.GetCurrentTurn();
+        return turnManager.GetCurrentTurn().GetEntity().entityTurn;
     }
 
     public void MouseEnterButton(MouseEnterEvent ev)

@@ -6603,6 +6603,7 @@ MonoBehaviour:
   - key: medica
     phases:
     - activeMechanics:
+      - {fileID: 11400000, guid: 8d4e9257f7ac297489f8bbc21158011c, type: 2}
       - {fileID: 11400000, guid: 8ca842f3346d1a24da4c15a204534bce, type: 2}
       - {fileID: 11400000, guid: 2c762bcc112ca1b4d978066784026fc8, type: 2}
       - {fileID: 11400000, guid: c2f446be1990be8439a9eae4e72a9cf3, type: 2}
@@ -6634,7 +6635,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
       isTriggerPhase: 0
       phaseType: 1
-      hpPercentageThreshold: 70
+      hpPercentageThreshold: 60
     initialPhase:
       mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
       delayBonus: 10
