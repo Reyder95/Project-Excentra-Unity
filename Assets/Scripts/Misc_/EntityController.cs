@@ -153,7 +153,7 @@ public class EntityController : MonoBehaviour
             }
             rb.MovePosition(newPosition);
 
-            if (Vector2.Distance(transform.position, target.transform.position) < 2f)
+            if (Vector2.Distance(transform.position, target.transform.position) < entityStats.basicRange / 10f)
             {
                 autoMove = false;
                 animator.SetBool("IsWalk", false);
