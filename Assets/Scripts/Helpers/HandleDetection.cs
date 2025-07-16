@@ -59,7 +59,6 @@ public class HandleDetection : MonoBehaviour
         GameObject aoe = collision.gameObject;
         if (aoe.tag == "aoe")
         {
-            Debug.Log("YOO");
             BaseAoe aoeData = aoe.GetComponent<BaseAoe>();
             
             if (aoeData.mechanicAttack != null)
@@ -86,7 +85,6 @@ public class HandleDetection : MonoBehaviour
 
         if (aoe.tag == "aoe")
         {
-            Debug.Log("NOOO");
             BaseAoe aoeData = aoe.GetComponent<BaseAoe>();
 
             controller.inEnemyAoe = true;

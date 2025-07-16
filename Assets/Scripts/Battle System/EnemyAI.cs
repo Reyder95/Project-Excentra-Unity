@@ -48,7 +48,6 @@ public class EnemyAI : MonoBehaviour
             {
                 EnemyMechanic chosenMechanic = currPhase.ChooseMechanic();
 
-                Debug.Log(chosenMechanic);
                 if (chosenMechanic.mechanicStyle != MechanicStyle.IMMEDIATE)
                 {
                     currAttack = chosenMechanic;
@@ -184,8 +183,6 @@ public class EnemyAI : MonoBehaviour
 
         if (stats.CalculateHPPercentage() <= enemyPhases[phaseCount].hpPercentageThreshold && !isPhaseTrigger)
         {
-            Debug.Log(phaseCount);
-            Debug.Log(enemyPhases.Count);
             selectedPhase = enemyPhases[phaseCount];
             phaseCount++;
 
@@ -196,7 +193,6 @@ public class EnemyAI : MonoBehaviour
 
         if (changeHP && selectedPhase != null)
         {
-            Debug.Log(stats.maximumHP * (selectedPhase.hpPercentageThreshold / 100));
             stats.ModifyHP(stats.maximumHP * (selectedPhase.hpPercentageThreshold / 100));
         }
 

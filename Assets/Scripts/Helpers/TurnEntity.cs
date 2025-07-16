@@ -1,9 +1,16 @@
 using UnityEngine;
 
+public class TurnEntityData
+{
+    public GameObject entityTurn;
+    public AoeTurn aoeTurn;
+}
+
 public class TurnEntity
 {
-    GameObject entityTurn;
-    GameObject aoeTurn;
+    //GameObject entityTurn;
+    //AoeTurn aoeTurn;
+    public TurnEntityData turnData = new TurnEntityData();
     public bool isEntity = true;
     public float delay = 0f;
 
@@ -11,31 +18,37 @@ public class TurnEntity
     {
         if (entity.TryGetComponent(out EntityStats stats))
         {
-            entityTurn = entity;
+            turnData.entityTurn = entity;
             isEntity = true;
-        }
-        else
-        {
-            aoeTurn = entity;
-            isEntity = false;
         }
     }
 
-    public GameObject GetEntity()
+    public TurnEntity(AoeTurn aoe)
     {
-        if (entityTurn != null)
-            return entityTurn;
+        turnData.aoeTurn = aoe;
+        isEntity = false;
+    }
 
-        return aoeTurn;
+    public bool EqualsEntity(GameObject entity)
+    {
+        if (turnData.entityTurn != null)
+            return turnData.entityTurn == entity;
+
+        return turnData.aoeTurn.aoes.Contains(entity);
+    }
+
+    public TurnEntityData GetEntity()
+    {
+        return turnData;
     }
 
     public void CalculateDelay(bool turn = false)
     {
-        if (entityTurn != null)
+        if (turnData.entityTurn != null)
         {
             if (!turn)
             {
-                delay = (int)Mathf.Floor((500 + UnityEngine.Random.Range(10, 26) / (entityTurn.GetComponent<EntityStats>().CalculateSpeed() * 10.5f)) * UnityEngine.Random.Range(10, 26)) / entityTurn.GetComponent<EntityStats>().CalculateSpeed();
+                delay = (int)Mathf.Floor((500 + UnityEngine.Random.Range(10, 26) / (turnData.entityTurn.GetComponent<EntityStats>().CalculateSpeed() * 10.5f)) * UnityEngine.Random.Range(10, 26)) / turnData.entityTurn.GetComponent<EntityStats>().CalculateSpeed();
             }
         }
 

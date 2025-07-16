@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
   m_Name: Simple Attack (Adds)
   m_EditorClassIdentifier: 
-  mechanicName: Simple Attack
+  mechanicName: Simple Attackaaaa
   containsTrigger: 0
   mechanicKey: simple-attack
   mechanicStyle: 0

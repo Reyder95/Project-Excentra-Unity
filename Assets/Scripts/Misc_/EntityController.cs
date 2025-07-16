@@ -473,7 +473,7 @@ public class EntityController : MonoBehaviour
 
         if (!ExcentraGame.battleManager.battleVariables.IsEntityAttacking())
         {
-            if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
+            if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn().GetEntity().entityTurn, this.gameObject))
             {
                 PlayerSkill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill() as PlayerSkill;
 
@@ -489,7 +489,7 @@ public class EntityController : MonoBehaviour
                 if (currAbility.targetMode == TargetMode.SELECT && currAbility.areaStyle != AreaStyle.SINGLE)
                 {
 
-                    ExcentraGame.battleManager.SpawnAoe(currAbility, this.gameObject, ExcentraGame.battleManager.turnManager.GetCurrentTurn());
+                    ExcentraGame.battleManager.SpawnAoe(currAbility, this.gameObject, ExcentraGame.battleManager.turnManager.GetCurrentTurn().GetEntity().entityTurn);
                 }
             }
         }
@@ -510,11 +510,11 @@ public class EntityController : MonoBehaviour
             return;
 
 
-        if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
+        if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn().GetEntity().entityTurn, this.gameObject))
         {
             if (currAbility == null || (currAbility != null && currAbility.areaStyle == AreaStyle.SINGLE))
             {
-                if (ExcentraGame.battleManager.CheckWithinSkillRange(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject, currAbility))
+                if (ExcentraGame.battleManager.CheckWithinSkillRange(ExcentraGame.battleManager.turnManager.GetCurrentTurn().GetEntity().entityTurn, this.gameObject, currAbility))
                 {
 
                     HandleTarget(false);
@@ -541,7 +541,7 @@ public class EntityController : MonoBehaviour
         if (ExcentraGame.battleManager.battleVariables.GetState() == BattleState.AWAIT_ENEMY)
             return;
 
-        if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn(), this.gameObject))
+        if (ExcentraGame.battleManager.TargetingEligible(ExcentraGame.battleManager.turnManager.GetCurrentTurn().GetEntity().entityTurn, this.gameObject))
         {
             PlayerSkill currAbility = ExcentraGame.battleManager.battleVariables.GetCurrentSkill() as PlayerSkill;
 
@@ -557,7 +557,7 @@ public class EntityController : MonoBehaviour
             if (currAbility.targetMode == TargetMode.SELECT && currAbility.areaStyle != AreaStyle.SINGLE)
             {
                 if (!ExcentraGame.battleManager.battleVariables.IsEntityAttacking())
-                    ExcentraGame.battleManager.DestroyAoe(ExcentraGame.battleManager.turnManager.GetCurrentTurn());
+                    ExcentraGame.battleManager.DestroyAoe(ExcentraGame.battleManager.turnManager.GetCurrentTurn().GetEntity().entityTurn);
             }
         }
     }

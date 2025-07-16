@@ -35,14 +35,20 @@ public class CameraMovementHandler : MonoBehaviour
         {
             try
             {
-                targetPos = new Vector3(ExcentraGame.battleManager.turnManager.GetCurrentTurn().transform.position.x, ExcentraGame.battleManager.turnManager.GetCurrentTurn().transform.position.y, -1);
+                TurnEntity turnEntity = ExcentraGame.battleManager.turnManager.GetCurrentTurn();
 
-                float clampedX = Mathf.Clamp(targetPos.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
-                float clampedY = Mathf.Clamp(targetPos.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
+                if (turnEntity.isEntity)
+                {
+                    targetPos = new Vector3(turnEntity.GetEntity().entityTurn.transform.position.x, turnEntity.GetEntity().entityTurn.transform.position.y, -1);
 
-                targetPos = new Vector3(clampedX, clampedY, targetPos.z);
+                    float clampedX = Mathf.Clamp(targetPos.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
+                    float clampedY = Mathf.Clamp(targetPos.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
 
-                transform.position = Vector3.Lerp(transform.position, targetPos, cameraSmoothSpeed * Time.fixedDeltaTime);
+                    targetPos = new Vector3(clampedX, clampedY, targetPos.z);
+
+                    transform.position = Vector3.Lerp(transform.position, targetPos, cameraSmoothSpeed * Time.fixedDeltaTime);
+                }
+
             }
             catch (MissingReferenceException) { }
 

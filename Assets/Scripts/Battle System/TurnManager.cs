@@ -44,13 +44,15 @@ public class TurnManager
         }
         turnOrder.Add(new TurnEntity(boss));
 
+        
+
         // Calculates the initial delay for all entities
         foreach (var character in turnOrder)
         {
             if (character.isEntity)
             {
                 EnemyAI enemyAi;
-                if (character.GetEntity().TryGetComponent<EnemyAI>(out enemyAi))
+                if (character.GetEntity().entityTurn.TryGetComponent<EnemyAI>(out enemyAi))
                 {
                     if (enemyAi.enabled)
                     {
@@ -110,7 +112,7 @@ public class TurnManager
             VisualElement charPortrait = charElement.Q<VisualElement>("portrait");
             Label delayLabel = charElement.Q<Label>("delay");
             if (character.isEntity)
-                charPortrait.style.backgroundImage = character.GetEntity().GetComponent<EntityStats>().portrait;
+                charPortrait.style.backgroundImage = character.GetEntity().entityTurn.GetComponent<EntityStats>().portrait;
             else
                 charPortrait.style.backgroundImage = ExcentraDatabase.TryGetSkill("fireball").icon;
             delayLabel.text = ((int)character.delay).ToString();
@@ -123,7 +125,7 @@ public class TurnManager
     {
         foreach (var loopedEntity in turnOrder)
         {
-            if (loopedEntity.GetEntity() == entity)
+            if (loopedEntity.GetEntity().entityTurn == entity)
             {
                 turnOrder.Remove(loopedEntity);
                 break;
@@ -157,30 +159,42 @@ public class TurnManager
         }
     }
 
-    public bool CheckIfMechanicOver(EnemyMechanic mechanic)
-    {
-        foreach (var entity in turnOrder)
-        {
-            if (!entity.isEntity)
-            {
-                GameObject aoe = entity.GetEntity();
-                BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
+    //public bool CheckIfMechanicOver(EnemyMechanic mechanic)
+    //{
+    //    foreach (var entity in turnOrder)
+    //    {
+    //        if (!entity.isEntity)
+    //        {
+    //            GameObject aoe = entity.GetEntity().aoe;
+    //            BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
 
-                if (aoeInfo.mechanic == mechanic)
-                {
-                    return false;
-                }
-            }
-            else
+    //            if (aoeInfo.mechanic == mechanic)
+    //            {
+    //                return false;
+    //            }
+    //        }
+    //        else
+    //        {
+    //            if (entity.GetEntity().GetComponent<EntityStats>().addMechanic == mechanic)
+    //            {
+    //                return false;
+    //            }
+    //        }
+    //    }
+
+    //    return true;
+    //}
+
+    public TurnEntityData GetTurnEntityData(GameObject entity)
+    {
+        foreach (var character in turnOrder)
+        {
+            if (character.EqualsEntity(entity))
             {
-                if (entity.GetEntity().GetComponent<EntityStats>().addMechanic == mechanic)
-                {
-                    return false;
-                }
+                return character.GetEntity();
             }
         }
-
-        return true;
+        return null;
     }
 
     // Calculates the delay for all entities that already exist in the turn order.
@@ -191,7 +205,7 @@ public class TurnManager
         {
             if (character.isEntity)
             {
-                EntityStats entityStats = character.GetEntity().GetComponent<EntityStats>();
+                EntityStats entityStats = character.GetEntity().entityTurn.GetComponent<EntityStats>();
 
                 if (!entityStats.active)
                     continue;
@@ -201,10 +215,8 @@ public class TurnManager
         }
     }
 
-    public void CalculateIndividualDelay(GameObject entity, float forcedDelay = -1f)
+    public void CalculateIndividualDelay(TurnEntityData entity, float forcedDelay = -1f)
     {
-        EntityStats stats = entity.GetComponent<EntityStats>();
-
         TurnEntity turnEntity = null;
 
         for (int i = 0; i < turnOrder.Count; i++)
@@ -241,7 +253,7 @@ public class TurnManager
         {
             if (character.isEntity)
             {
-                if (character.GetEntity().GetComponent<EntityStats>().active == false && !character.GetEntity().GetComponent<EntityStats>().isPlayer)
+                if (character.GetEntity().entityTurn.GetComponent<EntityStats>().active == false && !character.GetEntity().entityTurn.GetComponent<EntityStats>().isPlayer)
                 {
                     countdown++;
                     continue;
@@ -271,10 +283,9 @@ public class TurnManager
     {
         foreach (var character in turnOrder)
         {
-            if (character.GetEntity() == entity)
+            if (character.EqualsEntity(entity))
             {
                 return character.delay + 1;
-
             }
         }
 
@@ -296,10 +307,10 @@ public class TurnManager
         {
             bool added = InsertUnitIntoTurn(currTurn);
 
-            EntityStats currTurnStats = currTurn.GetEntity().GetComponent<EntityStats>();
+            EntityStats currTurnStats = currTurn.GetEntity().entityTurn.GetComponent<EntityStats>();
             if (currTurnStats.isPlayer)
             {
-                PlayerInput input = currTurn.GetEntity().GetComponent<PlayerInput>();
+                PlayerInput input = currTurn.GetEntity().entityTurn.GetComponent<PlayerInput>();
                 input.enabled = false;
             }
 
@@ -318,8 +329,8 @@ public class TurnManager
         return currTurn;
     }
 
-    public GameObject GetCurrentTurn()
+    public TurnEntity GetCurrentTurn()
     {
-        return turnOrder[0].GetEntity();
+        return turnOrder[0];
     }
 }
