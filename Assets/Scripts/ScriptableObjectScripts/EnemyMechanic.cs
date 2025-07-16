@@ -56,6 +56,9 @@ public class EnemyMechanic : ScriptableObject
 
     public bool goNext = false;
 
+    [Tooltip("The overriding animation trigger for this mechanic. If this is not set, the child animations will be used. Should be always set unless doing a sequential mechanic (will handle later)")]
+    public string animationTrigger = "";
+
     [Tooltip("How many turns until casting can we re-cast this ability?")]
     public int turnCooldown = 0;
     [System.NonSerialized] public int currTurns;

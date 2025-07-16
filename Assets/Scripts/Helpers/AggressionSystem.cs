@@ -40,7 +40,8 @@ public class AggressionSystem
     {
         EntityStats stats = entity.GetComponent<EntityStats>();
         aggressionList.Remove(stats.entityName);
-        //OutputAggressionList();
+        Debug.Log("REMOVED ENTITY" + stats.entityName);
+        OutputAggressionList();
     }
 
     public void ModifyExistingEntityValue(AggressionElement element)
@@ -85,6 +86,7 @@ public class AggressionSystem
 
     public void OutputAggressionList()
     {
+        Debug.Log("Outputting aggression list:");
         foreach (DictionaryEntry entry in aggressionList)
         {
             Debug.Log("Entity: " + entry.Key + " | " + "Aggression: " + (entry.Value as AggressionElement).aggressionValue);

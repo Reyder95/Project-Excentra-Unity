@@ -22,6 +22,7 @@ public class EntityController : MonoBehaviour
 
     // Boss
     private GameObject target;      // Target entity to move towards
+    private string animationTrigger;    // The animation trigger that occurs when a movement attack gets within range of the target. Used for boss attacks, as they do not have playerInput enabled.
     private bool autoMove = false;  // Enables auto movement for boss. If this is triggered, the boss will move towards the target directly (Navigation not implemented yet)
 
     // Range - Shows range that entity can attack within. Basic chooses their "basic range", special chooses the specific skill's range
@@ -41,6 +42,8 @@ public class EntityController : MonoBehaviour
     public PlayerInput playerInput;
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
+
+    public float lineThickness = 0.001f;
 
     // Misc.
     public GameObject charGround;   // A simple object denoting an entity's ground. Used for handling depth (displaying entities in front and behind each other)
@@ -150,11 +153,11 @@ public class EntityController : MonoBehaviour
             }
             rb.MovePosition(newPosition);
 
-            if (Vector2.Distance(transform.position, target.transform.position) < 2f)
+            if (Vector2.Distance(transform.position, target.transform.position) < entityStats.basicRange / 10f)
             {
                 autoMove = false;
                 animator.SetBool("IsWalk", false);
-                animator.SetTrigger("Basic Attack");
+                animator.SetTrigger(this.animationTrigger);
                 //BattleClickInfo info = new BattleClickInfo();
                 //info.target = target;
                 //info.singleSkill = enemyAi.currAttack;
@@ -355,10 +358,11 @@ public class EntityController : MonoBehaviour
     }
 
     // Placed in Update(). Simple AI code to force move the entity to a target.
-    public void MoveTowards(GameObject target)
+    public void MoveTowards(GameObject target, string animationTrigger = "")
     {
         animator.SetBool("IsWalk", true);
         this.target = target;
+        this.animationTrigger = animationTrigger;
         autoMove = true;
     }
 
@@ -392,7 +396,7 @@ public class EntityController : MonoBehaviour
                 spriteRenderer.material.SetColor("_Color", new Color(1f, 0f, 0f));
             else
                 spriteRenderer.material.SetColor("_Color", new Color(0f, 1f, 0f));
-            spriteRenderer.material.SetFloat("_Thickness", 0.001f);
+            spriteRenderer.material.SetFloat("_Thickness", lineThickness);
         }
             
         else

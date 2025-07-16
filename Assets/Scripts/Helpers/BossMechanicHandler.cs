@@ -219,6 +219,7 @@ public static class BossMechanicHandler
 
     public static void InitializeSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker)
     {
+        Debug.Log("TESTING AHAHHAHAHA");
         EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
         GameObject target = enemyAi.ChooseEntity(mechanicAttack.targetType);
         enemyAi.currTarget = target;
@@ -228,7 +229,7 @@ public static class BossMechanicHandler
             enemyAi.currTarget = logic.overriddenTarget;
 
         EntityController controller = attacker.GetComponent<EntityController>();
-        controller.MoveTowards(enemyAi.currTarget);
+        controller.MoveTowards(enemyAi.currTarget, mechanic.animationTrigger);
 
     }
     public static void ActivateSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target)
