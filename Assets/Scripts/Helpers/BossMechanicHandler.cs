@@ -93,14 +93,51 @@ public static class BossMechanicHandler
                 stats.nextStaticDelay = delay + 1;
             }
 
-            AoeTurn aoeTurn = new AoeTurn(aoes);
-            TurnEntity aoeEntity = new TurnEntity(aoeTurn);
-            aoeEntity.CalculateDirectDelay(delay);
-            bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
-            if (!added)
+            if (mechanic.priorityIndex.Length > 0)
             {
-                battleManager.turnManager.turnOrder.Add(aoeEntity);
+                foreach (MechanicPriorityIndex priorityElement in mechanic.priorityIndex)
+                {
+                    List<GameObject> prioAoes = new List<GameObject>();
+
+                    foreach (int index in priorityElement.index)
+                    {
+                        if (index < aoes.Count)
+                        {
+                            prioAoes.Add(aoes[index]);
+                        }
+                    }
+
+                    //if (delay == -1f)
+                    //    delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+
+                    //if (targetedLogic.overrideDelay)
+                    //    delay = targetedLogic.overriddenDelay;
+
+                    AoeTurn aoeTurn = new AoeTurn(prioAoes);
+                    TurnEntity aoeEntity = new TurnEntity(aoeTurn);
+                    delay = battleManager.turnManager.ReturnDelayNeededForTurn(priorityElement.turnOffset);
+                    aoeEntity.CalculateDirectDelay(delay);
+                    bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
+                    if (!added)
+                    {
+                        battleManager.turnManager.turnOrder.Add(aoeEntity);
+                    }
+                }
+
             }
+            else
+            {
+                AoeTurn aoeTurn = new AoeTurn(aoes);
+                TurnEntity aoeEntity = new TurnEntity(aoeTurn);
+                aoeEntity.CalculateDirectDelay(delay);
+                bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
+                if (!added)
+                {
+                    battleManager.turnManager.turnOrder.Add(aoeEntity);
+                }
+            }
+
+
 
             battleManager.turnManager.DisplayTurnOrder();
         }
@@ -175,11 +212,11 @@ public static class BossMechanicHandler
 
         //TurnEntity aoeEntity = new TurnEntity(aoe);
         float delay = CustomMechanicLogicHelper.ExecuteMechanicDelay(mechanicAttack.attackKey, battleManager);
-        if (delay == -1f)
-            delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+        //if (delay == -1f)
+        //    delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
 
-        if (targetedLogic.overrideDelay)
-            delay = targetedLogic.overriddenDelay;
+        //if (targetedLogic.overrideDelay)
+        //    delay = targetedLogic.overriddenDelay;
 
         //aoeEntity.CalculateDirectDelay(delay);
 

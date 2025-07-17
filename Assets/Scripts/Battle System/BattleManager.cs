@@ -541,22 +541,26 @@ public class BattleManager
     // May not need this anymore, depends how I handle mechanics that have multiple parts
     public void EndMechanic(EnemyMechanic mechanic, GameObject attacker)
     {
-        EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
-        BossMechanicHandler.EndMechanic(mechanic, this, attacker);
-        enemyAi.currAttack = null;
-        enemyAi.stats.targetable = true;
-
-        if (mechanic.goNext)
+        if (turnManager.CheckIfMechanicOver(mechanic))
         {
-            Debug.Log("HELLO!ASDASDAD");
-            turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(attacker), 0);
+            EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+            BossMechanicHandler.EndMechanic(mechanic, this, attacker);
+            enemyAi.currAttack = null;
+            enemyAi.stats.targetable = true;
+
+            if (mechanic.goNext)
+            {
+                Debug.Log("HELLO!ASDASDAD");
+                turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(attacker), 0);
+            }
+
+            foreach (var character in playerCharacters)
+            {
+                EntityStats stats = character.GetComponent<EntityStats>();
+                stats.mechanicVariables.targeted = false;
+            }
         }
 
-        foreach (var character in playerCharacters)
-        {
-            EntityStats stats = character.GetComponent<EntityStats>();
-            stats.mechanicVariables.targeted = false;
-        }
     }
 
     public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey, string aiKey, bool next)

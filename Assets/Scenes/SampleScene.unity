@@ -6641,14 +6641,7 @@ MonoBehaviour:
   - key: medica_test
     phases:
     - activeMechanics:
-      - {fileID: 11400000, guid: 4909e30ad3daf524284928bf8f3c3aaf, type: 2}
-      - {fileID: 11400000, guid: fa07a1a10ebceda40aca139248415038, type: 2}
-      - {fileID: 11400000, guid: 2c762bcc112ca1b4d978066784026fc8, type: 2}
-      - {fileID: 11400000, guid: 33746743b43a7014c96ec87013a16775, type: 2}
-      - {fileID: 11400000, guid: 7e3374de77a3f154088f0807cf42c9b3, type: 2}
-      - {fileID: 11400000, guid: 4909e30ad3daf524284928bf8f3c3aaf, type: 2}
-      - {fileID: 11400000, guid: 2c762bcc112ca1b4d978066784026fc8, type: 2}
-      - {fileID: 11400000, guid: fa07a1a10ebceda40aca139248415038, type: 2}
+      - {fileID: 11400000, guid: 8032a542d4150f546a371f571415e1f8, type: 2}
       consistentMechanics:
       - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
       isTriggerPhase: 0

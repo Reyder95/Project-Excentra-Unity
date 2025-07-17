@@ -24,6 +24,8 @@ public static class Medica
         return new MechanicLogic();
     }
 
+    // -- OLD UNUSED MECHANICS HERE
+
     public static MechanicLogic AcclimationEffectEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleTargets = battleManager.GetAliveEntities();

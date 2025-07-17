@@ -25,6 +25,13 @@ public enum MoveType
     CUSTOM
 }
 
+[System.Serializable]
+public class MechanicPriorityIndex
+{
+    public int[] index;
+    public int turnOffset;
+}
+
 [CreateAssetMenu(fileName = "EnemyMechanic", menuName = "Scriptable Objects/EnemyMechanic")]
 public class EnemyMechanic : ScriptableObject
 {
@@ -58,6 +65,8 @@ public class EnemyMechanic : ScriptableObject
 
     [Tooltip("The overriding animation trigger for this mechanic. If this is not set, the child animations will be used. Should be always set unless doing a sequential mechanic (will handle later)")]
     public string animationTrigger = "";
+
+    public MechanicPriorityIndex[] priorityIndex;
 
     [Tooltip("How many turns until casting can we re-cast this ability?")]
     public int turnCooldown = 0;
