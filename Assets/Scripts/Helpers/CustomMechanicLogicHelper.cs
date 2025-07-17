@@ -8,7 +8,8 @@ public static class CustomMechanicLogicHelper
 {
     private static Dictionary<string, System.Action<BattleManager, EnemyMechanic>> mechCustom = new Dictionary<string, System.Action<BattleManager, EnemyMechanic>>()
     {
-        { "lonely-ghost", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.LonelyGhost(battleManager, mechanic) }
+        { "lonely-ghost", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.LonelyGhost(battleManager, mechanic) },
+        { "bittersweet-spirits", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.BittersweetSpirits(battleManager, mechanic) }
     };
 
     private static Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>> mechDict = new Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>>()
@@ -17,11 +18,11 @@ public static class CustomMechanicLogicHelper
         { "blue_acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationEffect(battleManager, passthrough) },
         { "red_acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => RedAcclimationEffect(battleManager, passthrough) },
         { "acclimation_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationEffectEnd(battleManager, passthrough)   },
-        { "acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationEffectStart(battleManager, passthrough) },
-        { "sweet_bliss", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.SweetBlissStart(battleManager, passthrough) },
+        //{ "acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationEffectStart(battleManager, passthrough) },
+        //{ "sweet_bliss", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.SweetBlissStart(battleManager, passthrough) },
         { "sweet_bliss_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.SweetBlissEnd(battleManager, passthrough) },
-        { "red_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => RedAcclimationTarget(battleManager, passthrough) },
-        { "blue_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationTarget(battleManager, passthrough) },
+        { "red_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.RedAcclimationTarget(battleManager, passthrough) },
+        { "blue_acclimation_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.BlueAcclimationTarget(battleManager, passthrough) },
         { "soul-bomb-attack", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBomb(battleManager, passthrough) },
         { "soul-bomb_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBombEnd(battleManager, passthrough) },
         { "soul-bomb_target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => SoulBombTarget(battleManager, passthrough) },
@@ -30,6 +31,7 @@ public static class CustomMechanicLogicHelper
         { "red-acclimation-hit", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.RedAcclimationHit(battleManager, passthrough) },
         { "blue-acclimation-hit", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.BlueAcclimationHit(battleManager, passthrough) },
         { "adds-target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AddTarget(battleManager, passthrough) },
+        { "acclimation-resolve", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationResolve(battleManager, passthrough) },
     
     };
 
@@ -52,8 +54,12 @@ public static class CustomMechanicLogicHelper
 
     public static MechanicLogic ExecuteMechanic(string mechanicKey, BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
-        if (mechDict.ContainsKey(mechanicKey))
-            return mechDict[mechanicKey](battleManager, passthrough);
+        if (mechanicKey != null)
+        {
+            if (mechDict.ContainsKey(mechanicKey))
+                return mechDict[mechanicKey](battleManager, passthrough);
+        }
+
 
         return new MechanicLogic();
     }
@@ -131,67 +137,6 @@ public static class CustomMechanicLogicHelper
             logic.overriddenDamage = passthrough.entityDamage * 0.20f;
             return logic;
         }
-        return logic;
-    }
-
-    public static MechanicLogic RedAcclimationTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
-    {
-        List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Red acclimation target effect");
-        MechanicLogic logic = new MechanicLogic();
-
-        List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null).ToList();
-
-        if (targetableChars.Count == 0)
-            return logic;
-
-        Debug.Log("Red Target " + targetableChars.Count);
-
-        logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
-
-        foreach (var character in battleManager.turnManager.turnOrder)
-        {
-            if (character.isEntity)
-            {
-                if (character.GetEntity().entityTurn.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null)
-                {
-                    logic.overrideDelay = true;
-                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity().entityTurn);
-                    break;
-                }
-            }
-        }
-
-        return logic;
-    }
-
-    public static MechanicLogic BlueAcclimationTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
-    {
-        List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Blue acclimation target effect");
-        MechanicLogic logic = new MechanicLogic();
-
-        List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null).ToList();
-
-        if (targetableChars.Count == 0)
-            return logic;
-
-        logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
-
-        foreach (var character in battleManager.turnManager.turnOrder)
-        {
-            if (character.isEntity)
-            {
-                if (character.GetEntity().entityTurn.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null)
-                {
-                    logic.overrideDelay = true;
-                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity().entityTurn);
-                    Debug.Log("HELLO!!");
-                    break;
-                }
-            }
-        }
-
         return logic;
     }
 

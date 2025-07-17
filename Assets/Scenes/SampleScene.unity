@@ -6654,6 +6654,7 @@ MonoBehaviour:
     phases:
     - activeMechanics:
       - {fileID: 11400000, guid: 8ca842f3346d1a24da4c15a204534bce, type: 2}
+      - {fileID: 11400000, guid: 954778d0d539a9b46a3ef18d071d80d2, type: 2}
       consistentMechanics:
       - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
       isTriggerPhase: 0

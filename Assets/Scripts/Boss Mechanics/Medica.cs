@@ -5,23 +5,45 @@ using UnityEngine;
 
 public static class Medica
 {
-    public static MechanicLogic AcclimationEffectStart(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    // MechanicAttack for Acclimation Resolve
+    public static MechanicAttack AcclimationResolve()
     {
-        List<GameObject> possibleTargets = battleManager.GetAliveEntities();
+        MechanicAttack acclimationResolve = new MechanicAttack();
+        acclimationResolve.attackKey = "acclimation-resolve";
+        acclimationResolve.attackType = AttackType.AOE;
+        acclimationResolve.aoeShape = Shape.DONUT;
+        acclimationResolve.isInvisible = true;
+        acclimationResolve.raidWide = true;
 
-        foreach (var character in possibleTargets)
-        {
-            EntityStats stats = character.GetComponent<EntityStats>();
+        return acclimationResolve;
+    }
 
+    public static MechanicAttack BittersweetsAoe(bool blue)
+    {
+        string attackKey = blue ? "blue-acclimation-hit" : "red-acclimation-hit";
+        Color color = blue ? new Color(0f, 0f, 1f) : new Color(1f, 0f, 0f);
 
-            stats.ReduceStatusTurns(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
-            stats.ReduceStatusTurns(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
+        MechanicAttack newAttack = new MechanicAttack();
 
-        }
+        newAttack.attackType = AttackType.AOE;
+        newAttack.attackKey = attackKey;
+        newAttack.targetKey = "";
+        newAttack.turnOffset = 4;
+        newAttack.originIsTarget = true;
+        newAttack.damageType = DamageType.DAMAGE;
 
-        passthrough.attacker.GetComponent<EntityController>().ModifyOpacity(1f);
+        newAttack.aoeShape = Shape.CIRCLE;
 
-        return new MechanicLogic();
+        newAttack.size = 4;
+        newAttack.distanceOffset = 1;
+        newAttack.customColor = true;
+        newAttack.aoeColor = color;
+
+        newAttack.scaleMult = 3;
+        newAttack.baseValue = 50;
+        newAttack.attackCount = 1;
+
+        return newAttack;
     }
 
     public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
@@ -53,6 +75,14 @@ public static class Medica
 
     public static void LonelyGhost(BattleManager battleManager, EnemyMechanic mechanic)
     {
+        mechanic.priorityIndex = new MechanicPriorityIndex[2];
+        mechanic.priorityIndex[0] = new MechanicPriorityIndex();
+        mechanic.priorityIndex[0].index = new int[1];
+        mechanic.priorityIndex[0].index[0] = 0;
+        mechanic.priorityIndex[0].turnOffset = 5;
+
+        mechanic.mechanicAttacks.Add(AcclimationResolve());
+
         // Get all player characters
         List<GameObject> playerCharacters = battleManager.GetAliveEntities();
 
@@ -117,66 +147,219 @@ public static class Medica
                 mechanic.mechanicAttacks.Add(newAttack);
             }
         }
+
+        mechanic.priorityIndex[1] = new MechanicPriorityIndex();
+        mechanic.priorityIndex[1].index = new int[mechanic.mechanicAttacks.Count - 1];
+        mechanic.priorityIndex[1].turnOffset = 3;
+
+        for (int i = 1; i < mechanic.mechanicAttacks.Count; i++)
+        {
+            mechanic.priorityIndex[1].index[i - 1] = i;
+        }
+    }
+
+    public static MechanicLogic AcclimationResolve(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        List<GameObject> possibleTargets = battleManager.GetAliveEntities();
+        EntityStats stats = passthrough.target.GetComponent<EntityStats>();
+
+        StatusBattle status = stats.effectHandler.GetEffectByKey("spirit_acclimation_blue");
+
+        if (status != null)
+        {
+            Debug.Log(status.turnsRemaining);
+        }
+
+        stats.ReduceStatusTurns(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
+        stats.ReduceStatusTurns(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
+
+        passthrough.attacker.GetComponent<EntityController>().ModifyOpacity(1f);
+
+        return new MechanicLogic();
+    }
+
+    public static void BittersweetSpirits(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+
+        List<GameObject> possibleTargets = battleManager.GetAliveEntities();
+
+        GameObject target1 = null;
+        GameObject target2 = null;
+
+        MechanicAttack aoe1 = null;
+        MechanicAttack aoe2 = null;
+
+        bool onlyBlue = false;
+        bool onlyRed = false;
+
+        possibleTargets = possibleTargets.OrderBy(_ => Random.value).ToList();
+
+        // Find the first blue target and set them as target 1.
+        foreach (GameObject target in possibleTargets) 
+        {
+            EntityStats stats = target.GetComponent<EntityStats>();
+
+            if (stats.effectHandler.GetEffectByKey("spirit_acclimation_blue") != null)
+            {
+                target1 = target;
+                aoe1 = BittersweetsAoe(false);
+                break;
+            }
+        }
+
+        // Find the first red target and set them as target 2.
+        foreach (GameObject target in possibleTargets)
+        {
+            EntityStats stats = target.GetComponent<EntityStats>();
+            if (stats.effectHandler.GetEffectByKey("spirit_acclimation_red") != null)
+            {
+                target2 = target;
+                aoe2 = BittersweetsAoe(true);
+                break;
+            }
+        }
+
+        if (target1 == null)
+        {
+            target1 = possibleTargets[possibleTargets.Count - 1];
+            aoe1 = BittersweetsAoe(true);
+        }
+        else if (target2 == null)
+        {
+            target2 = possibleTargets[possibleTargets.Count - 1];
+            aoe2 = BittersweetsAoe(false);
+        }
+
+        if (aoe1 == null || aoe2 == null)
+            return;
+
+        aoe1.directTarget = target1;
+        aoe2.directTarget = target2;
+
+        mechanic.mechanicAttacks.Add(aoe1);
+        mechanic.mechanicAttacks.Add(aoe2);
+
     }
 
     // -- OLD UNUSED MECHANICS HERE
 
-    public static MechanicLogic AcclimationEffectEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    public static MechanicLogic RedAcclimationTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
-        List<GameObject> possibleTargets = battleManager.GetAliveEntities();
+        List<GameObject> possibleChars = battleManager.GetAliveEntities();
+        Debug.Log("Red acclimation target effect");
+        MechanicLogic logic = new MechanicLogic();
 
-        Debug.Log("TEST!");
-        foreach (var character in possibleTargets)
+        List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null).ToList();
+
+        if (targetableChars.Count == 0)
+            return logic;
+
+        Debug.Log("Red Target " + targetableChars.Count);
+
+        logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
+
+        foreach (var character in battleManager.turnManager.turnOrder)
         {
-            EntityStats stats = character.GetComponent<EntityStats>();
-            StatusBattle status = stats.effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
-
-            if (status != null)
+            if (character.isEntity)
             {
-
-                if (status.turnsRemaining == 0)
+                if (character.GetEntity().entityTurn.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null)
                 {
-                    stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
-
-                    PlayerSkill newSkill = (PlayerSkill)ScriptableObject.CreateInstance("PlayerSkill");
-                    newSkill.damageType = DamageType.DAMAGE;
-                    newSkill.scaler = Scaler.ATTACK;
-                    newSkill.scaleMult = 3.5f;
-                    newSkill.baseValue = 150;
-                    newSkill.attackCount = 1;
-
-                    float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(character, passthrough.attacker, newSkill, null));
-
-                    battleManager.DealDamage(character, entityDamage, passthrough.attacker);
-
-                    stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
-                }
-            }
-            else
-            {
-
-
-                status = stats.effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
-
-                if (status.turnsRemaining == 0)
-                {
-                    stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
-
-                    PlayerSkill newSkill = (PlayerSkill)ScriptableObject.CreateInstance("PlayerSkill");
-                    newSkill.damageType = DamageType.DAMAGE;
-                    newSkill.scaler = Scaler.ATTACK;
-                    newSkill.scaleMult = 3.5f;
-                    newSkill.baseValue = 150;
-                    newSkill.attackCount = 1;
-
-                    float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(character, passthrough.attacker, newSkill));
-
-                    battleManager.DealDamage(character, entityDamage, passthrough.attacker);
-
-                    stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
+                    logic.overrideDelay = true;
+                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity().entityTurn);
+                    break;
                 }
             }
         }
+
+        return logic;
+    }
+
+    public static MechanicLogic BlueAcclimationTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        List<GameObject> possibleChars = battleManager.GetAliveEntities();
+        Debug.Log("Blue acclimation target effect");
+        MechanicLogic logic = new MechanicLogic();
+
+        List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null).ToList();
+
+        if (targetableChars.Count == 0)
+            return logic;
+
+        logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
+
+        foreach (var character in battleManager.turnManager.turnOrder)
+        {
+            if (character.isEntity)
+            {
+                if (character.GetEntity().entityTurn.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null)
+                {
+                    logic.overrideDelay = true;
+                    logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity().entityTurn);
+                    Debug.Log("HELLO!!");
+                    break;
+                }
+            }
+        }
+
+        return logic;
+    }
+
+    public static MechanicLogic AcclimationEffectEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        //List<GameObject> possibleTargets = battleManager.GetAliveEntities();
+
+        //Debug.Log("TEST!");
+        //foreach (var character in possibleTargets)
+        //{
+        //    EntityStats stats = character.GetComponent<EntityStats>();
+        //    StatusBattle status = stats.effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
+
+        //    if (status != null)
+        //    {
+
+        //        if (status.turnsRemaining == 0)
+        //        {
+        //            stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
+
+        //            PlayerSkill newSkill = (PlayerSkill)ScriptableObject.CreateInstance("PlayerSkill");
+        //            newSkill.damageType = DamageType.DAMAGE;
+        //            newSkill.scaler = Scaler.ATTACK;
+        //            newSkill.scaleMult = 3.5f;
+        //            newSkill.baseValue = 150;
+        //            newSkill.attackCount = 1;
+
+        //            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(character, passthrough.attacker, newSkill, null));
+
+        //            battleManager.DealDamage(character, entityDamage, passthrough.attacker);
+
+        //            stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
+        //        }
+        //    }
+        //    else
+        //    {
+
+
+        //        status = stats.effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
+
+        //        if (status.turnsRemaining == 0)
+        //        {
+        //            stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
+
+        //            PlayerSkill newSkill = (PlayerSkill)ScriptableObject.CreateInstance("PlayerSkill");
+        //            newSkill.damageType = DamageType.DAMAGE;
+        //            newSkill.scaler = Scaler.ATTACK;
+        //            newSkill.scaleMult = 3.5f;
+        //            newSkill.baseValue = 150;
+        //            newSkill.attackCount = 1;
+
+        //            float entityDamage = GlobalDamageHelper.HandleActionCalculation(new ActionInformation(character, passthrough.attacker, newSkill));
+
+        //            battleManager.DealDamage(character, entityDamage, passthrough.attacker);
+
+        //            stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
+        //        }
+        //    }
+        //}
 
         return new MechanicLogic();
     }
@@ -381,19 +564,19 @@ public static class Medica
         battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(owner), battleManager.turnManager.ReturnDelayNeededForTurn(0));
     }
 
-    public static MechanicLogic SweetBlissStart(BattleManager battleManager, CustomLogicPassthrough passthrough)
-    {
-        MechanicLogic logic = AcclimationEffectStart(battleManager, passthrough);
-        GameObject attacker = passthrough.attacker;
+    //public static MechanicLogic SweetBlissStart(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    //{
+    //    MechanicLogic logic = AcclimationEffectStart(battleManager, passthrough);
+    //    GameObject attacker = passthrough.attacker;
 
-        Debug.Log("ATTACKER START IS " + attacker);
+    //    Debug.Log("ATTACKER START IS " + attacker);
 
-        // Get the Renderer component of the attacker
-        attacker.GetComponent<EntityController>().ModifyOpacity(0f);
+    //    // Get the Renderer component of the attacker
+    //    attacker.GetComponent<EntityController>().ModifyOpacity(0f);
 
-        return logic;
+    //    return logic;
 
-    }
+    //}
 
     public static MechanicLogic SweetBlissEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {

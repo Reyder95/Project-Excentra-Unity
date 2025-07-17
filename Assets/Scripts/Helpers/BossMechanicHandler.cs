@@ -98,6 +98,8 @@ public static class BossMechanicHandler
                 stats.nextStaticDelay = delay + 1;
             }
 
+            Debug.Log(mechanic.priorityIndex.Length);
+
             if (mechanic.priorityIndex.Length > 0)
             {
                 foreach (MechanicPriorityIndex priorityElement in mechanic.priorityIndex)

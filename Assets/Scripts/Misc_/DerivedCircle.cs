@@ -152,7 +152,7 @@ public class DerivedCircle : BaseAoe
         SpriteRenderer circleRenderer = circleAoe.GetComponent<SpriteRenderer>();
         circleRenderer.color = newColor;
         Color colorWithAlpha = circleRenderer.color;
-        if (!mechanicAttack.isInvisible)
+        if (this.mechanicAttack != null && !mechanicAttack.isInvisible)
             colorWithAlpha.a = 0.2f;
         else
             colorWithAlpha.a = 0.0f;

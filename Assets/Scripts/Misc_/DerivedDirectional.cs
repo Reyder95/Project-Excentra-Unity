@@ -223,7 +223,7 @@ public class DerivedDirectional : BaseAoe
 
         colorWithAlpha.a = 0.0f;
 
-        if (!mechanicAttack.isInvisible)
+        if ((this.mechanicAttack != null && !mechanicAttack.isInvisible) || this.mechanicAttack == null)
             colorWithAlpha.a = 0.2f;
         lineRenderer.color = colorWithAlpha;
     }
@@ -239,14 +239,14 @@ public class DerivedDirectional : BaseAoe
 
         triangleRenderer.color = newColor;
         Color colorWithAlpha = triangleRenderer.color;
-        if (!mechanicAttack.isInvisible)
+        if ((this.mechanicAttack != null && !mechanicAttack.isInvisible) || this.mechanicAttack == null)
             colorWithAlpha.a = 0.2f;
         else
             colorWithAlpha.a = 0.0f;
         triangleRenderer.color = colorWithAlpha;
         circleRenderer.color = newColor;
         colorWithAlpha = circleRenderer.color;
-        if (!mechanicAttack.isInvisible)
+        if ((this.mechanicAttack != null && !mechanicAttack.isInvisible) || this.mechanicAttack == null)
             colorWithAlpha.a = 0.2f;
         else
             colorWithAlpha.a = 0.0f;
