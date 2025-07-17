@@ -64,6 +64,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 0
     aoeColor: {r: 0.8506356, g: 1, b: 0.7783019, a: 1}
+    isInvisible: 0
     addKeys: []
     tetherStationary: 0
     secondTether: 0
@@ -85,11 +86,11 @@ MonoBehaviour:
     canBeShirked: 0
     originIsTarget: 0
     originIsSelf: 1
-    endpointIsTarget: 1
+    endpointIsTarget: 0
     customOrigin: {x: 0, y: 0}
     containsMovement: 0
     moveType: 0
-    aoeShape: 1
+    aoeShape: 3
     hasArenaPositioning: 0
     aoePositionInformation:
       positionType: 0
@@ -102,14 +103,15 @@ MonoBehaviour:
     isProximity: 0
     isStack: 0
     nonUniformDimensions: 0
-    size: 3
+    size: 0
     innerDonutSize: 0
     dimensions: {x: 0, y: 0}
-    raidWide: 0
+    raidWide: 1
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
-    customColor: 1
-    aoeColor: {r: 0.8506356, g: 1, b: 0.7783019, a: 1}
+    customColor: 0
+    aoeColor: {r: 0.8506356, g: 1, b: 0.7783019, a: 0}
+    isInvisible: 1
     addKeys: []
     tetherStationary: 0
     secondTether: 0

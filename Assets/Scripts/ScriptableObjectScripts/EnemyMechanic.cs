@@ -68,10 +68,42 @@ public class EnemyMechanic : ScriptableObject
 
     public MechanicPriorityIndex[] priorityIndex;
 
+    public bool customScript = false;
+    public string customScriptKey = ""; 
+
     [Tooltip("How many turns until casting can we re-cast this ability?")]
     public int turnCooldown = 0;
     [System.NonSerialized] public int currTurns;
     public List<MechanicAttack> mechanicAttacks = new List<MechanicAttack>();
+
+    public EnemyMechanic Clone()
+    {
+        var clone = CreateInstance<EnemyMechanic>();
+        clone.mechanicName = this.mechanicName;
+        clone.containsTrigger = this.containsTrigger;
+        clone.mechanicKey = this.mechanicKey;
+        clone.mechanicStyle = this.mechanicStyle;
+        clone.dontSkipTurn = this.dontSkipTurn;
+        clone.active = this.active;
+        clone.untargetable = this.untargetable;
+        clone.targetScript = this.targetScript;
+        clone.activeScript = this.activeScript;
+        clone.goNext = this.goNext;
+        clone.animationTrigger = this.animationTrigger;
+        clone.priorityIndex = this.priorityIndex;
+        clone.customScript = this.customScript;
+        clone.customScriptKey = this.customScriptKey;
+        clone.turnCooldown = this.turnCooldown;
+        clone.currTurns = this.currTurns;
+        clone.mechanicAttacks = new List<MechanicAttack>();
+
+        foreach (var attack in this.mechanicAttacks)
+        {
+            clone.mechanicAttacks.Add(attack.Clone());
+        }
+
+        return clone;
+    }
 }
 
 [System.Serializable]
@@ -183,8 +215,58 @@ public class MechanicAttack
     [Tooltip("How many times does this attack hit? It divides the damage by this much")]
     public float attackCount = 1;
 
+    [System.NonSerialized]
+    public GameObject directTarget;
+
     [Header("Statuses")]
     public List<string> statusesToAdd = new List<string>();
     public List<string> statusesToRemove = new List<string>();
 
+    public MechanicAttack Clone()
+    {
+        return new MechanicAttack
+        {
+            attackType = this.attackType,
+            attackKey = this.attackKey,
+            triggerKey = this.triggerKey,
+            targetKey = this.targetKey,
+            targetType = this.targetType,
+            turnOffset = this.turnOffset,
+            canBeShirked = this.canBeShirked,
+            originIsTarget = this.originIsTarget,
+            originIsSelf = this.originIsSelf,
+            endpointIsTarget = this.endpointIsTarget,
+            customOrigin = this.customOrigin,
+            containsMovement = this.containsMovement,
+            moveType = this.moveType,
+            aoeShape = this.aoeShape,
+            hasArenaPositioning = this.hasArenaPositioning,
+            aoePositionInformation = this.aoePositionInformation,
+            isProximity = this.isProximity,
+            isStack = this.isStack,
+            nonUniformDimensions = this.nonUniformDimensions,
+            size = this.size,
+            innerDonutSize = this.innerDonutSize,
+            dimensions = this.dimensions,
+            raidWide = this.raidWide,
+            distanceOffset = this.distanceOffset,
+            endpoint = this.endpoint,
+            customColor = this.customColor,
+            aoeColor = this.aoeColor,
+            isInvisible = this.isInvisible,
+            addKeys = new List<AddSpawner>(this.addKeys),
+            tetherStationary = this.tetherStationary,
+            secondTether = this.secondTether,
+            tetherLocation = this.tetherLocation,
+            tetherRange = this.tetherRange,
+            damageType = this.damageType,
+            scaler = this.scaler,
+            scaleMult = this.scaleMult,
+            baseValue = this.baseValue,
+            attackCount = this.attackCount,
+            statusesToAdd = new List<string>(this.statusesToAdd),
+            statusesToRemove = new List<string>(this.statusesToRemove),
+            directTarget = this.directTarget
+        }; 
+    }
 }

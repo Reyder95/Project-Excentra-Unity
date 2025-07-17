@@ -71,7 +71,7 @@ public class EnemyPhase
                     inactiveMechanics.Add(chosenMechanic);
                     activeMechanics.RemoveAt(0);
                 }
-                return chosenMechanic;
+                return chosenMechanic.Clone();
             }
             catch
             {

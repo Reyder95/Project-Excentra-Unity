@@ -24,6 +24,101 @@ public static class Medica
         return new MechanicLogic();
     }
 
+    public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        List<GameObject> possibleChars = battleManager.GetAliveEntities();
+
+        int counter = 0;
+        while (possibleChars.Count > 0)
+        {
+            int randomCharIndex = Random.Range(0, possibleChars.Count);
+            GameObject character = possibleChars[randomCharIndex];
+            possibleChars.RemoveAt(randomCharIndex);
+
+            EntityStats charStats = character.GetComponent<EntityStats>();
+
+            int randomAcclimation = Random.Range(0, 2);
+
+            if (randomAcclimation == 0)
+                charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
+            else
+                charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
+                
+
+            counter++;
+        }
+
+        return new MechanicLogic();
+    }
+
+    public static void LonelyGhost(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        // Get all player characters
+        List<GameObject> playerCharacters = battleManager.GetAliveEntities();
+
+        foreach (GameObject playerCharacter in playerCharacters)
+        {
+            EntityStats stats = playerCharacter.GetComponent<EntityStats>();
+            // Check if the character has the "spirit_acclimation_blue" effect
+            StatusBattle blueEffect = stats.effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
+            if (blueEffect != null)
+            {
+                MechanicAttack newAttack = new MechanicAttack();
+
+                newAttack.attackType = AttackType.AOE;
+                newAttack.attackKey = "red-acclimation-hit";
+                newAttack.targetKey = "";
+                newAttack.directTarget = playerCharacter;
+                newAttack.turnOffset = 3;
+                newAttack.originIsSelf = true;
+                newAttack.endpointIsTarget = true;
+                newAttack.damageType = DamageType.DAMAGE;
+
+                newAttack.aoeShape = Shape.CONE;
+
+                newAttack.size = 3;
+                newAttack.distanceOffset = 1;
+                newAttack.customColor = true;
+                newAttack.aoeColor = new Color(1f, 0f, 0f);
+
+                newAttack.scaleMult = 3;
+                newAttack.baseValue = 50;
+                newAttack.attackCount = 1;
+
+                mechanic.mechanicAttacks.Add(newAttack);
+            }
+
+            // Check if the character has the "spirit_acclimation_red" effect
+            StatusBattle redEffect = stats.effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
+            if (redEffect != null)
+            {
+                MechanicAttack newAttack = new MechanicAttack();
+
+                newAttack.attackType = AttackType.AOE;
+                newAttack.attackKey = "blue-acclimation-hit";
+                newAttack.targetKey = "";
+                newAttack.directTarget = playerCharacter;
+                newAttack.turnOffset = 3;
+                newAttack.originIsSelf = true;
+                newAttack.endpointIsTarget = true;
+                newAttack.damageType = DamageType.DAMAGE;
+
+                newAttack.aoeShape = Shape.CONE;
+
+                newAttack.size = 3;
+                newAttack.distanceOffset = 1;
+                newAttack.customColor = true;
+                newAttack.aoeColor = new Color(0f, 0f, 1f);
+
+                newAttack.scaleMult = 3;
+                newAttack.baseValue = 50;
+                newAttack.attackCount = 1;
+
+                mechanic.mechanicAttacks.Add(newAttack);
+            }
+        }
+    }
+
     // -- OLD UNUSED MECHANICS HERE
 
     public static MechanicLogic AcclimationEffectEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)

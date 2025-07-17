@@ -6,9 +6,14 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public static class CustomMechanicLogicHelper
 {
+    private static Dictionary<string, System.Action<BattleManager, EnemyMechanic>> mechCustom = new Dictionary<string, System.Action<BattleManager, EnemyMechanic>>()
+    {
+        { "lonely-ghost", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.LonelyGhost(battleManager, mechanic) }
+    };
+
     private static Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>> mechDict = new Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>>()
     {
-        { "reprisal", (BattleManager battleManager, CustomLogicPassthrough passthrough) => ReprisalEffect(battleManager, passthrough)},
+        { "reprisal", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.ReprisalEffect(battleManager, passthrough)},
         { "blue_acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationEffect(battleManager, passthrough) },
         { "red_acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => RedAcclimationEffect(battleManager, passthrough) },
         { "acclimation_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationEffectEnd(battleManager, passthrough)   },
@@ -39,6 +44,12 @@ public static class CustomMechanicLogicHelper
         { "soul-bomb-attack", (BattleManager battleManager) => SoulBombDelay(battleManager) },
     };
 
+    public static void ExecuteCustomMechanic(string mechanicKey, BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        if (mechCustom.ContainsKey(mechanicKey))
+            mechCustom[mechanicKey](battleManager, mechanic);
+    }
+
     public static MechanicLogic ExecuteMechanic(string mechanicKey, BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         if (mechDict.ContainsKey(mechanicKey))
@@ -61,42 +72,6 @@ public static class CustomMechanicLogicHelper
             return mechDelay[mechanicKey](battleManager);
         return -1f;
     }
-
-    public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
-    {
-        List<GameObject> possibleChars = battleManager.GetAliveEntities();
-
-        int counter = 0;
-        while (possibleChars.Count > 0)
-        {
-            int randomCharIndex = Random.Range(0, possibleChars.Count);
-            GameObject character = possibleChars[randomCharIndex];
-            possibleChars.RemoveAt(randomCharIndex);
-
-            EntityStats charStats = character.GetComponent<EntityStats>();
-
-            if (counter % 2 == 0)
-                charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
-            else
-                charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
-
-            counter++;
-        }
-
-        //foreach (var character in possibleChars)
-        //{
-        //    EntityStats stats = character.GetComponent<EntityStats>();
-        //    if (counter % 2 == 0)
-        //        stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
-        //    else
-        //        stats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
-        //    counter++;
-        //}
-
-        return new MechanicLogic();
-    }
-
-
 
     public static MechanicLogic BlueAcclimationEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {

@@ -19,6 +19,11 @@ public static class BossMechanicHandler
 {
     public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
+        if (mechanic.customScript)
+        {
+            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
+        }
+
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
         CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, passthrough);
 
@@ -137,8 +142,6 @@ public static class BossMechanicHandler
                 }
             }
 
-
-
             battleManager.turnManager.DisplayTurnOrder();
         }
     }
@@ -193,6 +196,11 @@ public static class BossMechanicHandler
 
         SkillInformation info = new SkillInformation();
 
+        Debug.Log(mechanicAttack.directTarget);
+
+        if (mechanicAttack.directTarget != null)
+            actualTarget = mechanicAttack.directTarget;
+
         if (mechanicAttack.originIsSelf)
         {
             info.objectOrigin = attacker;
@@ -212,8 +220,8 @@ public static class BossMechanicHandler
 
         //TurnEntity aoeEntity = new TurnEntity(aoe);
         float delay = CustomMechanicLogicHelper.ExecuteMechanicDelay(mechanicAttack.attackKey, battleManager);
-        //if (delay == -1f)
-        //    delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+        if (delay == -1f)
+            delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
 
         //if (targetedLogic.overrideDelay)
         //    delay = targetedLogic.overriddenDelay;
@@ -245,6 +253,8 @@ public static class BossMechanicHandler
         Dictionary<string, GameObject> targets = aoe.aoeData.TargetList;
 
         CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null, mechanic));
+
+        Debug.Log("TEST!");
 
         try
         {

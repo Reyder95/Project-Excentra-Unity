@@ -6650,6 +6650,18 @@ MonoBehaviour:
     initialPhase:
       mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
       delayBonus: 10
+  - key: medica_v2
+    phases:
+    - activeMechanics:
+      - {fileID: 11400000, guid: 8ca842f3346d1a24da4c15a204534bce, type: 2}
+      consistentMechanics:
+      - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
+      isTriggerPhase: 0
+      phaseType: 1
+      hpPercentageThreshold: 100
+    initialPhase:
+      mechanic: {fileID: 11400000, guid: f4c8870901ad08c4ca16482f4e3efe2e, type: 2}
+      delayBonus: 10
   damageNumberHandlerScript: {fileID: 1049321076}
   triggers: {fileID: 0}
 --- !u!4 &1272877064
