@@ -155,6 +155,8 @@ public class MechanicAttack
     [Tooltip("Specifies the color of the aoe")]
     public Color aoeColor;
 
+    public bool isInvisible = false;
+
     [Header("Adds")]
     [Tooltip("Allows us to specify the different adds we want to spawn")]
     public List<AddSpawner> addKeys = new List<AddSpawner>();
