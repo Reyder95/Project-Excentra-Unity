@@ -17,7 +17,7 @@ MonoBehaviour:
   mechanicKey: acclimation
   mechanicStyle: 1
   dontSkipTurn: 0
-  active: 0
+  active: 1
   untargetable: 0
   targetScript: 0
   activeScript: 0

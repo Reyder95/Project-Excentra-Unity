@@ -8,6 +8,7 @@ public class DerivedCircle : BaseAoe
     public GameObject circleAoe;
     public Vector2 circlePosition;
 
+    public GameObject soak;
 
     public Vector2 frozenPosition;
 
@@ -158,6 +159,11 @@ public class DerivedCircle : BaseAoe
             colorWithAlpha.a = 0.0f;
         circleRenderer.color = colorWithAlpha;
         circleAoe.SetActive(true);
+
+        if (this.mechanicAttack != null && this.mechanicAttack.isSoak)
+        {
+            this.soak.SetActive(true);
+        }
     }
 
     public override void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null)

@@ -256,6 +256,7 @@ public static class BossMechanicHandler
 
         CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null, mechanic));
 
+        Debug.Log(mechanic.mechanicName);
         Debug.Log("TEST!");
 
         try
@@ -287,7 +288,26 @@ public static class BossMechanicHandler
                 }
             }
 
-            Debug.Log(mechanic);
+            Debug.Log("TEST!!AAA");
+            Debug.Log(aoe.aoeData.TargetList.Count);
+            Debug.Log(mechanicAttack.isSoak);
+
+            if (mechanicAttack.isSoak)
+            {
+                Debug.Log("HELLO!");
+                Debug.Log(aoe.aoeData.TargetList.Count);
+                if (aoe.aoeData.TargetList.Count == 0)
+                {
+                    List<GameObject> possibleCharacters = battleManager.GetAliveEntities();
+
+                    foreach (GameObject character in possibleCharacters)
+                    {
+                        battleManager.DealDamage(character, mechanicAttack.soakDamage, attacker);
+                    }
+                }
+            }
+
+            Debug.Log(mechanic.mechanicName);
 
             if (aoe.particleEmitter != null)
             {
@@ -297,7 +317,9 @@ public static class BossMechanicHandler
 
             if (mechanic.containsTrigger)
                 ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, mechanicAttack.triggerKey);
-        } catch (InvalidOperationException) { }
+        } catch (InvalidOperationException ex) {
+            Debug.Log(ex);
+        }
 
         
     }

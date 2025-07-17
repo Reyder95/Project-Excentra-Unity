@@ -164,6 +164,9 @@ public class MechanicAttack
     [Tooltip("States if this aoe attack is a stack. If it's a stack, the damage dealt to anyone would be divided by the number of entities hit.")]
     public bool isStack;
 
+    [Tooltip("States if this aoe attack is a soak. If it's a soak, if someone does not get hit by this, the entire party will take damage.")]
+    public bool isSoak;
+
     public bool nonUniformDimensions = false;
 
     [Tooltip("The size of the aoe. For circles this is the diameter. For directionals this is the width.")]
@@ -211,6 +214,8 @@ public class MechanicAttack
 
     [Tooltip("The base value, as in baseValue + (calculations)")]
     public int baseValue;
+
+    public float soakDamage;
 
     [Tooltip("How many times does this attack hit? It divides the damage by this much")]
     public float attackCount = 1;
@@ -266,7 +271,9 @@ public class MechanicAttack
             attackCount = this.attackCount,
             statusesToAdd = new List<string>(this.statusesToAdd),
             statusesToRemove = new List<string>(this.statusesToRemove),
-            directTarget = this.directTarget
+            directTarget = this.directTarget,
+            isSoak = this.isSoak,
+            soakDamage = this.soakDamage
         }; 
     }
 }
