@@ -264,7 +264,6 @@ public static class CustomMechanicLogicHelper
     {
         Debug.Log("ENDING MECH");
         GameObject owner = stats.addOwner;
-        //battleManager.EndMechanic(mechanic, stats.addOwner);
 
         owner.GetComponent<EntityStats>().active = true;
         battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(owner));

@@ -393,11 +393,11 @@ public class BattleManager
             //Debug.Log("GO IN!");
             //// Find some way to store attackers of skills
             //BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, aoe.attackerObject, aoe);
-            EndTurn();
+            EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
         }
     }
 
-    public void EndTurn()
+    public void EndTurn(GameObject attacker = null)
     {
         ChangeState(BattleState.TURN_TRANSITION);
         TurnEntity turnEntity = turnManager.GetCurrentTurn();
@@ -410,8 +410,14 @@ public class BattleManager
             controller = currTurn.GetComponent<EntityController>();
         }
 
+        EnemyAI enemyAi = null;
+
         bool isRevive = false;
-        EnemyAI enemyAi = boss.GetComponent<EnemyAI>();
+        if (attacker != null)
+        {
+           enemyAi = attacker.GetComponent<EnemyAI>();
+        }
+        
 
         // Checks if we need to revive dead Entities during this EndTurn() phase
         if (battleVariables.currSkill != null && battleVariables.currSkill.damageType == DamageType.REVIVE)
