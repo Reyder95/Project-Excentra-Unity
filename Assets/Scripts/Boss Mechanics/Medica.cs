@@ -204,6 +204,13 @@ public static class Medica
 
     public static void BittersweetSpirits(BattleManager battleManager, EnemyMechanic mechanic)
     {
+        mechanic.priorityIndex = new MechanicPriorityIndex[2];
+        mechanic.priorityIndex[0] = new MechanicPriorityIndex();
+        mechanic.priorityIndex[0].index = new int[1];
+        mechanic.priorityIndex[0].index[0] = 0;
+        mechanic.priorityIndex[0].turnOffset = 5;
+
+        mechanic.mechanicAttacks.Add(AcclimationResolve());
 
         List<GameObject> possibleTargets = battleManager.GetAliveEntities();
 
@@ -262,6 +269,15 @@ public static class Medica
 
         mechanic.mechanicAttacks.Add(aoe1);
         mechanic.mechanicAttacks.Add(aoe2);
+
+        mechanic.priorityIndex[1] = new MechanicPriorityIndex();
+        mechanic.priorityIndex[1].index = new int[mechanic.mechanicAttacks.Count - 1];
+        mechanic.priorityIndex[1].turnOffset = 4;
+
+        for (int i = 1; i < mechanic.mechanicAttacks.Count; i++)
+        {
+            mechanic.priorityIndex[1].index[i - 1] = i;
+        }
 
     }
 
