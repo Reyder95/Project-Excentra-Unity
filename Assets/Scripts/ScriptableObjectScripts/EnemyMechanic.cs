@@ -63,6 +63,10 @@ public class EnemyMechanic : ScriptableObject
 
     public bool goNext = false;
 
+    public bool containsMovement = false;
+
+    public MoveType movementType = MoveType.ORIGIN;
+
     [Tooltip("The overriding animation trigger for this mechanic. If this is not set, the child animations will be used. Should be always set unless doing a sequential mechanic (will handle later)")]
     public string animationTrigger = "";
 
@@ -95,6 +99,8 @@ public class EnemyMechanic : ScriptableObject
         clone.customScriptKey = this.customScriptKey;
         clone.turnCooldown = this.turnCooldown;
         clone.currTurns = this.currTurns;
+        clone.containsMovement = this.containsMovement;
+        clone.movementType = this.movementType;
         clone.mechanicAttacks = new List<MechanicAttack>();
 
         foreach (var attack in this.mechanicAttacks)

@@ -22,6 +22,8 @@ public class EntityController : MonoBehaviour
 
     // Boss
     private GameObject target;      // Target entity to move towards
+    private Vector2 targetPosition; // Target position to move towards on the arena.
+    EnemyMechanic targetMechanic;
     private string animationTrigger;    // The animation trigger that occurs when a movement attack gets within range of the target. Used for boss attacks, as they do not have playerInput enabled.
     private bool autoMove = false;  // Enables auto movement for boss. If this is triggered, the boss will move towards the target directly (Navigation not implemented yet)
 
@@ -139,36 +141,60 @@ public class EntityController : MonoBehaviour
         // Moves entity towards target at a set speed. When within range, attack target.
         if (autoMove)
         {
-            if (target == null)
+            if (target == null && targetPosition == null)
                 return;
-            Vector2 newPosition = Vector2.MoveTowards(transform.position, target.transform.position, Time.deltaTime * moveSpeed);
 
-            if (newPosition.x > transform.position.x)
+            if (target != null)
             {
-                transform.localScale = localScale;   // Normal scale for moving right
-            }
-            else if (newPosition.x < transform.position.x)
-            {
-                transform.localScale = new Vector2(localScale.x * -1, localScale.y); // Flipped scale for moving left
-            }
-            rb.MovePosition(newPosition);
+                Vector2 newPosition = Vector2.MoveTowards(transform.position, target.transform.position, Time.deltaTime * moveSpeed);
 
-            if (Vector2.Distance(transform.position, target.transform.position) < entityStats.basicRange / 10f)
+                if (newPosition.x > transform.position.x)
+                {
+                    transform.localScale = localScale;   // Normal scale for moving right
+                }
+                else if (newPosition.x < transform.position.x)
+                {
+                    transform.localScale = new Vector2(localScale.x * -1, localScale.y); // Flipped scale for moving left
+                }
+                rb.MovePosition(newPosition);
+
+                if (Vector2.Distance(transform.position, target.transform.position) < entityStats.basicRange / 10f)
+                {
+                    autoMove = false;
+                    animator.SetBool("IsWalk", false);
+                    animator.SetTrigger(this.animationTrigger);
+                    //BattleClickInfo info = new BattleClickInfo();
+                    //info.target = target;
+                    //info.singleSkill = enemyAi.currAttack;
+                    //ExcentraGame.battleManager.HandleEntityAction(info);
+                }
+            }
+            else if (targetPosition != null)
             {
-                autoMove = false;
-                animator.SetBool("IsWalk", false);
-                animator.SetTrigger(this.animationTrigger);
-                //BattleClickInfo info = new BattleClickInfo();
-                //info.target = target;
-                //info.singleSkill = enemyAi.currAttack;
-                //ExcentraGame.battleManager.HandleEntityAction(info);
+                Vector2 newPosition = Vector2.MoveTowards(transform.position, targetPosition, Time.deltaTime * moveSpeed);
+                if (newPosition.x > transform.position.x)
+                {
+                    transform.localScale = localScale;   // Normal scale for moving right
+                }
+                else if (newPosition.x < transform.position.x)
+                {
+                    transform.localScale = new Vector2(localScale.x * -1, localScale.y); // Flipped scale for moving left
+                }
+                rb.MovePosition(newPosition);
+                if (Vector2.Distance(transform.position, targetPosition) < 0.05f)
+                {
+                    autoMove = false;
+                    animator.SetBool("IsWalk", false);
+                    BossMechanicHandler.InitializeMechanic(targetMechanic, ExcentraGame.battleManager, this.gameObject, true);
+                    //animator.SetTrigger(this.animationTrigger);
+                }
+
+            }
+            // If not autoMove, allows for entity to move using WASD (if playerInput is enabled)
+            else
+            {
             }
         }
-        // If not autoMove, allows for entity to move using WASD (if playerInput is enabled)
-        else
-        {
-        }
-
     }
 
     public void FixedUpdate()
@@ -363,6 +389,14 @@ public class EntityController : MonoBehaviour
         animator.SetBool("IsWalk", true);
         this.target = target;
         this.animationTrigger = animationTrigger;
+        autoMove = true;
+    }
+
+    public void MoveTowards(Vector2 targetPosition, EnemyMechanic mechanic)
+    {
+        animator.SetBool("IsWalk", true);
+        this.targetPosition = targetPosition;
+        this.targetMechanic = mechanic;
         autoMove = true;
     }
 

@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal.Commands;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,11 +18,23 @@ public class MechanicAoeData
 
 public static class BossMechanicHandler
 {
-    public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
+    public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker, bool skip = false)
     {
         if (mechanic.customScript)
         {
             CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
+        }
+
+        if (mechanic.containsMovement && !skip)
+        {
+            EntityController controller = attacker.GetComponent<EntityController>();
+
+            Vector2 targetPosition = Vector2.zero;
+
+            targetPosition = battleManager.arena.GetCenter();
+
+            controller.MoveTowards(targetPosition, mechanic);
+            return;
         }
 
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
