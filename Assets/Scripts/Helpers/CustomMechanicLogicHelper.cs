@@ -10,7 +10,8 @@ public static class CustomMechanicLogicHelper
     {
         { "lonely-ghost", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.LonelyGhost(battleManager, mechanic) },
         { "bittersweet-spirits", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.BittersweetSpirits(battleManager, mechanic) },
-        { "color-lock-2-2" , (BattleManager battleManager, EnemyMechanic mechanic) => Medica.ColorLock22(battleManager, mechanic) }
+        { "color-lock-2-2" , (BattleManager battleManager, EnemyMechanic mechanic) => Medica.ColorLock22(battleManager, mechanic) },
+        { "color-lock-2-2-p2", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.ColorLock22p2(battleManager, mechanic) }
     };
 
     private static Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>> mechDict = new Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>>()
@@ -34,6 +35,7 @@ public static class CustomMechanicLogicHelper
         { "adds-target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AddTarget(battleManager, passthrough) },
         { "acclimation-resolve", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationResolve(battleManager, passthrough) },
         { "color-lock-22_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.ColorLock22End(battleManager, passthrough) },
+        { "color-lock-22-p2_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.ColorLock22p2End(battleManager, passthrough) },
     
     };
 

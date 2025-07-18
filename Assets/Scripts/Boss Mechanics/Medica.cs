@@ -316,10 +316,69 @@ public static class Medica
         mechanic.mechanicAttacks.Add(rightAoe);
     }
 
+    public static void ColorLock22p2(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        float radius = 2.5f;
+        float diagonal = radius / Mathf.Sqrt(2);
+        int blueCount = 0;
+        int redCount = 0;
+        bool[] blueArray = new bool[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool blueValue = Random.Range(0, 2) == 0 ? true : false;
+
+            if (blueCount < 2 && redCount < 2)
+            {
+                blueArray[i] = blueValue;
+
+                if (blueValue)
+                {
+                    blueCount++;
+                }
+                else
+                {
+                    redCount++;
+                }
+            }
+            else if (blueCount >= 2)
+            {
+                blueArray[i] = false;
+
+                redCount++;
+            }
+            else if (redCount >= 2)
+            {
+                blueArray[i] = true;
+
+                blueCount++;
+            }
+        }
+
+        MechanicAttack topAoe = ColorLock22Aoe(diagonal, diagonal, blueArray[0]);
+        MechanicAttack bottomAoe = ColorLock22Aoe(-diagonal, diagonal, blueArray[1]);
+        MechanicAttack leftAoe = ColorLock22Aoe(-diagonal, -diagonal, blueArray[2]);
+        MechanicAttack rightAoe = ColorLock22Aoe(diagonal, -diagonal, blueArray[3]);
+
+        mechanic.mechanicAttacks.Add(topAoe);
+        mechanic.mechanicAttacks.Add(bottomAoe);
+        mechanic.mechanicAttacks.Add(leftAoe);
+        mechanic.mechanicAttacks.Add(rightAoe);
+    }
+
     public static MechanicLogic ColorLock22End(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
-        EntityStats stats = passthrough.attacker.GetComponent<EntityStats>();
         battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(passthrough.attacker), 0f);
+
+
+        return new MechanicLogic();
+    }
+
+    public static MechanicLogic ColorLock22p2End(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        EntityStats stats = passthrough.attacker.GetComponent<EntityStats>();
+        battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(passthrough.attacker));
+        stats.active = true;
 
         return new MechanicLogic();
     }

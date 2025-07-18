@@ -6680,6 +6680,7 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 954778d0d539a9b46a3ef18d071d80d2, type: 2}
       - {fileID: 11400000, guid: d6405501b83b42543b7daba2c99d1f81, type: 2}
       - {fileID: 11400000, guid: 135ce0484bd22374b87db5d1715e2196, type: 2}
+      - {fileID: 11400000, guid: 58983565c75fd354ba144c5162db32cc, type: 2}
       consistentMechanics:
       - {fileID: 11400000, guid: 0faf9e5d50700d74eb6d15436bfaede9, type: 2}
       isTriggerPhase: 0

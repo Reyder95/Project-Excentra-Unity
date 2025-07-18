@@ -272,7 +272,6 @@ public class TurnManager
             return turnOrder[turnOrder.Count - 1 - countdown].delay + (averageTurnDelay * (turnCount - turnOrder.Count));
         }
             
-
         if (counter == turnOrder.Count)
             return turnOrder[counter - 1].delay + 1;
 
