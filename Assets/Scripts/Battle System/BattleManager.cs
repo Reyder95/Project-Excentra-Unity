@@ -327,8 +327,12 @@ public class BattleManager
                             BossMechanicHandler.InitializeMechanic(mechanic, this, currTurn);
                         }
 
-                        if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE && !mechanic.dontSkipTurn)
+                        Debug.Log("BEFORE IF STATEMENT");
+                        if (mechanic != null && (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE || mechanic.containsMovement) && !mechanic.dontSkipTurn)
+                        {
+                            Debug.Log("IN IF STATEMENT");
                             skipEndTurn = true;
+                        }
 
                         if (mechanic != null)
                             stats.targetable = !mechanic.untargetable;
@@ -399,6 +403,7 @@ public class BattleManager
 
     public void EndTurn(GameObject attacker = null)
     {
+        Debug.Log("Hi!");
         ChangeState(BattleState.TURN_TRANSITION);
         TurnEntity turnEntity = turnManager.GetCurrentTurn();
         GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
@@ -408,6 +413,9 @@ public class BattleManager
         {
             stats = currTurn.GetComponent<EntityStats>();
             controller = currTurn.GetComponent<EntityController>();
+
+            if (controller.autoMove)
+                return;
         }
 
         EnemyAI enemyAi = null;
@@ -518,7 +526,6 @@ public class BattleManager
             stats.ModifyHP(0);
 
         stats.ModifyStatus();
-        Debug.Log("Hello!");
         controller.animator.SetTrigger("Die");
 
         turnManager.DisplayTurnOrder();

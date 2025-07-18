@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public static class Medica
@@ -43,6 +42,31 @@ public static class Medica
         newAttack.baseValue = 50;
         newAttack.attackCount = 1;
 
+        return newAttack;
+    }
+
+    public static MechanicAttack ColorLock22Aoe(float x, float y, bool blue)
+    {
+        Color color = blue ? new Color(0f, 0f, 1f) : new Color(1f, 0f, 0f);
+
+        MechanicAttack newAttack = new MechanicAttack();
+        newAttack.attackType = AttackType.AOE;
+        newAttack.attackKey = blue ? "blue-acclimation-hit" : "red-acclimation-hit";
+        newAttack.isSoak = true; 
+        newAttack.soakDamage = 1000;
+        newAttack.hasArenaPositioning = true;
+        newAttack.aoePositionInformation = new MechanicAoePositionHelper();
+        newAttack.aoePositionInformation.positionType = ArenaPositionType.CENTER;
+        newAttack.aoePositionInformation.offset = new Vector2(x, y);
+        newAttack.turnOffset = 4;
+        newAttack.damageType = DamageType.DAMAGE;
+        newAttack.aoeShape = Shape.CIRCLE;
+        newAttack.size = 2;
+        newAttack.customColor = true;
+        newAttack.aoeColor = color;
+        newAttack.scaleMult = 3;
+        newAttack.baseValue = 50;
+        newAttack.attackCount = 1;
         return newAttack;
     }
 
@@ -241,7 +265,66 @@ public static class Medica
 
     }
 
-    // -- OLD UNUSED MECHANICS HERE
+    public static void ColorLock22(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        Debug.Log("YOOASDOFDWSFG!");
+
+        float radius = 2.5f;
+        int blueCount = 0;
+        int redCount = 0;
+        bool[] blueArray = new bool[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool blueValue = Random.Range(0, 2) == 0 ? true : false;
+
+            if (blueCount < 2 && redCount < 2)
+            {
+                blueArray[i] = blueValue;
+                
+                if (blueValue)
+                {
+                    blueCount++;
+                }
+                else
+                {
+                    redCount++;
+                }
+            }
+            else if (blueCount >= 2)
+            {
+                blueArray[i] = false;
+
+                redCount++;
+            }
+            else if (redCount >= 2)
+            {
+                blueArray[i] = true;
+
+                blueCount++;
+            }
+        }
+
+        MechanicAttack topAoe = ColorLock22Aoe(0f, radius, blueArray[0]);
+        MechanicAttack bottomAoe = ColorLock22Aoe(0f, -radius, blueArray[1]);
+        MechanicAttack leftAoe = ColorLock22Aoe(-radius, 0f, blueArray[2]);
+        MechanicAttack rightAoe = ColorLock22Aoe(radius, 0f, blueArray[3]);
+
+        mechanic.mechanicAttacks.Add(topAoe);
+        mechanic.mechanicAttacks.Add(bottomAoe);
+        mechanic.mechanicAttacks.Add(leftAoe);
+        mechanic.mechanicAttacks.Add(rightAoe);
+    }
+
+    public static MechanicLogic ColorLock22End(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        EntityStats stats = passthrough.attacker.GetComponent<EntityStats>();
+        battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(passthrough.attacker), 0f);
+
+        return new MechanicLogic();
+    }
+
+        // -- OLD UNUSED MECHANICS HERE
 
     public static MechanicLogic RedAcclimationTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {

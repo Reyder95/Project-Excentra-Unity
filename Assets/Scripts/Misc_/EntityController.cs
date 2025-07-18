@@ -25,7 +25,7 @@ public class EntityController : MonoBehaviour
     private Vector2 targetPosition; // Target position to move towards on the arena.
     EnemyMechanic targetMechanic;
     private string animationTrigger;    // The animation trigger that occurs when a movement attack gets within range of the target. Used for boss attacks, as they do not have playerInput enabled.
-    private bool autoMove = false;  // Enables auto movement for boss. If this is triggered, the boss will move towards the target directly (Navigation not implemented yet)
+    public bool autoMove = false;  // Enables auto movement for boss. If this is triggered, the boss will move towards the target directly (Navigation not implemented yet)
 
     // Range - Shows range that entity can attack within. Basic chooses their "basic range", special chooses the specific skill's range
     public bool basicActive = false;
@@ -138,13 +138,19 @@ public class EntityController : MonoBehaviour
         circleBasicRangeRenderer.enabled = basicActive || specialActive;
         DrawBasicRangeCircle();
 
+        if (targetMechanic != null)
+            Debug.Log(autoMove);
+
         // Moves entity towards target at a set speed. When within range, attack target.
         if (autoMove)
         {
             if (target == null && targetPosition == null)
+            {
+                Debug.Log("Is it in here?");
                 return;
+            }
 
-            if (target != null)
+            if (target != null && targetMechanic == null)
             {
                 Vector2 newPosition = Vector2.MoveTowards(transform.position, target.transform.position, Time.deltaTime * moveSpeed);
 
@@ -184,8 +190,11 @@ public class EntityController : MonoBehaviour
                 if (Vector2.Distance(transform.position, targetPosition) < 0.05f)
                 {
                     autoMove = false;
+                    Debug.Log("TEST!");
                     animator.SetBool("IsWalk", false);
                     BossMechanicHandler.InitializeMechanic(targetMechanic, ExcentraGame.battleManager, this.gameObject, true);
+                    targetMechanic = null;
+                    OnActionEnd();
                     //animator.SetTrigger(this.animationTrigger);
                 }
 
@@ -386,6 +395,13 @@ public class EntityController : MonoBehaviour
     // Placed in Update(). Simple AI code to force move the entity to a target.
     public void MoveTowards(GameObject target, string animationTrigger = "")
     {
+        if (targetMechanic != null)
+        {
+            return;
+        }
+
+        Debug.Log("Test Basic Attack Movement");
+
         animator.SetBool("IsWalk", true);
         this.target = target;
         this.animationTrigger = animationTrigger;
@@ -394,10 +410,16 @@ public class EntityController : MonoBehaviour
 
     public void MoveTowards(Vector2 targetPosition, EnemyMechanic mechanic)
     {
+
         animator.SetBool("IsWalk", true);
         this.targetPosition = targetPosition;
         this.targetMechanic = mechanic;
         autoMove = true;
+
+        Debug.Log("Another Internal Test!");
+        Debug.Log("Auto Move: " + autoMove);
+        Debug.Log("Target Position " + this.targetPosition);
+        Debug.Log("Target Mechanic " + this.targetMechanic);
     }
 
     /// <summary>

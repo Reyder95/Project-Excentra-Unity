@@ -20,13 +20,9 @@ public static class BossMechanicHandler
 {
     public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker, bool skip = false)
     {
-        if (mechanic.customScript)
-        {
-            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
-        }
-
         if (mechanic.containsMovement && !skip)
         {
+            Debug.Log("TEST!!!!@#$@#$@# " + mechanic.mechanicName);
             EntityController controller = attacker.GetComponent<EntityController>();
 
             Vector2 targetPosition = Vector2.zero;
@@ -35,6 +31,11 @@ public static class BossMechanicHandler
 
             controller.MoveTowards(targetPosition, mechanic);
             return;
+        }
+
+        if (mechanic.customScript)
+        {
+            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
         }
 
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
@@ -80,6 +81,7 @@ public static class BossMechanicHandler
                         }
                         else
                         {
+                            Debug.Log("TEST?!?!?!?!");
                             MechanicAoeData mechanicAoeData = InitializeAOEAttack(mechanic, attack, battleManager, attacker, logic, logic.overriddenTarget);
                             delay = Mathf.Max(mechanicAoeData.delay, delay);
                             aoes.Add(mechanicAoeData.aoeObject);
@@ -105,16 +107,12 @@ public static class BossMechanicHandler
                         //turnManager.DisplayTurnOrder();
                 }
             }
-            if (!mechanic.active)
-            {
-                EntityStats stats = attacker.GetComponent<EntityStats>();
-                stats.nextStaticDelay = delay + 1;
-            }
 
             Debug.Log(mechanic.priorityIndex.Length);
 
             if (mechanic.priorityIndex.Length > 0)
             {
+                float maxDelay = -1f;
                 foreach (MechanicPriorityIndex priorityElement in mechanic.priorityIndex)
                 {
                     List<GameObject> prioAoes = new List<GameObject>();
@@ -136,6 +134,8 @@ public static class BossMechanicHandler
                     AoeTurn aoeTurn = new AoeTurn(prioAoes);
                     TurnEntity aoeEntity = new TurnEntity(aoeTurn);
                     delay = battleManager.turnManager.ReturnDelayNeededForTurn(priorityElement.turnOffset);
+
+                    maxDelay = Mathf.Max(maxDelay, delay);
                     aoeEntity.CalculateDirectDelay(delay);
                     bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
                     if (!added)
@@ -144,12 +144,24 @@ public static class BossMechanicHandler
                     }
                 }
 
+                if (!mechanic.active)
+                {
+                    EntityStats stats = attacker.GetComponent<EntityStats>();
+                    stats.nextStaticDelay = maxDelay + 1;
+                }
+
             }
             else
             {
                 AoeTurn aoeTurn = new AoeTurn(aoes);
                 TurnEntity aoeEntity = new TurnEntity(aoeTurn);
                 aoeEntity.CalculateDirectDelay(delay);
+                if (!mechanic.active)
+                {
+                    Debug.Log("YO!! " + delay);
+                    EntityStats stats = attacker.GetComponent<EntityStats>();
+                    stats.nextStaticDelay = delay + 1;
+                }
                 bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
                 if (!added)
                 {
@@ -162,6 +174,7 @@ public static class BossMechanicHandler
     }
     public static void EndMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
+        Debug.Log("YOOOOOOO " + mechanic.mechanicKey + "_end");
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
         CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey + "_end", battleManager, passthrough);
     }
@@ -236,7 +249,10 @@ public static class BossMechanicHandler
         //TurnEntity aoeEntity = new TurnEntity(aoe);
         float delay = CustomMechanicLogicHelper.ExecuteMechanicDelay(mechanicAttack.attackKey, battleManager);
         if (delay == -1f)
+        {
             delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+        }
+            
 
         //if (targetedLogic.overrideDelay)
         //    delay = targetedLogic.overriddenDelay;
