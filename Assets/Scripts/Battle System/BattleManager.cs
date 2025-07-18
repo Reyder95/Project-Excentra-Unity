@@ -173,7 +173,6 @@ public class BattleManager
             if (phaseChanged)
             {
 
-                Debug.Log("LOLLLL!");
                 turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(stats.gameObject), turnManager.ReturnDelayNeededForTurn(0));
             }
             
@@ -317,7 +316,6 @@ public class BattleManager
 
                         if (mechanic == null)
                         {
-                            Debug.Log(enemyAi.currAttack);
                             BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
 
                         }
@@ -327,10 +325,8 @@ public class BattleManager
                             BossMechanicHandler.InitializeMechanic(mechanic, this, currTurn);
                         }
 
-                        Debug.Log("BEFORE IF STATEMENT");
                         if (mechanic != null && (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE || mechanic.containsMovement) && !mechanic.dontSkipTurn)
                         {
-                            Debug.Log("IN IF STATEMENT");
                             skipEndTurn = true;
                         }
 
@@ -371,7 +367,7 @@ public class BattleManager
                 ChangeState(BattleState.AWAIT_ENEMY);
 
                 if (!skipEndTurn)
-                    EndTurn();
+                    EndTurn(null, enemyAi);
             }
         }
         else
@@ -385,25 +381,15 @@ public class BattleManager
                 BaseAoe baseAoe = aoe.GetComponent<BaseAoe>();
                 EnemyAI enemyAi = baseAoe.attackerObject.GetComponent<EnemyAI>();
 
-                Debug.Log("TEST!!" + enemyAi.currAttack);
-
                 BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, baseAoe.mechanicAttack, this, baseAoe.attackerObject, baseAoe);
             }
 
-
-            //BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
-            //EnemyAI enemyAi = aoe.attackerObject.GetComponent<EnemyAI>();
-            //if (aoe)
-            //Debug.Log("GO IN!");
-            //// Find some way to store attackers of skills
-            //BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, aoe.attackerObject, aoe);
             EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
         }
     }
 
-    public void EndTurn(GameObject attacker = null)
+    public void EndTurn(GameObject attacker = null, EnemyAI enemyAi = null)
     {
-        Debug.Log("Hi!");
         ChangeState(BattleState.TURN_TRANSITION);
         TurnEntity turnEntity = turnManager.GetCurrentTurn();
         GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
@@ -417,8 +403,6 @@ public class BattleManager
             if (controller.autoMove)
                 return;
         }
-
-        EnemyAI enemyAi = null;
 
         bool isRevive = false;
         if (attacker != null)
@@ -444,14 +428,12 @@ public class BattleManager
                 {
                     if (entityStats.currentHP <= 0)
                     {
-                        Debug.Log("KILLING " + entity);
                         KillEntity(entity.Value);
 
                     }
                 }
                 else
                 {
-                    Debug.Log("REVIVING ENTITY!");
                     turnManager.ReviveEntity(entity.Value);
                     entity.Value.GetComponent<EntityController>().animator.SetTrigger("Revive");
                 }
@@ -497,14 +479,21 @@ public class BattleManager
                 {
                     if (enemyAi.enabled)
                     {
-                        if (enemyAi.currAttack != null)
+                        if (enemyAi.currAttack != null && turnEntity.turnData.aoeTurn.aoes.Count > 0)
                         {
                             EndMechanic(turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().mechanic, turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
+                        }
+                        else
+                        {
+                            enemyAi.currAttack = null;
                         }
                     }
                 }
             }
             catch (MissingReferenceException) { }
+            catch (NullReferenceException ex) {
+                
+            }
 
             
             StartTurn();
@@ -557,7 +546,6 @@ public class BattleManager
 
             if (mechanic.goNext)
             {
-                Debug.Log("HELLO!ASDASDAD");
                 turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(attacker), 0);
             }
 
@@ -807,8 +795,6 @@ public class BattleManager
                             aoe.objectTarget = enemyAi.ChooseEntity(aoe.subTargetType);
                         }
 
-                        Debug.Log(aoe.objectTarget);
-
                         if (aoe.onSelf)
                             aoe.objectOrigin = currTurn;
                         else if (aoe.onTarget)
@@ -965,7 +951,6 @@ public class BattleManager
                 if (currAttacker.GetComponent<EntityStats>().currentHP <= 0)
                     return;
 
-                Debug.Log("Adding Aggression: " + currAttacker);
                 contents.aggression.AggressionEntryPoint(new AggressionElement(currAttacker, entityDamage));
             }
         }

@@ -10,8 +10,9 @@ public static class CustomMechanicLogicHelper
     {
         { "lonely-ghost", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.LonelyGhost(battleManager, mechanic) },
         { "bittersweet-spirits", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.BittersweetSpirits(battleManager, mechanic) },
-        { "color-lock-2-2" , (BattleManager battleManager, EnemyMechanic mechanic) => Medica.ColorLock22(battleManager, mechanic) },
-        { "color-lock-2-2-p2", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.ColorLock22p2(battleManager, mechanic) }
+        { "aetherial-calibration-2-2" , (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration22(battleManager, mechanic) },
+        { "aetherial-calibration-2-2-p2", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration22p2(battleManager, mechanic) },
+        { "aetherial-calibration-3-1", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration31(battleManager, mechanic) }
     };
 
     private static Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>> mechDict = new Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>>()
@@ -34,8 +35,8 @@ public static class CustomMechanicLogicHelper
         { "blue-acclimation-hit", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.BlueAcclimationHit(battleManager, passthrough) },
         { "adds-target", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AddTarget(battleManager, passthrough) },
         { "acclimation-resolve", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationResolve(battleManager, passthrough) },
-        { "color-lock-22_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.ColorLock22End(battleManager, passthrough) },
-        { "color-lock-22-p2_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.ColorLock22p2End(battleManager, passthrough) },
+        { "aetherial-calibration-22_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration22End(battleManager, passthrough) },
+        { "aetherial-calibration-22-p2_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration22p2End(battleManager, passthrough) },
     
     };
 
@@ -86,7 +87,6 @@ public static class CustomMechanicLogicHelper
     public static MechanicLogic BlueAcclimationEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Blue acclimation effect");
 
         MechanicLogic logic = new MechanicLogic();
 
@@ -117,7 +117,6 @@ public static class CustomMechanicLogicHelper
     public static MechanicLogic RedAcclimationEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Red acclimation effect");
 
         MechanicLogic logic = new MechanicLogic();
 
@@ -146,7 +145,6 @@ public static class CustomMechanicLogicHelper
 
     public static MechanicLogic SoulBomb(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
-        Debug.Log("Soul Bomb Activation");
 
         return new MechanicLogic();
     }
@@ -167,11 +165,8 @@ public static class CustomMechanicLogicHelper
 
     public static MechanicLogic SoulBombEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
-        Debug.Log("Before!" + battleManager.boss.GetComponent<EnemyAI>().currAttack);
 
         battleManager.KillEntity(passthrough.attacker);
-
-        Debug.Log("After! " + battleManager.boss.GetComponent<EnemyAI>().currAttack);
 
         return new MechanicLogic();
     }
@@ -186,7 +181,6 @@ public static class CustomMechanicLogicHelper
 
     public static void SpawnSoulTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)
     {
-        Debug.Log("ENDING MECH");
         GameObject owner = stats.addOwner;
 
         owner.GetComponent<EntityStats>().active = true;

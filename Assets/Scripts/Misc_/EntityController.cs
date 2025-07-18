@@ -138,15 +138,11 @@ public class EntityController : MonoBehaviour
         circleBasicRangeRenderer.enabled = basicActive || specialActive;
         DrawBasicRangeCircle();
 
-        if (targetMechanic != null)
-            Debug.Log(autoMove);
-
         // Moves entity towards target at a set speed. When within range, attack target.
         if (autoMove)
         {
             if (target == null && targetPosition == null)
             {
-                Debug.Log("Is it in here?");
                 return;
             }
 
@@ -190,7 +186,6 @@ public class EntityController : MonoBehaviour
                 if (Vector2.Distance(transform.position, targetPosition) < 0.05f)
                 {
                     autoMove = false;
-                    Debug.Log("TEST!");
                     animator.SetBool("IsWalk", false);
                     BossMechanicHandler.InitializeMechanic(targetMechanic, ExcentraGame.battleManager, this.gameObject, true);
                     targetMechanic = null;
@@ -400,8 +395,6 @@ public class EntityController : MonoBehaviour
             return;
         }
 
-        Debug.Log("Test Basic Attack Movement");
-
         animator.SetBool("IsWalk", true);
         this.target = target;
         this.animationTrigger = animationTrigger;
@@ -415,11 +408,6 @@ public class EntityController : MonoBehaviour
         this.targetPosition = targetPosition;
         this.targetMechanic = mechanic;
         autoMove = true;
-
-        Debug.Log("Another Internal Test!");
-        Debug.Log("Auto Move: " + autoMove);
-        Debug.Log("Target Position " + this.targetPosition);
-        Debug.Log("Target Mechanic " + this.targetMechanic);
     }
 
     /// <summary>

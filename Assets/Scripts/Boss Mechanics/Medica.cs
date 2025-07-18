@@ -45,7 +45,7 @@ public static class Medica
         return newAttack;
     }
 
-    public static MechanicAttack ColorLock22Aoe(float x, float y, bool blue)
+    public static MechanicAttack AetherialCalibration22Aoe(float x, float y, bool blue)
     {
         Color color = blue ? new Color(0f, 0f, 1f) : new Color(1f, 0f, 0f);
 
@@ -220,9 +220,6 @@ public static class Medica
         MechanicAttack aoe1 = null;
         MechanicAttack aoe2 = null;
 
-        bool onlyBlue = false;
-        bool onlyRed = false;
-
         possibleTargets = possibleTargets.OrderBy(_ => Random.value).ToList();
 
         // Find the first blue target and set them as target 1.
@@ -281,10 +278,8 @@ public static class Medica
 
     }
 
-    public static void ColorLock22(BattleManager battleManager, EnemyMechanic mechanic)
+    public static void AetherialCalibration22(BattleManager battleManager, EnemyMechanic mechanic)
     {
-        Debug.Log("YOOASDOFDWSFG!");
-
         float radius = 2.5f;
         int blueCount = 0;
         int redCount = 0;
@@ -321,10 +316,10 @@ public static class Medica
             }
         }
 
-        MechanicAttack topAoe = ColorLock22Aoe(0f, radius, blueArray[0]);
-        MechanicAttack bottomAoe = ColorLock22Aoe(0f, -radius, blueArray[1]);
-        MechanicAttack leftAoe = ColorLock22Aoe(-radius, 0f, blueArray[2]);
-        MechanicAttack rightAoe = ColorLock22Aoe(radius, 0f, blueArray[3]);
+        MechanicAttack topAoe = AetherialCalibration22Aoe(0f, radius, blueArray[0]);
+        MechanicAttack bottomAoe = AetherialCalibration22Aoe(0f, -radius, blueArray[1]);
+        MechanicAttack leftAoe = AetherialCalibration22Aoe(-radius, 0f, blueArray[2]);
+        MechanicAttack rightAoe = AetherialCalibration22Aoe(radius, 0f, blueArray[3]);
 
         mechanic.mechanicAttacks.Add(topAoe);
         mechanic.mechanicAttacks.Add(bottomAoe);
@@ -332,7 +327,7 @@ public static class Medica
         mechanic.mechanicAttacks.Add(rightAoe);
     }
 
-    public static void ColorLock22p2(BattleManager battleManager, EnemyMechanic mechanic)
+    public static void AetherialCalibration22p2(BattleManager battleManager, EnemyMechanic mechanic)
     {
         float radius = 2.5f;
         float diagonal = radius / Mathf.Sqrt(2);
@@ -371,10 +366,10 @@ public static class Medica
             }
         }
 
-        MechanicAttack topAoe = ColorLock22Aoe(diagonal, diagonal, blueArray[0]);
-        MechanicAttack bottomAoe = ColorLock22Aoe(-diagonal, diagonal, blueArray[1]);
-        MechanicAttack leftAoe = ColorLock22Aoe(-diagonal, -diagonal, blueArray[2]);
-        MechanicAttack rightAoe = ColorLock22Aoe(diagonal, -diagonal, blueArray[3]);
+        MechanicAttack topAoe = AetherialCalibration22Aoe(diagonal, diagonal, blueArray[0]);
+        MechanicAttack bottomAoe = AetherialCalibration22Aoe(-diagonal, diagonal, blueArray[1]);
+        MechanicAttack leftAoe = AetherialCalibration22Aoe(-diagonal, -diagonal, blueArray[2]);
+        MechanicAttack rightAoe = AetherialCalibration22Aoe(diagonal, -diagonal, blueArray[3]);
 
         mechanic.mechanicAttacks.Add(topAoe);
         mechanic.mechanicAttacks.Add(bottomAoe);
@@ -382,7 +377,12 @@ public static class Medica
         mechanic.mechanicAttacks.Add(rightAoe);
     }
 
-    public static MechanicLogic ColorLock22End(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    public static void AetherialCalibration31(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        Debug.Log("HI!!");
+    }
+
+    public static MechanicLogic AetherialCalibration22End(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(passthrough.attacker), 0f);
 
@@ -390,7 +390,7 @@ public static class Medica
         return new MechanicLogic();
     }
 
-    public static MechanicLogic ColorLock22p2End(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    public static MechanicLogic AetherialCalibration22p2End(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         EntityStats stats = passthrough.attacker.GetComponent<EntityStats>();
         battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(passthrough.attacker));
@@ -404,15 +404,12 @@ public static class Medica
     public static MechanicLogic RedAcclimationTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Red acclimation target effect");
         MechanicLogic logic = new MechanicLogic();
 
         List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null).ToList();
 
         if (targetableChars.Count == 0)
             return logic;
-
-        Debug.Log("Red Target " + targetableChars.Count);
 
         logic.overriddenTarget = targetableChars[Random.Range(0, targetableChars.Count)];
 
@@ -435,7 +432,6 @@ public static class Medica
     public static MechanicLogic BlueAcclimationTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Blue acclimation target effect");
         MechanicLogic logic = new MechanicLogic();
 
         List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_red")) != null).ToList();
@@ -453,7 +449,6 @@ public static class Medica
                 {
                     logic.overrideDelay = true;
                     logic.overriddenDelay = battleManager.turnManager.ReturnDelayNeededForCharacter(character.GetEntity().entityTurn);
-                    Debug.Log("HELLO!!");
                     break;
                 }
             }
@@ -575,7 +570,6 @@ public static class Medica
     public static MechanicLogic RedAcclimationHit(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Blue acclimation effect");
 
         MechanicLogic logic = new MechanicLogic();
 
@@ -607,7 +601,6 @@ public static class Medica
     public static MechanicLogic BlueAcclimationHit(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
-        Debug.Log("Blue acclimation effect");
 
         MechanicLogic logic = new MechanicLogic();
 
@@ -638,7 +631,6 @@ public static class Medica
 
     public static MechanicLogic AddTarget(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
-        Debug.Log("TESTING!!");
         MechanicLogic logic = new MechanicLogic();
         EnemyContents enemyContents = passthrough.attacker.GetComponent<EnemyContents>();
 
@@ -659,16 +651,12 @@ public static class Medica
 
             RaycastHit2D hit = Physics2D.Raycast(startPosition, direction, distance, LayerMask.GetMask("Obstacles"));
 
-            Debug.Log("Hit!! " + hit.collider);
-
             if (hit.collider == null)
             {
                 Debug.Log("Add for position: " + startPosition + " may attack " + character);
                 lineOfSight.Add(character);
             }
         }
-
-        Debug.Log("LINE OF SIGHT: " + lineOfSight.Count);
 
         if (lineOfSight.Count == 0)
         {

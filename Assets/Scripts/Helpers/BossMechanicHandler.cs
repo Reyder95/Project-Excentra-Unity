@@ -22,7 +22,6 @@ public static class BossMechanicHandler
     {
         if (mechanic.containsMovement && !skip)
         {
-            Debug.Log("TEST!!!!@#$@#$@# " + mechanic.mechanicName);
             EntityController controller = attacker.GetComponent<EntityController>();
 
             Vector2 targetPosition = Vector2.zero;
@@ -81,7 +80,6 @@ public static class BossMechanicHandler
                         }
                         else
                         {
-                            Debug.Log("TEST?!?!?!?!");
                             MechanicAoeData mechanicAoeData = InitializeAOEAttack(mechanic, attack, battleManager, attacker, logic, logic.overriddenTarget);
                             delay = Mathf.Max(mechanicAoeData.delay, delay);
                             aoes.Add(mechanicAoeData.aoeObject);
@@ -107,8 +105,6 @@ public static class BossMechanicHandler
                         //turnManager.DisplayTurnOrder();
                 }
             }
-
-            Debug.Log(mechanic.priorityIndex.Length);
 
             if (mechanic.priorityIndex.Length > 0)
             {
@@ -158,7 +154,6 @@ public static class BossMechanicHandler
                 aoeEntity.CalculateDirectDelay(delay);
                 if (!mechanic.active)
                 {
-                    Debug.Log("YO!! " + delay);
                     EntityStats stats = attacker.GetComponent<EntityStats>();
                     stats.nextStaticDelay = delay + 1;
                 }
@@ -174,7 +169,6 @@ public static class BossMechanicHandler
     }
     public static void EndMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
     {
-        Debug.Log("YOOOOOOO " + mechanic.mechanicKey + "_end");
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
         CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey + "_end", battleManager, passthrough);
     }
@@ -223,8 +217,6 @@ public static class BossMechanicHandler
         BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
 
         SkillInformation info = new SkillInformation();
-
-        Debug.Log(mechanicAttack.directTarget);
 
         if (mechanicAttack.directTarget != null)
             actualTarget = mechanicAttack.directTarget;
@@ -285,9 +277,6 @@ public static class BossMechanicHandler
 
         CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null, mechanic));
 
-        Debug.Log(mechanic.mechanicName);
-        Debug.Log("TEST!");
-
         try
         {
             foreach (var entity in targets)
@@ -317,14 +306,8 @@ public static class BossMechanicHandler
                 }
             }
 
-            Debug.Log("TEST!!AAA");
-            Debug.Log(aoe.aoeData.TargetList.Count);
-            Debug.Log(mechanicAttack.isSoak);
-
             if (mechanicAttack.isSoak)
             {
-                Debug.Log("HELLO!");
-                Debug.Log(aoe.aoeData.TargetList.Count);
                 if (aoe.aoeData.TargetList.Count == 0)
                 {
                     List<GameObject> possibleCharacters = battleManager.GetAliveEntities();
@@ -335,8 +318,6 @@ public static class BossMechanicHandler
                     }
                 }
             }
-
-            Debug.Log(mechanic.mechanicName);
 
             if (aoe.particleEmitter != null)
             {
@@ -355,7 +336,6 @@ public static class BossMechanicHandler
 
     public static void InitializeSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker)
     {
-        Debug.Log("TESTING AHAHHAHAHA");
         EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
         GameObject target = enemyAi.ChooseEntity(mechanicAttack.targetType);
         enemyAi.currTarget = target;
@@ -365,7 +345,6 @@ public static class BossMechanicHandler
             enemyAi.currTarget = logic.overriddenTarget;
 
         EntityController controller = attacker.GetComponent<EntityController>();
-        Debug.Log(mechanic.mechanicName);
         controller.MoveTowards(enemyAi.currTarget, mechanic.animationTrigger);
 
     }

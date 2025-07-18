@@ -79,12 +79,9 @@ public class EnemyAI : MonoBehaviour
 
     public void TargetEntity(EntityTargetType targetType)
     {
-        Debug.Log("AHAHAHDKLSDJFLKSDFJGLK");
         currTarget = null;
         if (currAttack == null)
             return;
-
-        Debug.Log("AHAHAHDKLSDJFLKSDFJGLK TWO");
 
         var possibleChars = possibleTargets.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
 
@@ -142,8 +139,6 @@ public class EnemyAI : MonoBehaviour
             if (target != null)
                 return target;
         }
-
-        Debug.Log("TESTING: " + target);
 
         if (target != null)
             return target;

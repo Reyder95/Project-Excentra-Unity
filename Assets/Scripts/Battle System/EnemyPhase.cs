@@ -48,7 +48,7 @@ public class EnemyPhase
 
 
 
-            return chosenMechanic;
+            return chosenMechanic.Clone();
         }
         else if (phaseType == PhaseType.ORDER)
         {
