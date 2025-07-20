@@ -12,6 +12,9 @@ public class NumberHelper
     public GameObject target;
     public Vector2 goalVector;
     public float floatOffset = 0f; // How much it has floated up
+
+    public float randomLeft = 0f;
+    public float randomTop = 0f;
 }
 
 // Spawns damage numbers on the screen when an attack or heal happens. Currently only has white numbers, but should change depending on the effect (poison, damage, heal, etc)
@@ -43,15 +46,15 @@ public class DamageNumberHandler : MonoBehaviour
             Vector2 worldPosition = WorldToScreenPoint(Camera.main, helper.target.transform.position);
 
             // Apply float offset
-            float y = worldPosition.y - helper.floatOffset;
-            float x = worldPosition.x;
+            float y = worldPosition.y + helper.randomTop - helper.floatOffset;
+            float x = worldPosition.x + helper.randomLeft;
 
             // Set UI element position
             helper.num.style.top = y;
             helper.num.style.left = x;
 
             // Delete once passed goal vector
-            if (helper.floatOffset >= 100f)
+            if (helper.floatOffset >= numHelperList[counter].goalVector.y)
             {
                 battleUIRoot.Remove(helper.num);
                 numHelperList.RemoveAt(counter);
@@ -68,14 +71,19 @@ public class DamageNumberHandler : MonoBehaviour
         VisualElement currNum = damageNumber.CloneTree();
         currNum.Q<Label>().text = amount.ToString();
         Vector2 worldPosition = WorldToScreenPoint(Camera.main, target.transform.position);
-        currNum.style.left = worldPosition.x;
-        currNum.style.top = worldPosition.y;
+        int randomSpread = 50;
+        float randomLeft = Random.Range(-randomSpread, randomSpread);
+        float randomTop = Random.Range(-randomSpread, randomSpread);  
+        currNum.style.left = worldPosition.x + randomLeft;
+        currNum.style.top = worldPosition.y + randomTop;
 
         battleUIRoot.Add(currNum);
 
         NumberHelper numHelper = new NumberHelper();
+        numHelper.randomLeft = randomLeft;
+        numHelper.randomTop = randomTop;
         numHelper.num = currNum;
-        numHelper.goalVector = new Vector2(worldPosition.x, worldPosition.y - 100);
+        numHelper.goalVector = new Vector2(worldPosition.x + randomLeft, worldPosition.y + randomTop - 100);
         numHelper.target = target;
 
         numHelperList.Add(numHelper);
