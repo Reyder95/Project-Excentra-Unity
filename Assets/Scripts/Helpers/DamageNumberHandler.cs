@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 // Keeps track of the num and where the num should terminate (usually 5 units away from the initial spawn point)
 public class NumberHelper
 {
     public VisualElement num;
+    public GameObject target;
     public Vector2 goalVector;
+    public float floatOffset = 0f; // How much it has floated up
 }
 
 // Spawns damage numbers on the screen when an attack or heal happens. Currently only has white numbers, but should change depending on the effect (poison, damage, heal, etc)
@@ -22,16 +25,35 @@ public class DamageNumberHandler : MonoBehaviour
     {
         int counter = 0;
 
-        // Moves each number up by an amount. If number reaches num.goalVector's value, destroy number.
         while (counter < numHelperList.Count)
         {
-            var currentTop = numHelperList[counter].num.style.top.value;
+            var helper = numHelperList[counter];
 
-            numHelperList[counter].num.style.top = new StyleLength(currentTop.value - 0.5f);
-
-            if (numHelperList[counter].num.style.top.value.value < numHelperList[counter].goalVector.y)
+            if (helper.target == null)
             {
-                battleUIRoot.Remove(numHelperList[counter].num);
+                battleUIRoot.Remove(helper.num);
+                numHelperList.RemoveAt(counter);
+                continue;
+            }
+
+            // Increase vertical float over time
+            helper.floatOffset += 50f * Time.deltaTime; // move up 50px per second
+
+            // Update world position
+            Vector2 worldPosition = WorldToScreenPoint(Camera.main, helper.target.transform.position);
+
+            // Apply float offset
+            float y = worldPosition.y - helper.floatOffset;
+            float x = worldPosition.x;
+
+            // Set UI element position
+            helper.num.style.top = y;
+            helper.num.style.left = x;
+
+            // Delete once passed goal vector
+            if (helper.floatOffset >= 100f)
+            {
+                battleUIRoot.Remove(helper.num);
                 numHelperList.RemoveAt(counter);
             }
             else
@@ -54,6 +76,7 @@ public class DamageNumberHandler : MonoBehaviour
         NumberHelper numHelper = new NumberHelper();
         numHelper.num = currNum;
         numHelper.goalVector = new Vector2(worldPosition.x, worldPosition.y - 100);
+        numHelper.target = target;
 
         numHelperList.Add(numHelper);
     }
