@@ -1,9 +1,32 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public class AetherialCalibrationData
+{
+    public EnemyMechanic mechanic;
+    public int numRed = 0;
+    public int numBlue = 0;
+
+    public AetherialCalibrationData(EnemyMechanic mechanic, int numRed, int numBlue)
+    {
+        this.mechanic = mechanic;
+        this.numRed = numRed;
+        this.numBlue = numBlue;
+    }
+}
+
 public static class Medica
 {
+    // Data for the entire mechanic
+    // Stack for remaining Aetherial Calibration attacks
+    // Temp data
+    private static int numRed = 0;
+    private static int numBlue = 0;
+
+    public static List<AetherialCalibrationData> acData = new List<AetherialCalibrationData>();
+
     // MechanicAttack for Acclimation Resolve
     public static MechanicAttack AcclimationResolve()
     {
@@ -70,9 +93,54 @@ public static class Medica
         return newAttack;
     }
 
+    public static MechanicAttack AetherialCalibration31Aoe(bool blue, bool isStack, GameObject target)
+    {
+        Color color = blue ? new Color(0f, 0f, 1f) : new Color(1f, 0f, 0f);
+
+        MechanicAttack newAttack = new MechanicAttack();
+        newAttack.attackType = AttackType.AOE;
+        newAttack.attackKey = blue ? "blue-acclimation-hit" : "red-acclimation-hit";
+        newAttack.directTarget = target;
+        newAttack.turnOffset = 4;
+        newAttack.damageType = DamageType.DAMAGE;
+        newAttack.originIsTarget = true;
+        newAttack.aoeShape = Shape.CIRCLE;
+        newAttack.size = 15;
+        newAttack.isStack = isStack;
+        newAttack.customColor = true;
+        newAttack.aoeColor = color;
+        newAttack.scaleMult = isStack ? 18f : 5;
+        newAttack.baseValue = isStack ? 150 : 50;
+        newAttack.scaler = Scaler.ATTACK;
+        newAttack.attackCount = 1;
+
+        return newAttack;
+    }
+
     public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
+
+        acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-22"), 2, 2));
+
+        numRed = Random.Range(0, 2);
+
+        if (numRed == 1)
+        {
+            numRed = 3;
+            numBlue = 1;
+        }
+        else
+        {
+            numRed = 1;
+            numBlue = 3;
+        }
+
+        acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-31"), numRed, numBlue));
+
+        acData = acData.OrderBy(_ => Random.value).ToList();
+
+        //acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-22"), 2, 2));
 
         int counter = 0;
         while (possibleChars.Count > 0)
@@ -93,6 +161,10 @@ public static class Medica
 
             counter++;
         }
+
+
+
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, passthrough.mechanic, "aetherial-calibration", acData[0]);
 
         return new MechanicLogic();
     }
@@ -184,6 +256,7 @@ public static class Medica
 
     public static MechanicLogic AcclimationResolve(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
+        Debug.Log("??");
         List<GameObject> possibleTargets = battleManager.GetAliveEntities();
         EntityStats stats = passthrough.target.GetComponent<EntityStats>();
 
@@ -280,6 +353,11 @@ public static class Medica
 
     public static void AetherialCalibration22(BattleManager battleManager, EnemyMechanic mechanic)
     {
+        EnemyAI medica = battleManager.boss.GetComponent<EnemyAI>();
+        medica.currPhase.InsertMechanicAt(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-22-p2"), 0);
+
+
+
         float radius = 2.5f;
         int blueCount = 0;
         int redCount = 0;
@@ -379,7 +457,71 @@ public static class Medica
 
     public static void AetherialCalibration31(BattleManager battleManager, EnemyMechanic mechanic)
     {
-        Debug.Log("HI!!");
+        List<GameObject> possibleTargets = battleManager.GetAliveEntities();
+
+        possibleTargets = possibleTargets.OrderBy(_ => Random.value).ToList();
+
+        GameObject redTarget = possibleTargets[possibleTargets.Count - 1];
+        GameObject blueTarget = possibleTargets[possibleTargets.Count - 1];
+
+        MechanicAttack redAttack = null;
+        MechanicAttack blueAttack = null;
+
+
+
+        // Find red target
+        foreach (GameObject target in possibleTargets)
+        {
+            EntityStats stats = target.GetComponent<EntityStats>();
+            if (stats.effectHandler.GetEffectByKey("spirit_acclimation_blue") != null)
+            {
+                redTarget = target;
+                break;
+            }
+        }
+
+        // Find blue target
+        foreach (GameObject target in possibleTargets)
+        {
+            EntityStats stats = target.GetComponent<EntityStats>();
+            if (stats.effectHandler.GetEffectByKey("spirit_acclimation_red") != null)
+            {
+                blueTarget = target;
+                break;
+            }
+        }
+
+        bool isStack;
+        bool isBlue;
+        if (numRed == 1)
+        {
+            isStack = true;
+            isBlue = false;
+            
+        }
+        else
+        {
+            isStack = false;
+            isBlue = false;
+        }
+
+        redAttack = AetherialCalibration31Aoe(isBlue, isStack, redTarget);
+
+        if (numBlue == 1)
+        {
+            isStack = true;
+            isBlue = true;
+        }
+        else
+        {
+            isStack = false;
+            isBlue = true;
+        }
+
+        blueAttack = AetherialCalibration31Aoe(isBlue, isStack, blueTarget);
+
+        mechanic.mechanicAttacks.Add(redAttack);
+        mechanic.mechanicAttacks.Add(blueAttack);
     }
 
     public static MechanicLogic AetherialCalibration22End(BattleManager battleManager, CustomLogicPassthrough passthrough)
@@ -396,7 +538,50 @@ public static class Medica
         battleManager.turnManager.CalculateIndividualDelay(battleManager.turnManager.GetTurnEntityData(passthrough.attacker));
         stats.active = true;
 
+
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, passthrough.mechanic, "aetherial-calibration", acData[0]);
+
         return new MechanicLogic();
+    }
+
+    public static MechanicLogic AetherialCalibration31End(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, passthrough.mechanic, "aetherial-calibration", acData[0]);
+
+        return new MechanicLogic();
+    }
+
+    public static void AetherialCalibrationBase(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        EnemyMechanic currentMechanic = acData[0].mechanic;
+        mechanic.mechanicName = currentMechanic.mechanicName;
+        mechanic.containsTrigger = currentMechanic.containsTrigger;
+        mechanic.mechanicKey = currentMechanic.mechanicKey;
+        mechanic.mechanicStyle = currentMechanic.mechanicStyle;
+        mechanic.dontSkipTurn = currentMechanic.dontSkipTurn;
+        mechanic.active = currentMechanic.active;
+        mechanic.untargetable = currentMechanic.untargetable;
+        mechanic.targetScript = currentMechanic.targetScript;
+        mechanic.activeScript = currentMechanic.activeScript;
+        mechanic.goNext = currentMechanic.goNext;
+        mechanic.containsMovement = currentMechanic.containsMovement;
+        mechanic.movementType = currentMechanic.movementType;
+        mechanic.animationTrigger = currentMechanic.animationTrigger;
+        mechanic.priorityIndex = currentMechanic.priorityIndex;
+        mechanic.customScript = currentMechanic.customScript;
+        mechanic.customScriptKey = currentMechanic.customScriptKey;
+        mechanic.turnCooldown = currentMechanic.turnCooldown;
+
+        acData.RemoveAt(0);
+
+        if (mechanic.mechanicKey == "aetherial-calibration-22")
+        {
+            AetherialCalibration22(battleManager, mechanic);
+        }
+        else if (mechanic.mechanicKey == "aetherial-calibration-31")
+        {
+            AetherialCalibration31(battleManager, mechanic);
+        }
     }
 
         // -- OLD UNUSED MECHANICS HERE
@@ -587,6 +772,7 @@ public static class Medica
 
         if (statusEffect != null)
         {
+            Debug.Log("Red");
             targetStats.ModifyStatus(statusEffect.effect);
             targetStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
             logic.overrideDamage = true;
@@ -618,6 +804,7 @@ public static class Medica
 
         if (statusEffect != null)
         {
+            Debug.Log("Blue");
             targetStats.ModifyStatus(statusEffect.effect);
             targetStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
             logic.overrideDamage = true;

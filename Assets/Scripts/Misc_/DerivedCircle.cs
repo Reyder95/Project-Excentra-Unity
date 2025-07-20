@@ -12,6 +12,8 @@ public class DerivedCircle : BaseAoe
 
     public Vector2 frozenPosition;
 
+    public GameObject indicatorCircle;
+
     protected override void Start()
     {
         base.Start();
@@ -93,7 +95,43 @@ public class DerivedCircle : BaseAoe
                 circlePosition = this.originObject.transform.position;
 
             transform.position = circlePosition;
+
+            SpriteRenderer circleRenderer = indicatorCircle.GetComponent<SpriteRenderer>();
+
+            Color circleColor = circleRenderer.color;
+
+            if (activatingAttack)
+            {
+
+                circleColor.a += 0.5f * Time.deltaTime;
+
+                if (circleColor.a > 0.3f)
+                    circleColor.a = 0.3f;
+
+                if (circleColor.a >= 0.3f && circleColor.a >= 0.3f)
+                {
+                    activatingAttack = false;
+                    queueEndTurn = true;
+
+                    BossMechanicHandler.ActivateAoeAttack(mechanic, mechanicAttack, ExcentraGame.battleManager, attackerObject, this);
+                }
+            }
+
+            if (circleColor.a > 0 && !activatingAttack)
+                circleColor.a -= 0.5f * Time.deltaTime;
+            circleRenderer.color = circleColor;
+
+            if (queueEndTurn && circleRenderer.color.a <= 0)
+            {
+                ExcentraGame.battleManager.EndCurrentAoeTurn();
+                queueEndTurn = false;
+            }
         }
+    }
+
+    public override void ActivateAoe()
+    {
+        activatingAttack = true;
     }
 
     // Make a connected function between both initialization functions that prevent copy/pasted logic

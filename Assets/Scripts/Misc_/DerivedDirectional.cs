@@ -27,6 +27,13 @@ public class DerivedDirectional : BaseAoe
     public List<GameObject> topArrows = new List<GameObject>();
     public float arrowDescaler = 7.5f;
 
+    public GameObject indicatorTriangle;
+    public GameObject indicatorCircle;
+    public GameObject indicatorLine;
+
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
     {
@@ -119,8 +126,78 @@ public class DerivedDirectional : BaseAoe
 
             if (originObject != null)
                 transform.position = originObject.transform.position;
+
+            SpriteRenderer triangleRenderer = null;
+            SpriteRenderer circleRenderer = null;
+            SpriteRenderer lineRenderer = null;
+            if (mechanicAttack.aoeShape == Shape.CONE)
+            {
+                triangleRenderer = indicatorTriangle.GetComponent<SpriteRenderer>();
+                circleRenderer = indicatorCircle.GetComponent<SpriteRenderer>();
+            }
+            else
+            {
+                lineRenderer = indicatorLine.GetComponent<SpriteRenderer>();
+            }
+
+            Color triangleColor = new Color();
+            Color circleColor = new Color();
+            Color lineColor = new Color();
+
+            if (triangleRenderer != null)
+            {
+                triangleColor = triangleRenderer.color;
+                circleColor = circleRenderer.color;
+            }
+            else if (lineRenderer != null)
+            {
+                lineColor = lineRenderer.color;
+            }
+
+
+            if (activatingAttack)
+            {
+
+                triangleColor.a += 0.5f * Time.deltaTime;
+                circleColor.a += 0.5f * Time.deltaTime;
+
+                if (triangleColor.a > 0.3f)
+                    triangleColor.a = 0.3f;
+                 
+
+                if (circleColor.a > 0.3f)
+                    circleColor.a = 0.3f;
+
+                if (triangleColor.a >= 0.3f && circleColor.a >= 0.3f)
+                {
+                    activatingAttack = false;
+                    queueEndTurn = true;
+
+                    BossMechanicHandler.ActivateAoeAttack(mechanic, mechanicAttack, ExcentraGame.battleManager, attackerObject, this);
+                }
+            }
+
+            if (triangleColor.a > 0 && !activatingAttack)
+                triangleColor.a -= 0.5f * Time.deltaTime;
+
+            if (circleColor.a > 0 && !activatingAttack)
+                circleColor.a -= 0.5f * Time.deltaTime;
+
+            triangleRenderer.color = triangleColor;
+            circleRenderer.color = circleColor;
+
+            if (queueEndTurn && triangleRenderer.color.a <= 0)
+            {
+                ExcentraGame.battleManager.EndCurrentAoeTurn();
+                queueEndTurn = false;
+            }
         }
 
+    }
+
+    public override void ActivateAoe()
+    {
+        activatingAttack = true;
     }
 
     public override void InitializeEnemyAoe(GameObject attackerObject, EnemyMechanic mechanic, MechanicAttack attack, SkillInformation info)

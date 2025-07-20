@@ -12,7 +12,8 @@ public static class CustomMechanicLogicHelper
         { "bittersweet-spirits", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.BittersweetSpirits(battleManager, mechanic) },
         { "aetherial-calibration-2-2" , (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration22(battleManager, mechanic) },
         { "aetherial-calibration-2-2-p2", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration22p2(battleManager, mechanic) },
-        { "aetherial-calibration-3-1", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration31(battleManager, mechanic) }
+        { "aetherial-calibration-3-1", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration31(battleManager, mechanic) },
+        { "aetherial-calibration-base", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibrationBase(battleManager, mechanic) },
     };
 
     private static Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>> mechDict = new Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>>()
@@ -37,6 +38,7 @@ public static class CustomMechanicLogicHelper
         { "acclimation-resolve", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationResolve(battleManager, passthrough) },
         { "aetherial-calibration-22_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration22End(battleManager, passthrough) },
         { "aetherial-calibration-22-p2_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration22p2End(battleManager, passthrough) },
+        { "aetherial-calibration-31_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration31End(battleManager, passthrough) },
     
     };
 

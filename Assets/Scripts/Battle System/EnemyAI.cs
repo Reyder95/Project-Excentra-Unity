@@ -38,6 +38,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (currPhase == null)
         {
+            Debug.Log("Should NOT be here! ChooseAttack");
             currAttack = null;
             return null;
         }

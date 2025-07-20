@@ -16,6 +16,7 @@ public static class ExcentraDatabase
     private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
     private static Dictionary<string, GameObject> miscPrefabDictionary = new Dictionary<string, GameObject>();
     private static Dictionary<string, BossEnemyPhases> bossPhaseDictionary = new Dictionary<string, BossEnemyPhases>();
+    private static Dictionary<string, EnemyMechanic> mechanicDictionary = new Dictionary<string, EnemyMechanic>();  
 
     // Potentially a poor way of doing this. Should this be in the status damage helper class? 
     // Potential future solution: In status helper, use status "effect type" in a dictionary, pointing it to various functions.
@@ -86,6 +87,14 @@ public static class ExcentraDatabase
         }
     }
 
+    public static void LoadEnemyMechanics(List<MechanicKey> mechanics)
+    {
+        foreach (var mechanic in mechanics)
+        {
+            mechanicDictionary.Add(mechanic.key, mechanic.mechanic);
+        }
+    }
+
     // Our tryget functions. These attempt to get a specific dictionary's contents through a key. If it fails, returns null.
     public static GameObject TryGetEntity(string key)
     {
@@ -147,6 +156,13 @@ public static class ExcentraDatabase
     {
         if (bossPhaseDictionary.ContainsKey(key))
             return bossPhaseDictionary[key];
+        return null;
+    }
+
+    public static EnemyMechanic TryGetEnemyMechanics(string key)
+    {
+        if (mechanicDictionary.ContainsKey(key))
+            return mechanicDictionary[key].Clone();
         return null;
     }
 }

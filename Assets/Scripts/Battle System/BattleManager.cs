@@ -55,6 +55,9 @@ public class BattleManager
     public bool overButton = false;
     public bool initialPhaseChecker = false;
 
+    // Useful in case multiple sources try to end the turn at the same time. This is primarily used for when multiple aoe attacks go off, and then submit an event to end the turn.
+    public bool endingTurn = false;
+
     public BattleManager(System.Func<GameObject, Vector2, GameObject> instantiateFunction)
     {
         _instantiateFunction = instantiateFunction;
@@ -380,12 +383,30 @@ public class BattleManager
             {
                 BaseAoe baseAoe = aoe.GetComponent<BaseAoe>();
                 EnemyAI enemyAi = baseAoe.attackerObject.GetComponent<EnemyAI>();
-
-                BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, baseAoe.mechanicAttack, this, baseAoe.attackerObject, baseAoe);
+                endingTurn = false;
+                baseAoe.ActivateAoe();
+                //BossMechanicHandler.ActivateAoeAttack(baseAoe.mechanic, baseAoe.mechanicAttack, this, baseAoe.attackerObject, baseAoe);
             }
 
-            EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
+            //EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
         }
+    }
+    
+    // Easy access to end the turn if a mechanic is the current turn. Helpful for outside sources to end the turn easily (like AoEs)
+    public void EndCurrentAoeTurn()
+    {
+        if (endingTurn)
+            return;
+
+        endingTurn = true;
+
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
+        AoeTurn aoeTurn = turnEntity.GetEntity().aoeTurn;
+
+        if (aoeTurn == null)
+            return;
+
+        EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
     }
 
     public void EndTurn(GameObject attacker = null, EnemyAI enemyAi = null)
@@ -485,15 +506,17 @@ public class BattleManager
                         }
                         else
                         {
+                            if (enemyAi.currAttack == null && turnEntity.turnData.aoeTurn.aoes.Count > 0)
+                            {
+                                EndMechanic(turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().mechanic, turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
+                            }
                             enemyAi.currAttack = null;
                         }
                     }
                 }
             }
             catch (MissingReferenceException) { }
-            catch (NullReferenceException ex) {
-                
-            }
+            catch (NullReferenceException) {}
 
             
             StartTurn();
@@ -541,6 +564,7 @@ public class BattleManager
         {
             EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
             BossMechanicHandler.EndMechanic(mechanic, this, attacker);
+            Debug.Log("Should NOT be here! EndMechanic");
             enemyAi.currAttack = null;
             enemyAi.stats.targetable = true;
 

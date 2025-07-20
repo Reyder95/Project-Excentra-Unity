@@ -20,6 +20,11 @@ public static class BossMechanicHandler
 {
     public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker, bool skip = false)
     {
+        if (mechanic.customScript && !skip)
+        {
+            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
+        }
+
         if (mechanic.containsMovement && !skip)
         {
             EntityController controller = attacker.GetComponent<EntityController>();
@@ -30,11 +35,6 @@ public static class BossMechanicHandler
 
             controller.MoveTowards(targetPosition, mechanic);
             return;
-        }
-
-        if (mechanic.customScript)
-        {
-            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
         }
 
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
@@ -275,6 +275,8 @@ public static class BossMechanicHandler
     {
         Dictionary<string, GameObject> targets = aoe.aoeData.TargetList;
 
+        Debug.Log("Target Count: " + targets.Count);
+
         CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null, mechanic));
 
         try
@@ -324,6 +326,8 @@ public static class BossMechanicHandler
                 UnityEngine.GameObject.Destroy(aoe.particleEmitter);
                 aoe.particleEmitter = null;
             }
+
+            Debug.Log(mechanic);
 
             if (mechanic.containsTrigger)
                 ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, mechanicAttack.triggerKey);
