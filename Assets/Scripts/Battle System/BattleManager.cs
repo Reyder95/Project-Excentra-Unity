@@ -437,6 +437,8 @@ public class BattleManager
             stats = currTurn.GetComponent<EntityStats>();
             controller = currTurn.GetComponent<EntityController>();
 
+            controller.playerInput.enabled = false;
+
             if (controller.autoMove)
                 return;
         }
