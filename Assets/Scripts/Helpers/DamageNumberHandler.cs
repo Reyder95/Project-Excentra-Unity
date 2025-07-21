@@ -40,7 +40,7 @@ public class DamageNumberHandler : MonoBehaviour
             }
 
             // Increase vertical float over time
-            helper.floatOffset += 50f * Time.deltaTime; // move up 50px per second
+            helper.floatOffset += 150f * Time.deltaTime; // move up 50px per second
 
             // Update world position
             Vector2 worldPosition = WorldToScreenPoint(Camera.main, helper.target.transform.position);
@@ -54,7 +54,7 @@ public class DamageNumberHandler : MonoBehaviour
             helper.num.style.left = x;
 
             // Delete once passed goal vector
-            if (helper.floatOffset >= numHelperList[counter].goalVector.y)
+            if (helper.floatOffset >= 200f)
             {
                 battleUIRoot.Remove(helper.num);
                 numHelperList.RemoveAt(counter);
@@ -83,7 +83,6 @@ public class DamageNumberHandler : MonoBehaviour
         numHelper.randomLeft = randomLeft;
         numHelper.randomTop = randomTop;
         numHelper.num = currNum;
-        numHelper.goalVector = new Vector2(worldPosition.x + randomLeft, worldPosition.y + randomTop - 100);
         numHelper.target = target;
 
         numHelperList.Add(numHelper);

@@ -5,36 +5,44 @@
     <engine:VisualElement name="char-panel" style="flex-grow: 1; position: absolute; background-color: rgba(87, 50, 137, 0.6); bottom: 0; top: 75%; width: 50%; flex-direction: row; border-left-color: rgba(0, 0, 0, 0.94); border-right-color: rgba(0, 0, 0, 0.94); border-top-color: rgba(0, 0, 0, 0.94); border-bottom-color: rgba(0, 0, 0, 0.94); border-top-width: 2px; border-right-width: 2px; border-bottom-width: 2px; border-left-width: 2px; background-image: url(&quot;project://database/Assets/Raw/Textures/Sprite-0001.png?fileID=2800000&amp;guid=3b88a7751f1f8f243a3ab729685e99ad&amp;type=3#Sprite-0001&quot;);">
         <engine:VisualElement name="rioka" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
             <engine:ProgressBar value="22" name="hp" style="-unity-background-image-tint-color: rgb(255, 6, 6); background-color: rgb(255, 0, 0);" />
+            <engine:Label text="Label&#10;" name="hp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; position: relative; white-space: pre; text-overflow: clip; width: 0; justify-content: center; align-items: flex-end; align-self: flex-end;" />
             <engine:ProgressBar value="22" name="mp" />
-            <engine:Label text="Rioka" style="-unity-font-style: bold; font-size: 20px;" />
-            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+            <engine:Label text="Labelaaaaaaa" name="mp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; align-self: flex-end; width: 0;" />
+            <engine:Label text="Rioka" name="name" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 75%; bottom: 5%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
             <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/templar-portrait%20(1).png?fileID=2800000&amp;guid=a1585d9d11a7c4843a6d3a80a7a711eb&amp;type=3#templar-portrait (1)&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="nancy" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
-            <engine:ProgressBar value="22" name="hp" />
+            <engine:ProgressBar value="22" name="hp" style="-unity-background-image-tint-color: rgb(255, 6, 6); background-color: rgb(255, 0, 0);" />
+            <engine:Label text="Label" name="hp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; align-self: flex-end; width: 0;" />
             <engine:ProgressBar value="22" name="mp" />
-            <engine:Label text="Nancy" style="-unity-font-style: bold; font-size: 20px;" />
-            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+            <engine:Label text="Label" name="mp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; align-items: flex-end; align-self: flex-end; width: 0;" />
+            <engine:Label text="Nancy" name="name" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 75%; bottom: 5%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
             <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/swordsman-portrait%20(1).png?fileID=2800000&amp;guid=44987f889d9d41c4ba9f65201f982cea&amp;type=3#swordsman-portrait (1)&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="penny" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
-            <engine:ProgressBar value="22" name="hp" />
+            <engine:ProgressBar value="22" name="hp" style="-unity-background-image-tint-color: rgb(255, 6, 6); background-color: rgb(255, 0, 0);" />
+            <engine:Label text="Label" name="hp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; align-self: flex-end; width: 0;" />
             <engine:ProgressBar value="22" name="mp" />
-            <engine:Label text="Penny" style="-unity-font-style: bold; font-size: 20px;" />
-            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+            <engine:Label text="Label" name="mp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; align-self: flex-end; width: 0;" />
+            <engine:Label text="Penny" name="name" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 75%; bottom: 5%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
             <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/archer-portrait%20(1).png?fileID=2800000&amp;guid=c81925eab6512c64a80836109fec9061&amp;type=3#archer-portrait (1)&quot;);" />
         </engine:VisualElement>
         <engine:VisualElement name="nono" style="flex-grow: 1; align-self: auto; justify-content: center; padding-right: 20px; padding-left: 20px;">
-            <engine:ProgressBar value="22" name="hp" />
+            <engine:ProgressBar value="22" name="hp" style="-unity-background-image-tint-color: rgb(255, 6, 6); background-color: rgb(255, 0, 0);" />
+            <engine:Label text="Label" name="hp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; align-self: flex-end; width: 0;" />
             <engine:ProgressBar value="22" name="mp" />
-            <engine:Label text="Nono" style="-unity-font-style: bold; font-size: 20px;" />
-            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 65%; bottom: 10%; width: 90%; margin-right: 0; overflow: hidden;">
+            <engine:Label text="Label" name="mp-label" style="-unity-text-align: upper-right; -unity-font-style: bold; width: 0; align-self: flex-end;" />
+            <engine:Label text="Nono" name="name" style="-unity-font-style: bold; font-size: 20px;" />
+            <engine:VisualElement style="flex-grow: 1; position: absolute; top: 75%; bottom: 5%; width: 90%; margin-right: 0; overflow: hidden;">
                 <engine:VisualElement name="debuff" style="flex-grow: 1; padding-right: 20px; flex-direction: row; overflow: visible; -unity-background-image-tint-color: rgb(255, 0, 0); position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
             </engine:VisualElement>
             <engine:VisualElement name="char-portrait" style="flex-grow: 1; position: absolute; top: 5%; width: 100px; height: 100px; background-image: url(&quot;project://database/Assets/Raw/Textures/priest-portrait%20(1).png?fileID=2800000&amp;guid=38fc112becbbb6b4ea7e62affdb0abe4&amp;type=3#priest-portrait (1)&quot;);" />

@@ -26,7 +26,9 @@ public class BattleManager
     
     // Dictionaries for the HP UI elements and the MP UI elements of the players and enemies (where applicable)
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
+    private Dictionary<string, Label> hpDictionaryLabel = new Dictionary<string, Label>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
+    private Dictionary<string, Label> mpDictionaryLabel = new Dictionary<string, Label>();
 
     public List<GameObject> despawnBuffer = new List<GameObject>();
 
@@ -94,7 +96,9 @@ public class BattleManager
         {
             EntityStats stats = character.GetComponent<EntityStats>();
             hpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("hp"));
+            hpDictionaryLabel.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<Label>("hp-label"));
             mpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("mp"));
+            mpDictionaryLabel.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<Label>("mp-label"));
 
             stats.OnStatusChanged += DisplayStatuses;
             stats.OnHealthChanged += HPChangeEvent;
@@ -130,7 +134,9 @@ public class BattleManager
             EntityStats stats = character.GetComponent<EntityStats>();
 
             hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
+            hpDictionaryLabel[stats.entityName].text = $"{stats.currentHP}/{stats.maximumHP}";
             mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            mpDictionaryLabel[stats.entityName].text = $"{stats.currentAether}/{stats.maximumAether}";
         }
 
         EntityStats bossHPStats = boss.GetComponent<EntityStats>();
@@ -155,11 +161,21 @@ public class BattleManager
     public void SetMPProgress(EntityStats stats)
     {
         mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+
+        if (!mpDictionaryLabel.ContainsKey(stats.entityName))
+            return;
+
+        mpDictionaryLabel[stats.entityName].text = $"{Math.Floor(stats.currentAether)}/{stats.maximumAether}"; ;
     }
 
     public void SetHPProgress(EntityStats stats)
     {
         hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
+
+        if (!hpDictionaryLabel.ContainsKey(stats.entityName))
+            return;
+
+        hpDictionaryLabel[stats.entityName].text = $"{Math.Floor(stats.currentHP)}/{stats.maximumHP}";
     }
 
     public void HPChangeEvent(EntityStats stats)
@@ -970,6 +986,9 @@ public class BattleManager
         if (entityDamage > 0f)
         {
             ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
+
+            entityController.damageParticles.Play();
+
             if (contents.enabled)
             {
                 if (currAttacker.GetComponent<EntityStats>().currentHP <= 0)

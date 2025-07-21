@@ -71,6 +71,8 @@ public class EntityController : MonoBehaviour
 
     private EnemyAI enemyAi;
 
+    public ParticleSystem damageParticles;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
