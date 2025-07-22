@@ -259,8 +259,11 @@ public static class Medica
         Debug.Log("??");
         List<GameObject> possibleTargets = battleManager.GetAliveEntities();
         EntityStats stats = passthrough.target.GetComponent<EntityStats>();
+        EntityController controller = passthrough.target.GetComponent<EntityController>();
 
         StatusBattle status = stats.effectHandler.GetEffectByKey("spirit_acclimation_blue");
+
+        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Spirit Acclimation Down!");
 
         if (status != null)
         {

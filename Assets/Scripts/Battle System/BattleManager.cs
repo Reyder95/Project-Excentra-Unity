@@ -432,6 +432,8 @@ public class BattleManager
         GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
         EntityStats stats = null;
         EntityController controller = null;
+
+        // If we are on a player turn
         if (currTurn != null)
         {
             stats = currTurn.GetComponent<EntityStats>();

@@ -6613,6 +6613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageNumber: {fileID: 9197481963319205126, guid: 625412256735c10459af6b24034ae84b, type: 3}
+  popupText: {fileID: 9197481963319205126, guid: 68242e84f84dafc41894c6a31673d4df, type: 3}
 --- !u!4 &1049321077
 Transform:
   m_ObjectHideFlags: 0

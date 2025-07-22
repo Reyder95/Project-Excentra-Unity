@@ -44,6 +44,7 @@ public class EntityController : MonoBehaviour
     public PlayerInput playerInput;
     private Rigidbody2D rb;
     private BoxCollider2D boxCollider;
+    public GameObject iconHeader;
 
     public float lineThickness = 0.001f;
 

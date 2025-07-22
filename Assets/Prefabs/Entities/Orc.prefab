@@ -64,9 +64,13 @@ PrefabInstance:
       propertyPath: lineThickness
       value: 0.003
       objectReference: {fileID: 0}
+    - target: {fileID: 976132999205457727, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1273
+      objectReference: {fileID: 0}
     - target: {fileID: 2622219198015121584, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.0777
+      value: -0.124
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: move

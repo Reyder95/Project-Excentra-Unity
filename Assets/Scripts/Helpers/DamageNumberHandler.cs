@@ -1,6 +1,7 @@
 // DamageNumberHandler.cs
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static UnityEngine.GraphicsBuffer;
@@ -17,15 +18,50 @@ public class NumberHelper
     public float randomTop = 0f;
 }
 
+public class TextHelper
+{
+    public VisualElement text;
+    public GameObject target;
+    public float floatOffset = 0f; // How much it has floated up
+}
+
 // Spawns damage numbers on the screen when an attack or heal happens. Currently only has white numbers, but should change depending on the effect (poison, damage, heal, etc)
 public class DamageNumberHandler : MonoBehaviour
 {
     public VisualElement battleUIRoot;
     public VisualTreeAsset damageNumber;
+    public VisualTreeAsset popupText;
     public List<NumberHelper> numHelperList = new List<NumberHelper>(); // List of all numbers on the screen. They all fly up and get deleted at a respective position
+    public List<TextHelper> popupTextList = new List<TextHelper>();
+
 
     private void Update()
     {
+        int popupCounter = 0;
+
+        while (popupCounter < popupTextList.Count)
+        {
+            var textPopup = popupTextList[popupCounter];
+
+
+            textPopup.floatOffset += 100f * Time.deltaTime;
+
+            Vector2 uiPosition = WorldToUIPosition(Camera.main, popupTextList[popupCounter].target.transform.position);
+            textPopup.text.style.top = uiPosition.y - (textPopup.text.resolvedStyle.height / 2f) - textPopup.floatOffset;
+            textPopup.text.style.left = uiPosition.x - (textPopup.text.resolvedStyle.width / 2f);
+
+            if (textPopup.floatOffset >= 150f)
+            {
+                battleUIRoot.Remove(textPopup.text);
+                popupTextList.RemoveAt(popupCounter);
+                continue;
+            }
+            else
+            {
+                popupCounter++;
+            }
+        }
+
         int counter = 0;
 
         while (counter < numHelperList.Count)
@@ -43,7 +79,7 @@ public class DamageNumberHandler : MonoBehaviour
             helper.floatOffset += 150f * Time.deltaTime; // move up 50px per second
 
             // Update world position
-            Vector2 worldPosition = WorldToScreenPoint(Camera.main, helper.target.transform.position);
+            Vector2 worldPosition = WorldToUIPosition(Camera.main, helper.target.transform.position);
 
             // Apply float offset
             float y = worldPosition.y + helper.randomTop - helper.floatOffset;
@@ -66,11 +102,42 @@ public class DamageNumberHandler : MonoBehaviour
         }
     }
 
+    public void SpawnPopupText(GameObject target, Image icon, string text)
+    {
+        Vector2 uiPosition = WorldToUIPosition(Camera.main, target.transform.position);
+
+        VisualElement newPopup = popupText.CloneTree();
+        newPopup.Q<Label>("text").text = text;
+        newPopup.Q<VisualElement>("icon").style.backgroundImage = icon != null ? icon.sprite.texture : null;
+        newPopup.Q<VisualElement>("icon").style.display = icon != null ? DisplayStyle.Flex : DisplayStyle.None;  
+
+        newPopup.style.position = Position.Absolute;
+        newPopup.style.left = uiPosition.x;
+        newPopup.style.top = uiPosition.y;
+
+        TextHelper newText = new TextHelper();
+        newText.text = newPopup;
+        newText.target = target;
+
+        battleUIRoot.Add(newPopup);
+
+        newPopup.schedule.Execute(() =>
+        {
+            float centeredX = uiPosition.x - (newPopup.resolvedStyle.width / 2f);
+            float centeredY = uiPosition.y - (newPopup.resolvedStyle.height / 2f);
+
+            newPopup.style.left = centeredX;
+            newPopup.style.top = centeredY;
+        }).ExecuteLater(0);
+        popupTextList.Add(newText);
+
+    }
+
     public void SpawnDamageNumber(GameObject target, int amount)
     {
         VisualElement currNum = damageNumber.CloneTree();
         currNum.Q<Label>().text = amount.ToString();
-        Vector2 worldPosition = WorldToScreenPoint(Camera.main, target.transform.position);
+        Vector2 worldPosition = WorldToUIPosition(Camera.main, target.transform.position);
         int randomSpread = 50;
         float randomLeft = Random.Range(-randomSpread, randomSpread);
         float randomTop = Random.Range(-randomSpread, randomSpread);  
@@ -89,14 +156,12 @@ public class DamageNumberHandler : MonoBehaviour
     }
 
     // Calculates the actual position we want to place the UI element on the screen, relative to where the entity targeted is.
-    public Vector2 WorldToScreenPoint(Camera camera, Vector2 worldPosition)
+    public Vector2 WorldToUIPosition(Camera camera, Vector2 worldPosition)
     {
-        Vector3 viewportPosition = camera.WorldToViewportPoint(worldPosition);
+        Vector3 screenPos = camera.WorldToScreenPoint(worldPosition);
 
-        // Map viewport coordinates to UI space
-        float x = viewportPosition.x * battleUIRoot.resolvedStyle.width;
-        float y = (1 - viewportPosition.y) * battleUIRoot.resolvedStyle.height; // Invert Y for UI Toolkit
+        screenPos.y = Screen.height - screenPos.y;
 
-        return new Vector2(x, y);
+        return new Vector2(screenPos.x, screenPos.y);
     }
 }
