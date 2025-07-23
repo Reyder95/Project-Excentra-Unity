@@ -23,6 +23,7 @@ public class TextHelper
     public VisualElement text;
     public GameObject target;
     public float floatOffset = 0f; // How much it has floated up
+    public bool floatUp = true;
 }
 
 // Spawns damage numbers on the screen when an attack or heal happens. Currently only has white numbers, but should change depending on the effect (poison, damage, heal, etc)
@@ -47,7 +48,7 @@ public class DamageNumberHandler : MonoBehaviour
             textPopup.floatOffset += 100f * Time.deltaTime;
 
             Vector2 uiPosition = WorldToUIPosition(Camera.main, popupTextList[popupCounter].target.transform.position);
-            textPopup.text.style.top = uiPosition.y - (textPopup.text.resolvedStyle.height / 2f) - textPopup.floatOffset;
+            textPopup.text.style.top = uiPosition.y - (textPopup.text.resolvedStyle.height / 2f) - (textPopup.floatUp ? textPopup.floatOffset : 0);
             textPopup.text.style.left = uiPosition.x - (textPopup.text.resolvedStyle.width / 2f);
 
             if (textPopup.floatOffset >= 150f)
@@ -102,7 +103,7 @@ public class DamageNumberHandler : MonoBehaviour
         }
     }
 
-    public void SpawnPopupText(GameObject target, Image icon, string text)
+    public void SpawnPopupText(GameObject target, Image icon, string text, bool floatUp)
     {
         Vector2 uiPosition = WorldToUIPosition(Camera.main, target.transform.position);
 
@@ -118,6 +119,7 @@ public class DamageNumberHandler : MonoBehaviour
         TextHelper newText = new TextHelper();
         newText.text = newPopup;
         newText.target = target;
+        newText.floatUp = floatUp;
 
         battleUIRoot.Add(newPopup);
 

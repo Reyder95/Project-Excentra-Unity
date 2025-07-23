@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class AetherialCalibrationData
 {
@@ -263,7 +264,7 @@ public static class Medica
 
         StatusBattle status = stats.effectHandler.GetEffectByKey("spirit_acclimation_blue");
 
-        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Spirit Acclimation Down!");
+        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Spirit Acclimation Down!", false);
 
         if (status != null)
         {
@@ -594,6 +595,8 @@ public static class Medica
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
         MechanicLogic logic = new MechanicLogic();
 
+        
+
         List<GameObject> targetableChars = possibleChars.Where(go => go.GetComponent<EntityStats>().effectHandler.GetEffect(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue")) != null).ToList();
 
         if (targetableChars.Count == 0)
@@ -757,9 +760,14 @@ public static class Medica
 
     public static MechanicLogic RedAcclimationHit(BattleManager battleManager, CustomLogicPassthrough passthrough)
     {
+        Debug.Log("????");
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
 
         MechanicLogic logic = new MechanicLogic();
+
+        EntityController controller = passthrough.target.GetComponent<EntityController>();
+
+        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Acclimation Swapped!", false);
 
         // Blue Acclimation should always have an AoE
 
@@ -792,6 +800,9 @@ public static class Medica
         List<GameObject> possibleChars = battleManager.GetAliveEntities();
 
         MechanicLogic logic = new MechanicLogic();
+
+        EntityController controller = passthrough.target.GetComponent<EntityController>();
+        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Acclimation Swapped!", false);
 
         // Blue Acclimation should always have an AoE
 

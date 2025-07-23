@@ -31,7 +31,7 @@ MonoBehaviour:
   turnCooldown: 1
   mechanicAttacks:
   - attackType: 0
-    attackKey: red_acclimation
+    attackKey: red-acclimation-hit
     triggerKey: 
     targetKey: 
     targetType: 0
@@ -80,7 +80,7 @@ MonoBehaviour:
     statusesToAdd: []
     statusesToRemove: []
   - attackType: 0
-    attackKey: blue_acclimation
+    attackKey: blue-acclimation-hit
     triggerKey: 
     targetKey: 
     targetType: 0
