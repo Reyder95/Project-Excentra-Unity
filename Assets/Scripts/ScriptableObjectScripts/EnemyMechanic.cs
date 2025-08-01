@@ -61,6 +61,12 @@ public class EnemyMechanic : ScriptableObject
     [Tooltip("If active, sets caster delay to 1000 and prevents reduction in delay. Allows us to create a script to enable activity under specific situations")]
     public bool activeScript = false;
 
+    [Tooltip("Determines if this is a 'swap' mechanic. TL;DR - if true, the mechanic will swap itself with another mechanic. Uses the mechanicKey as the swap key, requires custom scripting. Used for randomizing raid attacks by creating a base attack.")]
+    public bool isSwap = false;
+
+    [Tooltip("When mechanic initializes, a cast bar will not play. This is useful for immediate attacks, or attacks that go one after another.")]
+    public bool skipCast = false;
+
     public bool goNext = false;
 
     public bool containsMovement = false;
@@ -102,6 +108,8 @@ public class EnemyMechanic : ScriptableObject
         clone.containsMovement = this.containsMovement;
         clone.movementType = this.movementType;
         clone.mechanicAttacks = new List<MechanicAttack>();
+        clone.isSwap = this.isSwap;
+        clone.skipCast = this.skipCast;
 
         foreach (var attack in this.mechanicAttacks)
         {

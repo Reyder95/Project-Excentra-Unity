@@ -168,10 +168,6 @@ public class EntityController : MonoBehaviour
                     autoMove = false;
                     animator.SetBool("IsWalk", false);
                     animator.SetTrigger(this.animationTrigger);
-                    //BattleClickInfo info = new BattleClickInfo();
-                    //info.target = target;
-                    //info.singleSkill = enemyAi.currAttack;
-                    //ExcentraGame.battleManager.HandleEntityAction(info);
                 }
             }
             else if (targetPosition != null)
@@ -190,10 +186,10 @@ public class EntityController : MonoBehaviour
                 {
                     autoMove = false;
                     animator.SetBool("IsWalk", false);
-                    BossMechanicHandler.InitializeMechanic(targetMechanic, ExcentraGame.battleManager, this.gameObject, true);
+                    //BossMechanicHandler.InitializeMechanic(targetMechanic, ExcentraGame.battleManager, this.gameObject, true);
+                    ExcentraGame.battleManager.HandleStartBossCasting(targetMechanic);
                     targetMechanic = null;
-                    OnActionEnd();
-                    //animator.SetTrigger(this.animationTrigger);
+                    //OnActionEnd();
                 }
 
             }

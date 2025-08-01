@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 public static class ExcentraDatabase
 {
     // Our dictionaries with which we query from
-    private static Dictionary<string, GameObject> entityDictionary = new Dictionary<string, GameObject>();
+    public static Dictionary<string, GameObject> entityDictionary = new Dictionary<string, GameObject>();
     private static Dictionary<string, UIDocument> documentDictionary = new Dictionary<string, UIDocument>();
     private static Dictionary<string, VisualTreeAsset> uiAssetDictionary = new Dictionary<string, VisualTreeAsset>();
     private static Dictionary<string, PlayerSkill> skillDictionary = new Dictionary<string, PlayerSkill>();
@@ -27,6 +27,7 @@ public static class ExcentraDatabase
     {
         for (int i = 0; i < entities.Count; i++)
         {
+            Debug.Log(entities[i].key);
             entityDictionary.Add(entities[i].key, entities[i].prefab);
         }
     }

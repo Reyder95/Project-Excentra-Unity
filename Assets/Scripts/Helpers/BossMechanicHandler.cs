@@ -18,14 +18,9 @@ public class MechanicAoeData
 
 public static class BossMechanicHandler
 {
-    public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker, bool skip = false)
+    public static void HandleMechanicMovement(EnemyMechanic mechanic, GameObject attacker, BattleManager battleManager)
     {
-        if (mechanic.customScript && !skip)
-        {
-            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
-        }
-
-        if (mechanic.containsMovement && !skip)
+        if (mechanic.containsMovement)
         {
             EntityController controller = attacker.GetComponent<EntityController>();
 
@@ -34,7 +29,14 @@ public static class BossMechanicHandler
             targetPosition = battleManager.arena.GetCenter();
 
             controller.MoveTowards(targetPosition, mechanic);
-            return;
+        }
+    }
+
+    public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker, bool skip = false)
+    {
+        if (mechanic.customScript && !skip)
+        {
+            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
         }
 
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
@@ -183,6 +185,7 @@ public static class BossMechanicHandler
 
         if (mechanicAttack.targetType != EntityTargetType.NONE)
         {
+            Debug.Log(mechanicAttack.targetType);
             actualTarget = enemyAi.ChooseEntity(mechanicAttack.targetType);
         }
 

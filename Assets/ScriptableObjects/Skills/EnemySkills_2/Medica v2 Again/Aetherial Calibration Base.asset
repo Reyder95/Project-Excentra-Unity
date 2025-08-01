@@ -14,19 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mechanicName: Aetherial Calibration Base
   containsTrigger: 0
-  mechanicKey: 
+  mechanicKey: aetherial-calibration-base
   mechanicStyle: 1
   dontSkipTurn: 0
   active: 1
   untargetable: 0
   targetScript: 0
   activeScript: 0
+  isSwap: 1
+  skipCast: 0
   goNext: 0
   containsMovement: 0
   movementType: 0
   animationTrigger: 
   priorityIndex: []
-  customScript: 1
-  customScriptKey: aetherial-calibration-base
+  customScript: 0
+  customScriptKey: 
   turnCooldown: 0
   mechanicAttacks: []

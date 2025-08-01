@@ -3,18 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
+using UnityEngine.TextCore.Text;
 
 public class AetherialCalibrationData
 {
     public EnemyMechanic mechanic;
     public int numRed = 0;
     public int numBlue = 0;
+    public bool tank = false;
+    public GameObject boss;
+    public CustomLogicPassthrough passthrough;
+    public BattleManager battleManager;
 
-    public AetherialCalibrationData(EnemyMechanic mechanic, int numRed, int numBlue)
+    public AetherialCalibrationData(EnemyMechanic mechanic, int numRed, int numBlue, GameObject boss, CustomLogicPassthrough passthrough, BattleManager battleManager, bool tank = false)
     {
         this.mechanic = mechanic;
         this.numRed = numRed;
         this.numBlue = numBlue;
+        this.boss = boss;
+        this.passthrough = passthrough;
+        this.battleManager = battleManager;
+        this.tank = tank;
     }
 }
 
@@ -25,6 +34,15 @@ public static class Medica
     // Temp data
     private static int numRed = 0;
     private static int numBlue = 0;
+
+    private static string[] calibrationArrayNames = new string[4] {
+        "Aetherial Calibration Alpha",
+        "Aetherial Calibration Beta",
+        "Aetherial Calibration Gamma",
+        "Aetherial Calibration Delta"
+    };
+
+    private static int calibrationCounter = 0;
 
     public static List<AetherialCalibrationData> acData = new List<AetherialCalibrationData>();
 
@@ -118,11 +136,58 @@ public static class Medica
         return newAttack;
     }
 
-    public static MechanicLogic ReprisalEffect(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    public static MechanicAttack AetherialCalibration31TankAoe(bool blue)
     {
-        List<GameObject> possibleChars = battleManager.GetAliveEntities();
+        Color color = blue ? new Color(0f, 0f, 1f) : new Color(1f, 0f, 0f);
 
-        acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-22"), 2, 2));
+        MechanicAttack newAttack = new MechanicAttack();
+        newAttack.attackType = AttackType.AOE;
+        newAttack.attackKey = blue ? "blue-acclimation-hit" : "red-acclimation-hit";
+        newAttack.turnOffset = 4;
+        newAttack.damageType = DamageType.DAMAGE;
+        newAttack.targetType = EntityTargetType.FIRST_AGGRESSION;
+        newAttack.originIsTarget = false;
+        newAttack.endpointIsTarget = true;
+        newAttack.originIsSelf = true;
+        newAttack.aoeShape = Shape.CONE;
+        newAttack.size = 30;
+        newAttack.distanceOffset = 10;
+        newAttack.customColor = true;
+        newAttack.aoeColor = color;
+        newAttack.scaleMult = 3.0f;
+        newAttack.baseValue = 300;
+        newAttack.scaler = Scaler.ATTACK;
+        newAttack.attackCount = 1;
+
+        return newAttack;
+    }
+
+    public static MechanicAttack AetherialCalibration31TankStackAoe(bool blue, GameObject target)
+    {
+        Color color = blue ? new Color(0f, 0f, 1f) : new Color(1f, 0f, 0f);
+
+        MechanicAttack newAttack = new MechanicAttack();
+        newAttack.attackType = AttackType.AOE;
+        newAttack.attackKey = blue ? "blue-acclimation-hit" : "red-acclimation-hit";
+        newAttack.directTarget = target;
+        newAttack.turnOffset = 4;
+        newAttack.damageType = DamageType.DAMAGE;
+        newAttack.originIsTarget = true;
+        newAttack.aoeShape = Shape.CIRCLE;
+        newAttack.size = 7;
+        newAttack.isStack = true;
+        newAttack.customColor = true;
+        newAttack.aoeColor = color;
+        newAttack.scaleMult = 18f;
+        newAttack.baseValue = 150;
+        newAttack.scaler = Scaler.ATTACK;
+        newAttack.attackCount = 1;
+
+        return newAttack;
+    }
+
+    public static MechanicLogic ReprisalEffectPhaseOne(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
 
         numRed = Random.Range(0, 2);
 
@@ -137,11 +202,21 @@ public static class Medica
             numBlue = 3;
         }
 
-        acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-31"), numRed, numBlue));
+        acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-22"), 2, 2, passthrough.attacker, passthrough, battleManager));
+        acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-31"), numRed, numBlue, passthrough.attacker, passthrough, battleManager));
 
         acData = acData.OrderBy(_ => Random.value).ToList();
 
-        //acData.Add(new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-22"), 2, 2));
+        acData.Insert(Random.Range(1, acData.Count), new AetherialCalibrationData(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-31-tank"), 4 - numRed, 4 - numBlue, passthrough.attacker, passthrough, battleManager, true));
+
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, passthrough.mechanic, "aetherial-calibration", acData[0]);
+
+        return new MechanicLogic();
+    }
+
+    public static MechanicLogic ReprisalEffectPhaseTwo(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        List<GameObject> possibleChars = battleManager.GetAliveEntities();
 
         int counter = 0;
         while (possibleChars.Count > 0)
@@ -151,23 +226,102 @@ public static class Medica
             possibleChars.RemoveAt(randomCharIndex);
 
             EntityStats charStats = character.GetComponent<EntityStats>();
+            EntityController charController = character.GetComponent<EntityController>();
 
             int randomAcclimation = Random.Range(0, 2);
 
             if (randomAcclimation == 0)
+            {
                 charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"), passthrough.attacker);
+            }
             else
+            {
                 charStats.ModifyStatus(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"), passthrough.attacker);
-                
+            }
+
 
             counter++;
         }
 
+        GameObject particleLineSpawned = UnityEngine.GameObject.Instantiate(ExcentraDatabase.TryGetMiscPrefab("circle-burst"), battleManager.arena.GetCenter(), Quaternion.identity);
+        particleLineSpawned.GetComponent<ParticleSystem>().Play();
 
-
-        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, passthrough.mechanic, "aetherial-calibration", acData[0]);
+        battleManager.EndTurn();
 
         return new MechanicLogic();
+    }
+
+    public static void Dissipation(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        AetherialCalibrationData currAcData = acData[0];
+
+        if (currAcData.tank || currAcData.numRed == 4 || currAcData.numBlue == 4)
+        {
+            mechanic.mechanicAttacks[0].isSoak = false;
+            mechanic.mechanicAttacks[1].isSoak = false;
+        }
+    }
+
+    public static void SpiritBlast(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        MechanicAttack acclimationResolve = AcclimationResolve();
+
+        mechanic.priorityIndex = new MechanicPriorityIndex[2];
+        mechanic.priorityIndex[0] = new MechanicPriorityIndex();
+        mechanic.priorityIndex[0].index = new int[1];
+        mechanic.priorityIndex[0].index[0] = 0;
+        mechanic.priorityIndex[0].turnOffset = 3;
+
+        mechanic.mechanicAttacks.Add(acclimationResolve);
+
+        mechanic.priorityIndex[1] = new MechanicPriorityIndex();
+        mechanic.priorityIndex[1].index = new int[1];
+        mechanic.priorityIndex[1].index[0] = 1;
+        mechanic.priorityIndex[1].turnOffset = 4;
+    }
+
+    public static void AetherialCalibration31Tank(BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, "aetherial-calibration");
+        List<GameObject> possibleChars = battleManager.GetAliveEntities();
+
+        MechanicAttack tankAoe = AetherialCalibration31TankAoe(numRed == 1 ? true : false);
+        mechanic.mechanicAttacks.Add(tankAoe);
+
+        GameObject target = null;
+        bool isBlue = false;
+
+        foreach (GameObject character in possibleChars)
+        {
+            EntityStats stats = character.GetComponent<EntityStats>();
+
+            if (numBlue == 1)
+            {
+                if (stats.effectHandler.GetEffectByKey("spirit_acclimation_red") != null)
+                {
+                    target = character;
+                    isBlue = true;
+                    break;
+                }
+            }
+            else
+            {
+                if (stats.effectHandler.GetEffectByKey("spirit_acclimation_blue") != null)
+                {
+                    target = character;
+                    isBlue = false;
+                    break;
+                }
+            }
+        }
+
+        if (target == null)
+        {
+            target = possibleChars[0];
+        }
+
+        MechanicAttack stackAttack = AetherialCalibration31TankStackAoe(isBlue, target);
+        mechanic.mechanicAttacks.Add(stackAttack);
     }
 
     public static void LonelyGhost(BattleManager battleManager, EnemyMechanic mechanic)
@@ -357,16 +511,16 @@ public static class Medica
 
     public static void AetherialCalibration22(BattleManager battleManager, EnemyMechanic mechanic)
     {
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, "aetherial-calibration");
         EnemyAI medica = battleManager.boss.GetComponent<EnemyAI>();
         medica.currPhase.InsertMechanicAt(ExcentraDatabase.TryGetEnemyMechanics("aetherial-calibration-22-p2"), 0);
-
-
 
         float radius = 2.5f;
         int blueCount = 0;
         int redCount = 0;
         bool[] blueArray = new bool[4];
 
+        // Randomizing the blue and red values for the 4 aoes
         for (int i = 0; i < 4; i++)
         {
             bool blueValue = Random.Range(0, 2) == 0 ? true : false;
@@ -461,6 +615,7 @@ public static class Medica
 
     public static void AetherialCalibration31(BattleManager battleManager, EnemyMechanic mechanic)
     {
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, "aetherial-calibration");
         List<GameObject> possibleTargets = battleManager.GetAliveEntities();
 
         possibleTargets = possibleTargets.OrderBy(_ => Random.value).ToList();
@@ -555,10 +710,17 @@ public static class Medica
         return new MechanicLogic();
     }
 
+    public static MechanicLogic AetherialCalibration31TankEnd(BattleManager battleManager, CustomLogicPassthrough passthrough)
+    {
+        ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, passthrough.mechanic, "aetherial-calibration", acData[0]);
+
+        return new MechanicLogic();
+    }
+
     public static void AetherialCalibrationBase(BattleManager battleManager, EnemyMechanic mechanic)
     {
         EnemyMechanic currentMechanic = acData[0].mechanic;
-        mechanic.mechanicName = currentMechanic.mechanicName;
+        mechanic.mechanicName = calibrationArrayNames[calibrationCounter];
         mechanic.containsTrigger = currentMechanic.containsTrigger;
         mechanic.mechanicKey = currentMechanic.mechanicKey;
         mechanic.mechanicStyle = currentMechanic.mechanicStyle;
@@ -576,16 +738,27 @@ public static class Medica
         mechanic.customScriptKey = currentMechanic.customScriptKey;
         mechanic.turnCooldown = currentMechanic.turnCooldown;
 
+        calibrationCounter++;
+
+        numRed = acData[0].numRed;
+        numBlue = acData[0].numBlue;
+
         acData.RemoveAt(0);
 
-        if (mechanic.mechanicKey == "aetherial-calibration-22")
-        {
-            AetherialCalibration22(battleManager, mechanic);
-        }
-        else if (mechanic.mechanicKey == "aetherial-calibration-31")
-        {
-            AetherialCalibration31(battleManager, mechanic);
-        }
+        //ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, "aetherial-calibration");
+
+        //if (mechanic.mechanicKey == "aetherial-calibration-22")
+        //{
+        //    AetherialCalibration22(battleManager, mechanic);
+        //}
+        //else if (mechanic.mechanicKey == "aetherial-calibration-31")
+        //{
+        //    AetherialCalibration31(battleManager, mechanic);
+        //}
+        //else if (mechanic.mechanicKey == "aetherial-calibration-31-tank")
+        //{
+        //    AetherialCalibration31Tank(battleManager, mechanic);
+        //}
     }
 
         // -- OLD UNUSED MECHANICS HERE

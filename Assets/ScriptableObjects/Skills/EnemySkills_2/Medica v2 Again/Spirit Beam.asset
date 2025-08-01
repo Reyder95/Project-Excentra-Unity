@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: Dissipation
+  m_Name: Spirit Beam
   m_EditorClassIdentifier: 
-  mechanicName: Dissipation
+  mechanicName: Spirit Beam
   containsTrigger: 0
-  mechanicKey: acclimation
+  mechanicKey: spirit-beam
   mechanicStyle: 1
   dontSkipTurn: 0
-  active: 0
+  active: 1
   untargetable: 0
   targetScript: 0
   activeScript: 0
@@ -26,12 +26,12 @@ MonoBehaviour:
   movementType: 0
   animationTrigger: 
   priorityIndex: []
-  customScript: 1
-  customScriptKey: dissipation
-  turnCooldown: 1
+  customScript: 0
+  customScriptKey: 
+  turnCooldown: 0
   mechanicAttacks:
   - attackType: 0
-    attackKey: red-acclimation-hit
+    attackKey: 
     triggerKey: 
     targetKey: 
     targetType: 0
@@ -40,31 +40,31 @@ MonoBehaviour:
     originIsTarget: 0
     originIsSelf: 0
     endpointIsTarget: 0
-    customOrigin: {x: -8, y: 0}
+    customOrigin: {x: 0, y: 0}
     containsMovement: 0
     moveType: 0
-    aoeShape: 0
+    aoeShape: 4
     hasArenaPositioning: 1
     aoePositionInformation:
       positionType: 1
       offset: {x: 0, y: 0}
       leftPadding: 0
-      rightPadding: 0
+      rightPadding: 3
       topPadding: 0
       bottomPadding: 0
-      isHalfSize: 0
+      isHalfSize: 1
     isProximity: 0
     isStack: 0
-    isSoak: 1
-    nonUniformDimensions: 0
-    size: 8
+    isSoak: 0
+    nonUniformDimensions: 1
+    size: 0
     innerDonutSize: 0
-    dimensions: {x: 0, y: 0}
+    dimensions: {x: 30, y: 16}
     raidWide: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
     customColor: 1
-    aoeColor: {r: 1, g: 0, b: 0, a: 0.34117648}
+    aoeColor: {r: 0.8784314, g: 0.6745098, b: 0, a: 0}
     isInvisible: 0
     addKeys: []
     tetherStationary: 0
@@ -73,14 +73,14 @@ MonoBehaviour:
     tetherRange: 0
     damageType: 2
     scaler: 0
-    scaleMult: 3
-    baseValue: 300
-    soakDamage: 1000
+    scaleMult: 2.5
+    baseValue: 500
+    soakDamage: 0
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []
   - attackType: 0
-    attackKey: blue-acclimation-hit
+    attackKey: 
     triggerKey: 
     targetKey: 
     targetType: 0
@@ -89,31 +89,31 @@ MonoBehaviour:
     originIsTarget: 0
     originIsSelf: 0
     endpointIsTarget: 0
-    customOrigin: {x: 8, y: 0}
+    customOrigin: {x: 0, y: 0}
     containsMovement: 0
     moveType: 0
-    aoeShape: 0
+    aoeShape: 4
     hasArenaPositioning: 1
     aoePositionInformation:
       positionType: 2
       offset: {x: 0, y: 0}
-      leftPadding: 0
+      leftPadding: 3
       rightPadding: 0
       topPadding: 0
       bottomPadding: 0
-      isHalfSize: 0
+      isHalfSize: 1
     isProximity: 0
     isStack: 0
-    isSoak: 1
-    nonUniformDimensions: 0
-    size: 8
+    isSoak: 0
+    nonUniformDimensions: 1
+    size: 0
     innerDonutSize: 0
-    dimensions: {x: 0, y: 0}
+    dimensions: {x: 30, y: 16}
     raidWide: 0
     distanceOffset: 0
     endpoint: {x: 0, y: 0}
     customColor: 1
-    aoeColor: {r: 0, g: 0.09803922, b: 0.99215686, a: 0.39607844}
+    aoeColor: {r: 0.8784314, g: 0.6745098, b: 0, a: 0}
     isInvisible: 0
     addKeys: []
     tetherStationary: 0
@@ -122,9 +122,9 @@ MonoBehaviour:
     tetherRange: 0
     damageType: 2
     scaler: 0
-    scaleMult: 3
-    baseValue: 300
-    soakDamage: 1000
+    scaleMult: 2.5
+    baseValue: 500
+    soakDamage: 0
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []

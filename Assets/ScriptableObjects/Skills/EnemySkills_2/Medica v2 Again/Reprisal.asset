@@ -10,25 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 412f7045248f2df43b67cb6252d45506, type: 3}
-  m_Name: Aetherial Calibration 2 - 2 p2
+  m_Name: Reprisal
   m_EditorClassIdentifier: 
-  mechanicName: Aetherial Calibration 2 2 p2
+  mechanicName: Reprisal
   containsTrigger: 0
-  mechanicKey: aetherial-calibration-22-p2
-  mechanicStyle: 1
+  mechanicKey: reprisal
+  mechanicStyle: 0
   dontSkipTurn: 0
   active: 0
   untargetable: 0
   targetScript: 0
-  activeScript: 1
-  isSwap: 0
-  skipCast: 1
+  activeScript: 0
   goNext: 0
-  containsMovement: 1
+  containsMovement: 0
   movementType: 0
   animationTrigger: 
   priorityIndex: []
-  customScript: 1
-  customScriptKey: aetherial-calibration-2-2-p2
-  turnCooldown: 2
+  customScript: 0
+  customScriptKey: 
+  turnCooldown: 0
   mechanicAttacks: []

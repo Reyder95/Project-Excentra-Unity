@@ -6,6 +6,10 @@ using static UnityEngine.EventSystems.EventTrigger;
 
 public static class CustomMechanicLogicHelper
 {
+    private static Dictionary<string, System.Action<BattleManager, EnemyMechanic>> mechSwap = new Dictionary<string, System.Action<BattleManager, EnemyMechanic>>()
+    {
+        { "aetherial-calibration-base", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibrationBase(battleManager, mechanic) },
+    };
     private static Dictionary<string, System.Action<BattleManager, EnemyMechanic>> mechCustom = new Dictionary<string, System.Action<BattleManager, EnemyMechanic>>()
     {
         { "lonely-ghost", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.LonelyGhost(battleManager, mechanic) },
@@ -13,12 +17,15 @@ public static class CustomMechanicLogicHelper
         { "aetherial-calibration-2-2" , (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration22(battleManager, mechanic) },
         { "aetherial-calibration-2-2-p2", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration22p2(battleManager, mechanic) },
         { "aetherial-calibration-3-1", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration31(battleManager, mechanic) },
-        { "aetherial-calibration-base", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibrationBase(battleManager, mechanic) },
+        { "aetherial-calibration-3-1-tank", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibration31Tank(battleManager, mechanic) },
+        //{ "aetherial-calibration-base", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.AetherialCalibrationBase(battleManager, mechanic) },
+        { "dissipation", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.Dissipation(battleManager, mechanic) },
+        { "spirit-blast", (BattleManager battleManager, EnemyMechanic mechanic) => Medica.SpiritBlast(battleManager, mechanic) },
     };
 
     private static Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>> mechDict = new Dictionary<string, System.Func<BattleManager, CustomLogicPassthrough, MechanicLogic>>()
     {
-        { "reprisal", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.ReprisalEffect(battleManager, passthrough)},
+        { "reprisal", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.ReprisalEffectPhaseOne(battleManager, passthrough)},
         { "blue_acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => BlueAcclimationEffect(battleManager, passthrough) },
         { "red_acclimation", (BattleManager battleManager, CustomLogicPassthrough passthrough) => RedAcclimationEffect(battleManager, passthrough) },
         { "acclimation_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AcclimationEffectEnd(battleManager, passthrough)   },
@@ -39,6 +46,7 @@ public static class CustomMechanicLogicHelper
         { "aetherial-calibration-22_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration22End(battleManager, passthrough) },
         { "aetherial-calibration-22-p2_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration22p2End(battleManager, passthrough) },
         { "aetherial-calibration-31_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration31End(battleManager, passthrough) },
+        { "aetherial-calibration-31-tank_end", (BattleManager battleManager, CustomLogicPassthrough passthrough) => Medica.AetherialCalibration31TankEnd(battleManager, passthrough) },
     
     };
 
@@ -52,6 +60,12 @@ public static class CustomMechanicLogicHelper
     {
         { "soul-bomb-attack", (BattleManager battleManager) => SoulBombDelay(battleManager) },
     };
+
+    public static void ExecuteMechanicSwap(string mechanicKey, BattleManager battleManager, EnemyMechanic mechanic)
+    {
+        if (mechSwap.ContainsKey(mechanicKey))
+            mechSwap[mechanicKey](battleManager, mechanic);
+    }
 
     public static void ExecuteCustomMechanic(string mechanicKey, BattleManager battleManager, EnemyMechanic mechanic)
     {

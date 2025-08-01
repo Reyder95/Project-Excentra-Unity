@@ -15,6 +15,7 @@ public class EnemyAI : MonoBehaviour
     [System.NonSerialized] public EnemyMechanic currAttack;
     [System.NonSerialized] public EnemyMechanic currImmediateAttack;
     [System.NonSerialized] public EnemyContents enemyContents;
+    [System.NonSerialized] public bool isInitialPhase = true;
     [System.NonSerialized] public EntityStats stats;
     [System.NonSerialized] public int phaseCount = 0;
     [System.NonSerialized] public bool isPhaseTrigger = false;
@@ -143,6 +144,8 @@ public class EnemyAI : MonoBehaviour
 
         if (target != null)
             return target;
+
+        Debug.Log("AHHHHH");
         
         return possibleChars[randChar];
 

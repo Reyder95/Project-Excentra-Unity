@@ -39,6 +39,8 @@ public class ExcentraGame : MonoBehaviour
 
     public BattleMechanicTrigger triggers;
 
+    public BattleUIHelper battleUIHelper;
+
     public static ExcentraGame Instance { get; private set; }   // Singleton used in very specific circumstances
 
     public static BattleManager battleManager;  // The battle manager that handles all battles

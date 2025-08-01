@@ -30,6 +30,11 @@ public class BattleManager
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
     private Dictionary<string, Label> mpDictionaryLabel = new Dictionary<string, Label>();
 
+    private ProgressBar mechanicCast;
+    private bool isCasting = false;
+
+    private Label bossPercentage;
+
     public List<GameObject> despawnBuffer = new List<GameObject>();
 
     // The debuff bar for allies or enemies. Similar vein to HP/MP
@@ -87,9 +92,11 @@ public class BattleManager
         controlPanel = battleDoc.Q<VisualElement>("control-panel");
         stateLabel = battleDoc.Q<Label>("state-label");
         bossHP = battleDoc.Q<ProgressBar>("boss-hp");
+        bossPercentage = bossHP.Q<Label>("boss-percentage");
         specialPanel = battleDoc.Q<VisualElement>("special-panel");
         endScreen = battleDoc.Q<VisualElement>("end-screen");
-        
+
+        ExcentraGame.Instance.battleUIHelper.OnCastEnd += HandleEndBossCasting;
         ExcentraGame.Instance.damageNumberHandlerScript.battleUIRoot = battleDoc;
 
         foreach (var character in playerCharacters)
@@ -160,17 +167,22 @@ public class BattleManager
 
     public void SetMPProgress(EntityStats stats)
     {
-        mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
-
         if (!mpDictionaryLabel.ContainsKey(stats.entityName))
             return;
+
+        mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
 
         mpDictionaryLabel[stats.entityName].text = $"{Math.Floor(stats.currentAether)}/{stats.maximumAether}"; ;
     }
 
     public void SetHPProgress(EntityStats stats)
     {
-        hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
+        float hpPercentage = stats.CalculateHPPercentage();
+
+        hpDictionary[stats.entityName].value = hpPercentage;
+
+        if (boss == stats.gameObject)
+            bossPercentage.text = $"{hpPercentage.ToString("F1")}%";
 
         if (!hpDictionaryLabel.ContainsKey(stats.entityName))
             return;
@@ -272,11 +284,29 @@ public class BattleManager
         return false;
     }
 
+    public void HandleStartBossCasting(EnemyMechanic mechanic)
+    {
+        if (!mechanic.skipCast)
+            ExcentraGame.Instance.battleUIHelper.StartCast(mechanic);
+        else
+            HandleEndBossCasting(ExcentraGame.Instance.battleUIHelper);
+    }
+
+    public void HandleEndBossCasting(BattleUIHelper helper)
+    {
+        EnemyAI enemyAi = boss.GetComponent<EnemyAI>();
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
+        GameObject currTurn = turnEntity.GetEntity().entityTurn;
+
+        BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
+
+        EndTurn(null, enemyAi);
+    }
+
     public void StartTurn()
     {
         TurnEntity turnEntity = turnManager.GetCurrentTurn();
 
-        
 
         if (turnEntity.GetEntity().entityTurn != null)
         {
@@ -285,6 +315,8 @@ public class BattleManager
             EntityStats stats = currTurn.GetComponent<EntityStats>();
             EntityController controller = currTurn.GetComponent<EntityController>();
             PlayerInput input = currTurn.GetComponent<PlayerInput>();
+
+            Camera.main.GetComponent<CameraMovementHandler>().SetCameraPosition(Vector3.zero, currTurn);
 
             if (controller.animator.GetCurrentAnimatorStateInfo(0).IsName("Dead"))
             {
@@ -299,7 +331,6 @@ public class BattleManager
                 return;
             }
 
-            bool skipEndTurn = false;
 
             // Handle the turn if it's a player or enemy.
             if (stats.isPlayer)
@@ -322,31 +353,31 @@ public class BattleManager
 
                 try
                 {
-                    if (!initialPhaseChecker && enemyAi.initialPhase != null)
+                    if (enemyAi.isInitialPhase && enemyAi.initialPhase != null)
                     {
-                        
                         BossMechanicHandler.InitializeMechanic(enemyAi.initialPhase.mechanic, this, boss);
                         stats.nextStaticDelay = enemyAi.initialPhase.delayBonus;
                     }
                     else
                     {
-                        
                         EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
 
                         if (mechanic == null)
                         {
-                            BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
+                            if (enemyAi.currAttack.isSwap)
+                                CustomMechanicLogicHelper.ExecuteMechanicSwap(enemyAi.currAttack.mechanicKey, this, enemyAi.currAttack);
+
+                            if (!enemyAi.currAttack.containsMovement)
+                                HandleStartBossCasting(enemyAi.currAttack);
+                            else
+                                BossMechanicHandler.HandleMechanicMovement(enemyAi.currAttack, currTurn, this);
+
 
                         }
                         else
                         {
                             // Do immediate attack
                             BossMechanicHandler.InitializeMechanic(mechanic, this, currTurn);
-                        }
-
-                        if (mechanic != null && (mechanic.mechanicStyle == MechanicStyle.IMMEDIATE || mechanic.containsMovement) && !mechanic.dontSkipTurn)
-                        {
-                            skipEndTurn = true;
                         }
 
                         if (mechanic != null)
@@ -378,15 +409,13 @@ public class BattleManager
                 {
                     Debug.Log(ex);
                     Debug.Log("Mechanic is null when it should not have been. Maybe Initialization error again? Or check if current phase is set to proper HP threshold");
-                    skipEndTurn = false;
                 }
 
 
-                initialPhaseChecker = true;
+                enemyAi.isInitialPhase = false;
                 ChangeState(BattleState.AWAIT_ENEMY);
 
-                if (!skipEndTurn)
-                    EndTurn(null, enemyAi);
+                    //EndTurn(null, enemyAi);
             }
         }
         else
@@ -1432,6 +1461,9 @@ public class BattleManager
     // Checks if an attacker can even target the defender
     public bool TargetingEligible(GameObject attacker, GameObject defender)
     {
+        if (attacker == null || defender == null)
+            return false;
+
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
         EntityStats defenderStats = defender.GetComponent<EntityStats>();
         
