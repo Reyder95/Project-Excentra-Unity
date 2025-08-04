@@ -21,8 +21,25 @@ MonoBehaviour:
   untargetable: 0
   targetScript: 0
   activeScript: 0
+  isSwap: 0
+  skipCast: 0
   goNext: 0
+  containsMovement: 0
+  movementType: 0
   animationTrigger: Basic Attack
+  priorityIndex: []
+  movementFrames:
+  - arenaMovement: 0
+    arenaMoveType: 0
+    specificMovement: 0
+    position: {x: 0, y: 0}
+    moveToCurrTarget: 1
+    moveType: 0
+    animationTrigger: IsWalk
+    movementOffset: {x: 0, y: 0}
+    distanceOffset: 1.2
+  customScript: 0
+  customScriptKey: 
   turnCooldown: 0
   mechanicAttacks:
   - attackType: 1
@@ -50,6 +67,7 @@ MonoBehaviour:
       isHalfSize: 0
     isProximity: 0
     isStack: 0
+    isSoak: 0
     nonUniformDimensions: 0
     size: 0
     innerDonutSize: 0
@@ -59,6 +77,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 0
     aoeColor: {r: 0, g: 0, b: 0, a: 0}
+    isInvisible: 0
     addKeys: []
     tetherStationary: 0
     secondTether: 0
@@ -68,6 +87,7 @@ MonoBehaviour:
     scaler: 0
     scaleMult: 0.1
     baseValue: 100
+    soakDamage: 0
     attackCount: 1
     statusesToAdd: []
     statusesToRemove: []

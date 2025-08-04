@@ -367,10 +367,7 @@ public class BattleManager
                             if (enemyAi.currAttack.isSwap)
                                 CustomMechanicLogicHelper.ExecuteMechanicSwap(enemyAi.currAttack.mechanicKey, this, enemyAi.currAttack);
 
-                            if (!enemyAi.currAttack.containsMovement)
-                                HandleStartBossCasting(enemyAi.currAttack);
-                            else
-                                BossMechanicHandler.HandleMechanicMovement(enemyAi.currAttack, currTurn, this);
+                            BossMechanicHandler.HandleMechanicMovement(enemyAi.currAttack, currTurn, this);
 
 
                         }

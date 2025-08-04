@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -78,6 +79,9 @@ public class EnemyMechanic : ScriptableObject
 
     public MechanicPriorityIndex[] priorityIndex;
 
+    [Tooltip("The order of movements that the enemy will perform before casting their ability. Useful if multiple movements are needed")]
+    public List<MovementKeyframe> movementFrames = new List<MovementKeyframe>();
+
     public bool customScript = false;
     public string customScriptKey = ""; 
 
@@ -110,6 +114,11 @@ public class EnemyMechanic : ScriptableObject
         clone.mechanicAttacks = new List<MechanicAttack>();
         clone.isSwap = this.isSwap;
         clone.skipCast = this.skipCast;
+        
+        foreach (var moveFrame in this.movementFrames)
+        {
+            clone.movementFrames.Add(moveFrame);
+        }
 
         foreach (var attack in this.mechanicAttacks)
         {

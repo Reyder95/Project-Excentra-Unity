@@ -152,6 +152,10 @@ PrefabInstance:
       propertyPath: 'abilityKeys.Array.data[0]'
       value: firearrow
       objectReference: {fileID: 0}
+    - target: {fileID: 4222274275464382404, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5393262343277882581, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Enabled
       value: 1

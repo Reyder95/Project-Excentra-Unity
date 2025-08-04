@@ -42,7 +42,7 @@ public class EntityController : MonoBehaviour
     public LineRenderer lineRenderer;   // Shows the range of movement around the entity on their turn.
     public EntityStats entityStats;
     public PlayerInput playerInput;
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private BoxCollider2D boxCollider;
     public GameObject iconHeader;
 
@@ -202,6 +202,9 @@ public class EntityController : MonoBehaviour
 
     public void FixedUpdate()
     {
+        if (!entityStats.isPlayer)
+            return;
+
         if (isSkillMoving)
         {
             Vector2 newPosition = Vector2.MoveTowards(transform.position, targetLocation, Time.fixedDeltaTime * skillMoveSpeed);

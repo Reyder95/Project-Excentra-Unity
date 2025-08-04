@@ -18,17 +18,50 @@ public class MechanicAoeData
 
 public static class BossMechanicHandler
 {
+    public static void HandleMovementCallback(MovementHandler handler)
+    {
+        HandleMechanicMovement(handler.mechanic, handler.attacker, handler.battleManager);
+    }
+
     public static void HandleMechanicMovement(EnemyMechanic mechanic, GameObject attacker, BattleManager battleManager)
     {
-        if (mechanic.containsMovement)
+        Debug.Log(mechanic.movementFrames.Count);
+        if (mechanic.movementFrames.Count > 0)
         {
-            EntityController controller = attacker.GetComponent<EntityController>();
+            MovementHandler handler = attacker.GetComponent<MovementHandler>();
 
-            Vector2 targetPosition = Vector2.zero;
+            handler.battleManager = battleManager;
+            handler.mechanic = mechanic;
+            handler.attacker = attacker;
 
-            targetPosition = battleManager.arena.GetCenter();
+            EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
 
-            controller.MoveTowards(targetPosition, mechanic);
+            if (mechanic.movementFrames[0].moveToCurrTarget)
+            {
+                mechanic.movementFrames[0].target = enemyAi.currTarget;
+            }
+
+            MovementKeyframe currKeyframe = mechanic.movementFrames[0];
+
+            mechanic.movementFrames.RemoveAt(0);
+
+            handler.OnMovementEnd += HandleMovementCallback;
+
+            handler.Play(currKeyframe);
+        }
+        else
+        {
+            if (mechanic.mechanicStyle != MechanicStyle.IMMEDIATE)
+                battleManager.HandleStartBossCasting(mechanic);
+            else
+            {
+                EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+                EntityController enemyController = attacker.GetComponent<EntityController>();
+
+                enemyController.animator.SetTrigger(mechanic.animationTrigger);
+
+            }
+                
         }
     }
 
@@ -351,8 +384,10 @@ public static class BossMechanicHandler
         if (logic.overriddenTarget != null)
             enemyAi.currTarget = logic.overriddenTarget;
 
-        EntityController controller = attacker.GetComponent<EntityController>();
-        controller.MoveTowards(enemyAi.currTarget, mechanic.animationTrigger);
+        HandleMechanicMovement(mechanic, attacker, battleManager);
+
+        //EntityController controller = attacker.GetComponent<EntityController>();
+        //controller.MoveTowards(enemyAi.currTarget, mechanic.animationTrigger);
 
     }
     public static void ActivateSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target)
