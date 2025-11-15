@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lonely Ghost
   m_EditorClassIdentifier: 
   mechanicName: Lonely Ghost
-  containsTrigger: 1
+  containsTrigger: 0
   mechanicKey: acclimation
   mechanicStyle: 1
   dontSkipTurn: 0
@@ -22,6 +22,9 @@ MonoBehaviour:
   targetScript: 0
   activeScript: 0
   goNext: 0
+  animationTrigger: 
+  priorityIndex: []
+  customScript: 0
   turnCooldown: 0
   mechanicAttacks:
   - attackType: 0
@@ -58,6 +61,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 1
     aoeColor: {r: 1, g: 0, b: 0, a: 0}
+    isInvisible: 0
     addKeys: []
     tetherStationary: 0
     secondTether: 0
@@ -104,6 +108,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 1
     aoeColor: {r: 1, g: 0, b: 0, a: 0}
+    isInvisible: 0
     addKeys: []
     tetherStationary: 0
     secondTether: 0
@@ -150,6 +155,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 1
     aoeColor: {r: 0, g: 0.075618744, b: 1, a: 0}
+    isInvisible: 0
     addKeys: []
     tetherStationary: 0
     secondTether: 0
@@ -196,6 +202,7 @@ MonoBehaviour:
     endpoint: {x: 0, y: 0}
     customColor: 1
     aoeColor: {r: 0, g: 0.075618744, b: 1, a: 0}
+    isInvisible: 0
     addKeys: []
     tetherStationary: 0
     secondTether: 0

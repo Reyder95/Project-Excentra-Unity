@@ -32,9 +32,14 @@ public class ExcentraGame : MonoBehaviour
     [SerializeField]
     List<BossEnemyPhases> bossPhases = new List<BossEnemyPhases>();
 
+    [SerializeField]
+    List<MechanicKey> miscMechanics = new List<MechanicKey>();
+
     public DamageNumberHandler damageNumberHandlerScript;   // Needs to be on monobehaviour so we can place and delete the damage numbers
 
     public BattleMechanicTrigger triggers;
+
+    public BattleUIHelper battleUIHelper;
 
     public static ExcentraGame Instance { get; private set; }   // Singleton used in very specific circumstances
 
@@ -56,6 +61,7 @@ public class ExcentraGame : MonoBehaviour
         ExcentraDatabase.LoadStatuses(statusEffects);
         ExcentraDatabase.LoadMiscPrefabs(miscPrefabs);
         ExcentraDatabase.LoadBossPhases(bossPhases);
+        ExcentraDatabase.LoadEnemyMechanics(miscMechanics);
 
         FindTriggers();
 

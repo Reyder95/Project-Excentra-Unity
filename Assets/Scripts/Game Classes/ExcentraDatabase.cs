@@ -9,13 +9,14 @@ using UnityEngine.UIElements;
 public static class ExcentraDatabase
 {
     // Our dictionaries with which we query from
-    private static Dictionary<string, GameObject> entityDictionary = new Dictionary<string, GameObject>();
+    public static Dictionary<string, GameObject> entityDictionary = new Dictionary<string, GameObject>();
     private static Dictionary<string, UIDocument> documentDictionary = new Dictionary<string, UIDocument>();
     private static Dictionary<string, VisualTreeAsset> uiAssetDictionary = new Dictionary<string, VisualTreeAsset>();
     private static Dictionary<string, PlayerSkill> skillDictionary = new Dictionary<string, PlayerSkill>();
     private static Dictionary<string, StatusEffect> statusDictionary = new Dictionary<string, StatusEffect>();
     private static Dictionary<string, GameObject> miscPrefabDictionary = new Dictionary<string, GameObject>();
     private static Dictionary<string, BossEnemyPhases> bossPhaseDictionary = new Dictionary<string, BossEnemyPhases>();
+    private static Dictionary<string, EnemyMechanic> mechanicDictionary = new Dictionary<string, EnemyMechanic>();  
 
     // Potentially a poor way of doing this. Should this be in the status damage helper class? 
     // Potential future solution: In status helper, use status "effect type" in a dictionary, pointing it to various functions.
@@ -26,6 +27,7 @@ public static class ExcentraDatabase
     {
         for (int i = 0; i < entities.Count; i++)
         {
+            Debug.Log(entities[i].key);
             entityDictionary.Add(entities[i].key, entities[i].prefab);
         }
     }
@@ -83,6 +85,14 @@ public static class ExcentraDatabase
         foreach (var bossPhase in bossPhases)
         {
             bossPhaseDictionary.Add(bossPhase.key, bossPhase);
+        }
+    }
+
+    public static void LoadEnemyMechanics(List<MechanicKey> mechanics)
+    {
+        foreach (var mechanic in mechanics)
+        {
+            mechanicDictionary.Add(mechanic.key, mechanic.mechanic);
         }
     }
 
@@ -147,6 +157,13 @@ public static class ExcentraDatabase
     {
         if (bossPhaseDictionary.ContainsKey(key))
             return bossPhaseDictionary[key];
+        return null;
+    }
+
+    public static EnemyMechanic TryGetEnemyMechanics(string key)
+    {
+        if (mechanicDictionary.ContainsKey(key))
+            return mechanicDictionary[key].Clone();
         return null;
     }
 }

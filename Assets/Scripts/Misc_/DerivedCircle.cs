@@ -8,8 +8,11 @@ public class DerivedCircle : BaseAoe
     public GameObject circleAoe;
     public Vector2 circlePosition;
 
+    public GameObject soak;
 
     public Vector2 frozenPosition;
+
+    public GameObject indicatorCircle;
 
     protected override void Start()
     {
@@ -92,7 +95,43 @@ public class DerivedCircle : BaseAoe
                 circlePosition = this.originObject.transform.position;
 
             transform.position = circlePosition;
+
+            SpriteRenderer circleRenderer = indicatorCircle.GetComponent<SpriteRenderer>();
+
+            Color circleColor = circleRenderer.color;
+
+            if (activatingAttack)
+            {
+
+                circleColor.a += 0.5f * Time.deltaTime;
+
+                if (circleColor.a > 0.3f)
+                    circleColor.a = 0.3f;
+
+                if (circleColor.a >= 0.3f && circleColor.a >= 0.3f)
+                {
+                    activatingAttack = false;
+                    queueEndTurn = true;
+
+                    BossMechanicHandler.ActivateAoeAttack(mechanic, mechanicAttack, ExcentraGame.battleManager, attackerObject, this);
+                }
+            }
+
+            if (circleColor.a > 0 && !activatingAttack)
+                circleColor.a -= 0.5f * Time.deltaTime;
+            circleRenderer.color = circleColor;
+
+            if (queueEndTurn && circleRenderer.color.a <= 0)
+            {
+                ExcentraGame.battleManager.EndCurrentAoeTurn();
+                queueEndTurn = false;
+            }
         }
+    }
+
+    public override void ActivateAoe()
+    {
+        activatingAttack = true;
     }
 
     // Make a connected function between both initialization functions that prevent copy/pasted logic
@@ -152,9 +191,17 @@ public class DerivedCircle : BaseAoe
         SpriteRenderer circleRenderer = circleAoe.GetComponent<SpriteRenderer>();
         circleRenderer.color = newColor;
         Color colorWithAlpha = circleRenderer.color;
-        colorWithAlpha.a = 0.2f;
+        if (this.mechanicAttack != null && !mechanicAttack.isInvisible)
+            colorWithAlpha.a = 0.2f;
+        else
+            colorWithAlpha.a = 0.0f;
         circleRenderer.color = colorWithAlpha;
         circleAoe.SetActive(true);
+
+        if (this.mechanicAttack != null && this.mechanicAttack.isSoak)
+        {
+            this.soak.SetActive(true);
+        }
     }
 
     public override void InitializeAoe(GameObject originObject, GameObject attackerObject, BaseSkill skill = null)

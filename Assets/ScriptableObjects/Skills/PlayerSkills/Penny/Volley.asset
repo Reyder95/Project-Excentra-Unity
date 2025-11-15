@@ -15,12 +15,13 @@ MonoBehaviour:
   skillName: Volley
   areaStyle: 1
   scaleMult: 0.8
+  ignoresLineOfSight: 0
   entityType: 1
   scaler: 0
   radius: 6
   range: 5
   mouseRange: 0
-  baseValue: 130
+  baseValue: 200
   delayAdditive: 150
   damageType: 2
   containsMovement: 0
@@ -32,9 +33,9 @@ MonoBehaviour:
   statusEffects: []
   removeAll: 1
   removeStatuses: []
+  shape: 1
   icon: {fileID: 2800000, guid: 3d0d646c529835a4d9dbdd3f38a22afe, type: 3}
   description: Deals moderate damage to enemies in a cone.
   targetMode: 1
   grabAggro: 0
   baseAether: 80
-  shape: 1

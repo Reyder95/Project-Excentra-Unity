@@ -21,9 +21,9 @@ public class BattleMechanicTrigger : MonoBehaviour
         }
     }
 
-    public void ActivateTrigger(BattleManager battleManager, EnemyMechanic mechanic, string key)
+    public void ActivateTrigger(BattleManager battleManager, EnemyMechanic mechanic, string key, object data = null)
     {
         if (triggerDict.ContainsKey(key))
-            triggerDict[key].GetComponent<AbilityTrigger>().ActivateTrigger(battleManager, mechanic);
+            triggerDict[key].GetComponent<AbilityTrigger>().ActivateTrigger(battleManager, mechanic, data);
     }
 }

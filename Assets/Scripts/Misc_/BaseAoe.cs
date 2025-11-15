@@ -14,8 +14,11 @@ public abstract class BaseAoe : MonoBehaviour
     public GameObject originObject;
     public GameObject attackerObject;
     public GameObject targetObject;
+    public bool activatingAttack = false;
 
     public bool freezeAoe = false;
+
+    public bool queueEndTurn = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected virtual void Start()
@@ -38,6 +41,8 @@ public abstract class BaseAoe : MonoBehaviour
     public abstract void ChangeTarget(GameObject target);
     
     public abstract void SetAoePosition(MechanicAoePositionHelper positionHelper);
+
+    public abstract void ActivateAoe();
     public virtual void FreezeAoe()
     {
         freezeAoe = true;

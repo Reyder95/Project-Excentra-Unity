@@ -20,6 +20,6 @@ MonoBehaviour:
   effectType: 10
   effectMagnitude: 0
   statType: 0
-  baseTurns: 2
+  baseTurns: 3
   enableParticles: 1
   particleColor: {r: 0.021978855, g: 0, b: 1, a: 1}

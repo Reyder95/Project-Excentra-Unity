@@ -26,7 +26,14 @@ public class BattleManager
     
     // Dictionaries for the HP UI elements and the MP UI elements of the players and enemies (where applicable)
     private Dictionary<string, ProgressBar> hpDictionary = new Dictionary<string, ProgressBar>();
+    private Dictionary<string, Label> hpDictionaryLabel = new Dictionary<string, Label>();
     private Dictionary<string, ProgressBar> mpDictionary = new Dictionary<string, ProgressBar>();
+    private Dictionary<string, Label> mpDictionaryLabel = new Dictionary<string, Label>();
+
+    private ProgressBar mechanicCast;
+    private bool isCasting = false;
+
+    private Label bossPercentage;
 
     public List<GameObject> despawnBuffer = new List<GameObject>();
 
@@ -55,6 +62,9 @@ public class BattleManager
     public bool overButton = false;
     public bool initialPhaseChecker = false;
 
+    // Useful in case multiple sources try to end the turn at the same time. This is primarily used for when multiple aoe attacks go off, and then submit an event to end the turn.
+    public bool endingTurn = false;
+
     public BattleManager(System.Func<GameObject, Vector2, GameObject> instantiateFunction)
     {
         _instantiateFunction = instantiateFunction;
@@ -82,16 +92,20 @@ public class BattleManager
         controlPanel = battleDoc.Q<VisualElement>("control-panel");
         stateLabel = battleDoc.Q<Label>("state-label");
         bossHP = battleDoc.Q<ProgressBar>("boss-hp");
+        bossPercentage = bossHP.Q<Label>("boss-percentage");
         specialPanel = battleDoc.Q<VisualElement>("special-panel");
         endScreen = battleDoc.Q<VisualElement>("end-screen");
-        
+
+        ExcentraGame.Instance.battleUIHelper.OnCastEnd += HandleEndBossCasting;
         ExcentraGame.Instance.damageNumberHandlerScript.battleUIRoot = battleDoc;
 
         foreach (var character in playerCharacters)
         {
             EntityStats stats = character.GetComponent<EntityStats>();
             hpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("hp"));
+            hpDictionaryLabel.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<Label>("hp-label"));
             mpDictionary.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<ProgressBar>("mp"));
+            mpDictionaryLabel.Add(stats.entityName, charPanel.Q<VisualElement>(stats.entityName.ToLower()).Q<Label>("mp-label"));
 
             stats.OnStatusChanged += DisplayStatuses;
             stats.OnHealthChanged += HPChangeEvent;
@@ -127,7 +141,9 @@ public class BattleManager
             EntityStats stats = character.GetComponent<EntityStats>();
 
             hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
+            hpDictionaryLabel[stats.entityName].text = $"{stats.currentHP}/{stats.maximumHP}";
             mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+            mpDictionaryLabel[stats.entityName].text = $"{stats.currentAether}/{stats.maximumAether}";
         }
 
         EntityStats bossHPStats = boss.GetComponent<EntityStats>();
@@ -151,12 +167,27 @@ public class BattleManager
 
     public void SetMPProgress(EntityStats stats)
     {
+        if (!mpDictionaryLabel.ContainsKey(stats.entityName))
+            return;
+
         mpDictionary[stats.entityName].value = stats.CalculateMPPercentage();
+
+        mpDictionaryLabel[stats.entityName].text = $"{Math.Floor(stats.currentAether)}/{stats.maximumAether}"; ;
     }
 
     public void SetHPProgress(EntityStats stats)
     {
-        hpDictionary[stats.entityName].value = stats.CalculateHPPercentage();
+        float hpPercentage = stats.CalculateHPPercentage();
+
+        hpDictionary[stats.entityName].value = hpPercentage;
+
+        if (boss == stats.gameObject)
+            bossPercentage.text = $"{hpPercentage.ToString("F1")}%";
+
+        if (!hpDictionaryLabel.ContainsKey(stats.entityName))
+            return;
+
+        hpDictionaryLabel[stats.entityName].text = $"{Math.Floor(stats.currentHP)}/{stats.maximumHP}";
     }
 
     public void HPChangeEvent(EntityStats stats)
@@ -173,7 +204,6 @@ public class BattleManager
             if (phaseChanged)
             {
 
-                Debug.Log("LOLLLL!");
                 turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(stats.gameObject), turnManager.ReturnDelayNeededForTurn(0));
             }
             
@@ -254,11 +284,29 @@ public class BattleManager
         return false;
     }
 
+    public void HandleStartBossCasting(EnemyMechanic mechanic)
+    {
+        if (!mechanic.skipCast)
+            ExcentraGame.Instance.battleUIHelper.StartCast(mechanic);
+        else
+            HandleEndBossCasting(ExcentraGame.Instance.battleUIHelper);
+    }
+
+    public void HandleEndBossCasting(BattleUIHelper helper)
+    {
+        EnemyAI enemyAi = boss.GetComponent<EnemyAI>();
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
+        GameObject currTurn = turnEntity.GetEntity().entityTurn;
+
+        BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
+
+        EndTurn(null, enemyAi);
+    }
+
     public void StartTurn()
     {
         TurnEntity turnEntity = turnManager.GetCurrentTurn();
 
-        
 
         if (turnEntity.GetEntity().entityTurn != null)
         {
@@ -267,6 +315,8 @@ public class BattleManager
             EntityStats stats = currTurn.GetComponent<EntityStats>();
             EntityController controller = currTurn.GetComponent<EntityController>();
             PlayerInput input = currTurn.GetComponent<PlayerInput>();
+
+            Camera.main.GetComponent<CameraMovementHandler>().SetCameraPosition(Vector3.zero, currTurn);
 
             if (controller.animator.GetCurrentAnimatorStateInfo(0).IsName("Dead"))
             {
@@ -281,7 +331,6 @@ public class BattleManager
                 return;
             }
 
-            bool skipEndTurn = false;
 
             // Handle the turn if it's a player or enemy.
             if (stats.isPlayer)
@@ -304,21 +353,22 @@ public class BattleManager
 
                 try
                 {
-                    if (!initialPhaseChecker && enemyAi.initialPhase != null)
+                    if (enemyAi.isInitialPhase && enemyAi.initialPhase != null)
                     {
-                        
                         BossMechanicHandler.InitializeMechanic(enemyAi.initialPhase.mechanic, this, boss);
                         stats.nextStaticDelay = enemyAi.initialPhase.delayBonus;
                     }
                     else
                     {
-                        
                         EnemyMechanic mechanic = enemyAi.ChooseAttack(); // Choose an attack for the enemy ai
 
                         if (mechanic == null)
                         {
-                            Debug.Log(enemyAi.currAttack);
-                            BossMechanicHandler.InitializeMechanic(enemyAi.currAttack, this, currTurn);
+                            if (enemyAi.currAttack.isSwap)
+                                CustomMechanicLogicHelper.ExecuteMechanicSwap(enemyAi.currAttack.mechanicKey, this, enemyAi.currAttack);
+
+                            BossMechanicHandler.HandleMechanicMovement(enemyAi.currAttack, currTurn, this);
+
 
                         }
                         else
@@ -326,9 +376,6 @@ public class BattleManager
                             // Do immediate attack
                             BossMechanicHandler.InitializeMechanic(mechanic, this, currTurn);
                         }
-
-                        if (mechanic != null && mechanic.mechanicStyle == MechanicStyle.IMMEDIATE && !mechanic.dontSkipTurn)
-                            skipEndTurn = true;
 
                         if (mechanic != null)
                             stats.targetable = !mechanic.untargetable;
@@ -359,15 +406,13 @@ public class BattleManager
                 {
                     Debug.Log(ex);
                     Debug.Log("Mechanic is null when it should not have been. Maybe Initialization error again? Or check if current phase is set to proper HP threshold");
-                    skipEndTurn = false;
                 }
 
 
-                initialPhaseChecker = true;
+                enemyAi.isInitialPhase = false;
                 ChangeState(BattleState.AWAIT_ENEMY);
 
-                if (!skipEndTurn)
-                    EndTurn();
+                    //EndTurn(null, enemyAi);
             }
         }
         else
@@ -380,37 +425,51 @@ public class BattleManager
             {
                 BaseAoe baseAoe = aoe.GetComponent<BaseAoe>();
                 EnemyAI enemyAi = baseAoe.attackerObject.GetComponent<EnemyAI>();
-
-                Debug.Log("TEST!!" + enemyAi.currAttack);
-
-                BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, baseAoe.mechanicAttack, this, baseAoe.attackerObject, baseAoe);
+                endingTurn = false;
+                baseAoe.ActivateAoe();
+                //BossMechanicHandler.ActivateAoeAttack(baseAoe.mechanic, baseAoe.mechanicAttack, this, baseAoe.attackerObject, baseAoe);
             }
 
-
-            //BaseAoe aoe = currTurn.GetComponent<BaseAoe>();
-            //EnemyAI enemyAi = aoe.attackerObject.GetComponent<EnemyAI>();
-            //if (aoe)
-            //Debug.Log("GO IN!");
-            //// Find some way to store attackers of skills
-            //BossMechanicHandler.ActivateAoeAttack(enemyAi.currAttack, aoe.mechanicAttack, this, aoe.attackerObject, aoe);
-            EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
+            //EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
         }
     }
+    
+    // Easy access to end the turn if a mechanic is the current turn. Helpful for outside sources to end the turn easily (like AoEs)
+    public void EndCurrentAoeTurn()
+    {
+        if (endingTurn)
+            return;
 
-    public void EndTurn(GameObject attacker = null)
+        endingTurn = true;
+
+        TurnEntity turnEntity = turnManager.GetCurrentTurn();
+        AoeTurn aoeTurn = turnEntity.GetEntity().aoeTurn;
+
+        if (aoeTurn == null)
+            return;
+
+        EndTurn(aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
+    }
+
+    public void EndTurn(GameObject attacker = null, EnemyAI enemyAi = null)
     {
         ChangeState(BattleState.TURN_TRANSITION);
         TurnEntity turnEntity = turnManager.GetCurrentTurn();
         GameObject currTurn = turnManager.GetCurrentTurn().GetEntity().entityTurn;
         EntityStats stats = null;
         EntityController controller = null;
+
+        // If we are on a player turn
         if (currTurn != null)
         {
             stats = currTurn.GetComponent<EntityStats>();
             controller = currTurn.GetComponent<EntityController>();
-        }
 
-        EnemyAI enemyAi = null;
+            controller.playerInput.enabled = false;
+
+            if (controller.autoMove)
+                return;
+        }
 
         bool isRevive = false;
         if (attacker != null)
@@ -436,14 +495,12 @@ public class BattleManager
                 {
                     if (entityStats.currentHP <= 0)
                     {
-                        Debug.Log("KILLING " + entity);
                         KillEntity(entity.Value);
 
                     }
                 }
                 else
                 {
-                    Debug.Log("REVIVING ENTITY!");
                     turnManager.ReviveEntity(entity.Value);
                     entity.Value.GetComponent<EntityController>().animator.SetTrigger("Revive");
                 }
@@ -489,14 +546,23 @@ public class BattleManager
                 {
                     if (enemyAi.enabled)
                     {
-                        if (enemyAi.currAttack != null)
+                        if (enemyAi.currAttack != null && turnEntity.turnData.aoeTurn.aoes.Count > 0)
                         {
                             EndMechanic(turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().mechanic, turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
+                        }
+                        else
+                        {
+                            if (enemyAi.currAttack == null && turnEntity.turnData.aoeTurn.aoes.Count > 0)
+                            {
+                                EndMechanic(turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().mechanic, turnEntity.turnData.aoeTurn.aoes[0].GetComponent<BaseAoe>().attackerObject);
+                            }
+                            enemyAi.currAttack = null;
                         }
                     }
                 }
             }
             catch (MissingReferenceException) { }
+            catch (NullReferenceException) {}
 
             
             StartTurn();
@@ -518,7 +584,6 @@ public class BattleManager
             stats.ModifyHP(0);
 
         stats.ModifyStatus();
-        Debug.Log("Hello!");
         controller.animator.SetTrigger("Die");
 
         turnManager.DisplayTurnOrder();
@@ -541,22 +606,26 @@ public class BattleManager
     // May not need this anymore, depends how I handle mechanics that have multiple parts
     public void EndMechanic(EnemyMechanic mechanic, GameObject attacker)
     {
-        EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
-        BossMechanicHandler.EndMechanic(mechanic, this, attacker);
-        enemyAi.currAttack = null;
-        enemyAi.stats.targetable = true;
-
-        if (mechanic.goNext)
+        if (turnManager.CheckIfMechanicOver(mechanic))
         {
-            Debug.Log("HELLO!ASDASDAD");
-            turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(attacker), 0);
+            EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+            BossMechanicHandler.EndMechanic(mechanic, this, attacker);
+            Debug.Log("Should NOT be here! EndMechanic");
+            enemyAi.currAttack = null;
+            enemyAi.stats.targetable = true;
+
+            if (mechanic.goNext)
+            {
+                turnManager.CalculateIndividualDelay(turnManager.GetTurnEntityData(attacker), 0);
+            }
+
+            foreach (var character in playerCharacters)
+            {
+                EntityStats stats = character.GetComponent<EntityStats>();
+                stats.mechanicVariables.targeted = false;
+            }
         }
 
-        foreach (var character in playerCharacters)
-        {
-            EntityStats stats = character.GetComponent<EntityStats>();
-            stats.mechanicVariables.targeted = false;
-        }
     }
 
     public GameObject SpawnNewEntity(GameObject entity, Vector2 pos, string entityKey, string aiKey, bool next)
@@ -796,8 +865,6 @@ public class BattleManager
                             aoe.objectTarget = enemyAi.ChooseEntity(aoe.subTargetType);
                         }
 
-                        Debug.Log(aoe.objectTarget);
-
                         if (aoe.onSelf)
                             aoe.objectOrigin = currTurn;
                         else if (aoe.onTarget)
@@ -949,12 +1016,14 @@ public class BattleManager
         if (entityDamage > 0f)
         {
             ExcentraGame.Instance.damageNumberHandlerScript.SpawnDamageNumber(entity, Mathf.Abs((int)entityDamage));
+
+            entityController.damageParticles.Play();
+
             if (contents.enabled)
             {
                 if (currAttacker.GetComponent<EntityStats>().currentHP <= 0)
                     return;
 
-                Debug.Log("Adding Aggression: " + currAttacker);
                 contents.aggression.AggressionEntryPoint(new AggressionElement(currAttacker, entityDamage));
             }
         }
@@ -1389,6 +1458,9 @@ public class BattleManager
     // Checks if an attacker can even target the defender
     public bool TargetingEligible(GameObject attacker, GameObject defender)
     {
+        if (attacker == null || defender == null)
+            return false;
+
         EntityStats attackerStats = attacker.GetComponent<EntityStats>();
         EntityStats defenderStats = defender.GetComponent<EntityStats>();
         

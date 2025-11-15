@@ -40,7 +40,6 @@ public class AggressionSystem
     {
         EntityStats stats = entity.GetComponent<EntityStats>();
         aggressionList.Remove(stats.entityName);
-        Debug.Log("REMOVED ENTITY" + stats.entityName);
         OutputAggressionList();
     }
 

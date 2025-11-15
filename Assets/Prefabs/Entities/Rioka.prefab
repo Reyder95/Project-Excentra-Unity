@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 654387019, guid: 8af7b37f9559fdd46b8f2373e7f18a52, type: 3}
+      objectReference: {fileID: -526127581, guid: 8af7b37f9559fdd46b8f2373e7f18a52, type: 3}
     - target: {fileID: 138672604131897943, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_WasSpriteAssigned
       value: 1
@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: aliveOffset.y
       value: 0.01774138
       objectReference: {fileID: 0}
+    - target: {fileID: 976132999205457727, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.14
+      objectReference: {fileID: 0}
     - target: {fileID: 1719475619647554519, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -74,7 +78,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: armour
-      value: 450
+      value: 350
       objectReference: {fileID: 0}
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: attack
@@ -159,6 +163,10 @@ PrefabInstance:
     - target: {fileID: 4160527486097252652, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: 'abilityKeys.Array.data[1]'
       value: embolden
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222274275464382404, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5393262343277882581, guid: 83c395727488c8c4f9580acf27ae7214, type: 3}
       propertyPath: m_Enabled

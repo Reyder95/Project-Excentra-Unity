@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,6 +24,13 @@ public enum MoveType
     TARGET,
     CENTER,
     CUSTOM
+}
+
+[System.Serializable]
+public class MechanicPriorityIndex
+{
+    public int[] index;
+    public int turnOffset;
 }
 
 [CreateAssetMenu(fileName = "EnemyMechanic", menuName = "Scriptable Objects/EnemyMechanic")]
@@ -54,15 +62,71 @@ public class EnemyMechanic : ScriptableObject
     [Tooltip("If active, sets caster delay to 1000 and prevents reduction in delay. Allows us to create a script to enable activity under specific situations")]
     public bool activeScript = false;
 
+    [Tooltip("Determines if this is a 'swap' mechanic. TL;DR - if true, the mechanic will swap itself with another mechanic. Uses the mechanicKey as the swap key, requires custom scripting. Used for randomizing raid attacks by creating a base attack.")]
+    public bool isSwap = false;
+
+    [Tooltip("When mechanic initializes, a cast bar will not play. This is useful for immediate attacks, or attacks that go one after another.")]
+    public bool skipCast = false;
+
     public bool goNext = false;
+
+    public bool containsMovement = false;
+
+    public MoveType movementType = MoveType.ORIGIN;
 
     [Tooltip("The overriding animation trigger for this mechanic. If this is not set, the child animations will be used. Should be always set unless doing a sequential mechanic (will handle later)")]
     public string animationTrigger = "";
+
+    public MechanicPriorityIndex[] priorityIndex;
+
+    [Tooltip("The order of movements that the enemy will perform before casting their ability. Useful if multiple movements are needed")]
+    public List<MovementKeyframe> movementFrames = new List<MovementKeyframe>();
+
+    public bool customScript = false;
+    public string customScriptKey = ""; 
 
     [Tooltip("How many turns until casting can we re-cast this ability?")]
     public int turnCooldown = 0;
     [System.NonSerialized] public int currTurns;
     public List<MechanicAttack> mechanicAttacks = new List<MechanicAttack>();
+
+    public EnemyMechanic Clone()
+    {
+        var clone = CreateInstance<EnemyMechanic>();
+        clone.mechanicName = this.mechanicName;
+        clone.containsTrigger = this.containsTrigger;
+        clone.mechanicKey = this.mechanicKey;
+        clone.mechanicStyle = this.mechanicStyle;
+        clone.dontSkipTurn = this.dontSkipTurn;
+        clone.active = this.active;
+        clone.untargetable = this.untargetable;
+        clone.targetScript = this.targetScript;
+        clone.activeScript = this.activeScript;
+        clone.goNext = this.goNext;
+        clone.animationTrigger = this.animationTrigger;
+        clone.priorityIndex = this.priorityIndex;
+        clone.customScript = this.customScript;
+        clone.customScriptKey = this.customScriptKey;
+        clone.turnCooldown = this.turnCooldown;
+        clone.currTurns = this.currTurns;
+        clone.containsMovement = this.containsMovement;
+        clone.movementType = this.movementType;
+        clone.mechanicAttacks = new List<MechanicAttack>();
+        clone.isSwap = this.isSwap;
+        clone.skipCast = this.skipCast;
+        
+        foreach (var moveFrame in this.movementFrames)
+        {
+            clone.movementFrames.Add(moveFrame);
+        }
+
+        foreach (var attack in this.mechanicAttacks)
+        {
+            clone.mechanicAttacks.Add(attack.Clone());
+        }
+
+        return clone;
+    }
 }
 
 [System.Serializable]
@@ -123,6 +187,9 @@ public class MechanicAttack
     [Tooltip("States if this aoe attack is a stack. If it's a stack, the damage dealt to anyone would be divided by the number of entities hit.")]
     public bool isStack;
 
+    [Tooltip("States if this aoe attack is a soak. If it's a soak, if someone does not get hit by this, the entire party will take damage.")]
+    public bool isSoak;
+
     public bool nonUniformDimensions = false;
 
     [Tooltip("The size of the aoe. For circles this is the diameter. For directionals this is the width.")]
@@ -145,6 +212,8 @@ public class MechanicAttack
 
     [Tooltip("Specifies the color of the aoe")]
     public Color aoeColor;
+
+    public bool isInvisible = false;
 
     [Header("Adds")]
     [Tooltip("Allows us to specify the different adds we want to spawn")]
@@ -169,11 +238,65 @@ public class MechanicAttack
     [Tooltip("The base value, as in baseValue + (calculations)")]
     public int baseValue;
 
+    public float soakDamage;
+
     [Tooltip("How many times does this attack hit? It divides the damage by this much")]
     public float attackCount = 1;
+
+    [System.NonSerialized]
+    public GameObject directTarget;
 
     [Header("Statuses")]
     public List<string> statusesToAdd = new List<string>();
     public List<string> statusesToRemove = new List<string>();
 
+    public MechanicAttack Clone()
+    {
+        return new MechanicAttack
+        {
+            attackType = this.attackType,
+            attackKey = this.attackKey,
+            triggerKey = this.triggerKey,
+            targetKey = this.targetKey,
+            targetType = this.targetType,
+            turnOffset = this.turnOffset,
+            canBeShirked = this.canBeShirked,
+            originIsTarget = this.originIsTarget,
+            originIsSelf = this.originIsSelf,
+            endpointIsTarget = this.endpointIsTarget,
+            customOrigin = this.customOrigin,
+            containsMovement = this.containsMovement,
+            moveType = this.moveType,
+            aoeShape = this.aoeShape,
+            hasArenaPositioning = this.hasArenaPositioning,
+            aoePositionInformation = this.aoePositionInformation,
+            isProximity = this.isProximity,
+            isStack = this.isStack,
+            nonUniformDimensions = this.nonUniformDimensions,
+            size = this.size,
+            innerDonutSize = this.innerDonutSize,
+            dimensions = this.dimensions,
+            raidWide = this.raidWide,
+            distanceOffset = this.distanceOffset,
+            endpoint = this.endpoint,
+            customColor = this.customColor,
+            aoeColor = this.aoeColor,
+            isInvisible = this.isInvisible,
+            addKeys = new List<AddSpawner>(this.addKeys),
+            tetherStationary = this.tetherStationary,
+            secondTether = this.secondTether,
+            tetherLocation = this.tetherLocation,
+            tetherRange = this.tetherRange,
+            damageType = this.damageType,
+            scaler = this.scaler,
+            scaleMult = this.scaleMult,
+            baseValue = this.baseValue,
+            attackCount = this.attackCount,
+            statusesToAdd = new List<string>(this.statusesToAdd),
+            statusesToRemove = new List<string>(this.statusesToRemove),
+            directTarget = this.directTarget,
+            isSoak = this.isSoak,
+            soakDamage = this.soakDamage
+        }; 
+    }
 }

@@ -25,6 +25,7 @@ public class EnemyPhase
 
     public EnemyMechanic ChooseMechanic(bool consistent = false)
     {
+        Debug.Log("alalalala");
         if (phaseType == PhaseType.RANDOM)
         {
             List<EnemyMechanic> possibleMechanics;
@@ -48,7 +49,7 @@ public class EnemyPhase
 
 
 
-            return chosenMechanic;
+            return chosenMechanic.Clone();
         }
         else if (phaseType == PhaseType.ORDER)
         {
@@ -71,7 +72,7 @@ public class EnemyPhase
                     inactiveMechanics.Add(chosenMechanic);
                     activeMechanics.RemoveAt(0);
                 }
-                return chosenMechanic;
+                return chosenMechanic.Clone();
             }
             catch
             {
@@ -117,5 +118,20 @@ public class EnemyPhase
             activeMechanics.Add(thisMechanic);
         }
 
+    }
+
+    public void InsertMechanicAt(EnemyMechanic mechanic, int index)
+    {
+        if (index < 0 || index > activeMechanics.Count)
+        {
+            Debug.LogError("Index out of bounds for inserting mechanic.");
+            return;
+        }
+        if (activeMechanics.Contains(mechanic))
+        {
+            Debug.LogWarning("Mechanic already exists in the active list.");
+            return;
+        }
+        activeMechanics.Insert(index, mechanic);
     }
 }

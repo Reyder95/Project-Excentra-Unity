@@ -159,31 +159,31 @@ public class TurnManager
         }
     }
 
-    //public bool CheckIfMechanicOver(EnemyMechanic mechanic)
-    //{
-    //    foreach (var entity in turnOrder)
-    //    {
-    //        if (!entity.isEntity)
-    //        {
-    //            GameObject aoe = entity.GetEntity().aoe;
-    //            BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
+    public bool CheckIfMechanicOver(EnemyMechanic mechanic)
+    {
+        foreach (var entity in turnOrder)
+        {
+            if (!entity.isEntity)
+            {
+                GameObject aoe = entity.GetEntity().aoeTurn.aoes[0];
+                BaseAoe aoeInfo = aoe.GetComponent<BaseAoe>();
 
-    //            if (aoeInfo.mechanic == mechanic)
-    //            {
-    //                return false;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            if (entity.GetEntity().GetComponent<EntityStats>().addMechanic == mechanic)
-    //            {
-    //                return false;
-    //            }
-    //        }
-    //    }
+                if (aoeInfo.mechanic == mechanic)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (entity.GetEntity().entityTurn.GetComponent<EntityStats>().addMechanic == mechanic)
+                {
+                    return false;
+                }
+            }
+        }
 
-    //    return true;
-    //}
+        return true;
+    }
 
     public TurnEntityData GetTurnEntityData(GameObject entity)
     {
@@ -272,7 +272,6 @@ public class TurnManager
             return turnOrder[turnOrder.Count - 1 - countdown].delay + (averageTurnDelay * (turnCount - turnOrder.Count));
         }
             
-
         if (counter == turnOrder.Count)
             return turnOrder[counter - 1].delay + 1;
 

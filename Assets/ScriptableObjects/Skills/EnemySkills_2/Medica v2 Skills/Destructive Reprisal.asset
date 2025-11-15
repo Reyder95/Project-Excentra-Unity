@@ -22,6 +22,10 @@ MonoBehaviour:
   targetScript: 0
   activeScript: 0
   goNext: 0
+  animationTrigger: 
+  priorityIndex:
+  - index: 
+    turnOffset: 0
   turnCooldown: 1
   mechanicAttacks:
   - attackType: 0
@@ -51,6 +55,7 @@ MonoBehaviour:
     isStack: 0
     nonUniformDimensions: 0
     size: 30
+    innerDonutSize: 0
     dimensions: {x: 0, y: 0}
     raidWide: 0
     distanceOffset: 10

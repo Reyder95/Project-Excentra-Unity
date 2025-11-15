@@ -15,6 +15,7 @@ public class EnemyAI : MonoBehaviour
     [System.NonSerialized] public EnemyMechanic currAttack;
     [System.NonSerialized] public EnemyMechanic currImmediateAttack;
     [System.NonSerialized] public EnemyContents enemyContents;
+    [System.NonSerialized] public bool isInitialPhase = true;
     [System.NonSerialized] public EntityStats stats;
     [System.NonSerialized] public int phaseCount = 0;
     [System.NonSerialized] public bool isPhaseTrigger = false;
@@ -38,6 +39,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (currPhase == null)
         {
+            Debug.Log("Should NOT be here! ChooseAttack");
             currAttack = null;
             return null;
         }
@@ -79,12 +81,9 @@ public class EnemyAI : MonoBehaviour
 
     public void TargetEntity(EntityTargetType targetType)
     {
-        Debug.Log("AHAHAHDKLSDJFLKSDFJGLK");
         currTarget = null;
         if (currAttack == null)
             return;
-
-        Debug.Log("AHAHAHDKLSDJFLKSDFJGLK TWO");
 
         var possibleChars = possibleTargets.Where(go => go.GetComponent<EntityStats>() != null && go.GetComponent<EntityStats>().currentHP > 0).ToList();
 
@@ -143,10 +142,10 @@ public class EnemyAI : MonoBehaviour
                 return target;
         }
 
-        Debug.Log("TESTING: " + target);
-
         if (target != null)
             return target;
+
+        Debug.Log("AHHHHH");
         
         return possibleChars[randChar];
 

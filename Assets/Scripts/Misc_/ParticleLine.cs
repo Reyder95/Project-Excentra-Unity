@@ -88,6 +88,12 @@ public class ParticleLine : MonoBehaviour
         int numEnter = ps.GetTriggerParticles(ParticleSystemTriggerEventType.Enter, enter);
         int numExit = ps.GetTriggerParticles(ParticleSystemTriggerEventType.Exit, exit);
 
+        if (target.TryGetComponent<IParticleHitReceiver>(out var receiver))
+            foreach (var p in enter)
+            {
+                receiver.OnParticleHit(p);
+            }
+
         // iterate
         for (int i = 0; i < numEnter; i++)
         {

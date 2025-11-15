@@ -28,6 +28,14 @@
     border: none;
 }
 
+#boss-hp #mechanic-cast .unity-progress-bar__background {
+    background-color: #2B3334;
+}
+
+#boss-hp #mechanic-cast .unity-progress-bar__progress {
+    background-color: #DE8245;
+}
+
 #boss-hp .unity-progress-bar__progress {
     background-color: #FF4C4C; /* Red progress bar color */
     margin: 0.5px;

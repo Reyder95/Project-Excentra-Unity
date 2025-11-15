@@ -1,3 +1,4 @@
+using NUnit.Framework.Internal.Commands;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,8 +18,60 @@ public class MechanicAoeData
 
 public static class BossMechanicHandler
 {
-    public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker)
+    public static void HandleMovementCallback(MovementHandler handler)
     {
+        HandleMechanicMovement(handler.mechanic, handler.attacker, handler.battleManager);
+    }
+
+    public static void HandleMechanicMovement(EnemyMechanic mechanic, GameObject attacker, BattleManager battleManager)
+    {
+        Debug.Log(mechanic.movementFrames.Count);
+        if (mechanic.movementFrames.Count > 0)
+        {
+            MovementHandler handler = attacker.GetComponent<MovementHandler>();
+
+            handler.battleManager = battleManager;
+            handler.mechanic = mechanic;
+            handler.attacker = attacker;
+
+            EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+
+            if (mechanic.movementFrames[0].moveToCurrTarget)
+            {
+                mechanic.movementFrames[0].target = enemyAi.currTarget;
+            }
+
+            MovementKeyframe currKeyframe = mechanic.movementFrames[0];
+
+            mechanic.movementFrames.RemoveAt(0);
+
+            handler.OnMovementEnd += HandleMovementCallback;
+
+            handler.Play(currKeyframe);
+        }
+        else
+        {
+            if (mechanic.mechanicStyle != MechanicStyle.IMMEDIATE)
+                battleManager.HandleStartBossCasting(mechanic);
+            else
+            {
+                EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
+                EntityController enemyController = attacker.GetComponent<EntityController>();
+
+                enemyController.animator.SetTrigger(mechanic.animationTrigger);
+
+            }
+                
+        }
+    }
+
+    public static void InitializeMechanic(EnemyMechanic mechanic, BattleManager battleManager, GameObject attacker, bool skip = false)
+    {
+        if (mechanic.customScript && !skip)
+        {
+            CustomMechanicLogicHelper.ExecuteCustomMechanic(mechanic.customScriptKey, battleManager, mechanic);
+        }
+
         CustomLogicPassthrough passthrough = new CustomLogicPassthrough(null, attacker, 0f, null, mechanic);
         CustomMechanicLogicHelper.ExecuteMechanic(mechanic.mechanicKey, battleManager, passthrough);
 
@@ -87,19 +140,63 @@ public static class BossMechanicHandler
                         //turnManager.DisplayTurnOrder();
                 }
             }
-            if (!mechanic.active)
-            {
-                EntityStats stats = attacker.GetComponent<EntityStats>();
-                stats.nextStaticDelay = delay + 1;
-            }
 
-            AoeTurn aoeTurn = new AoeTurn(aoes);
-            TurnEntity aoeEntity = new TurnEntity(aoeTurn);
-            aoeEntity.CalculateDirectDelay(delay);
-            bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
-            if (!added)
+            if (mechanic.priorityIndex.Length > 0)
             {
-                battleManager.turnManager.turnOrder.Add(aoeEntity);
+                float maxDelay = -1f;
+                foreach (MechanicPriorityIndex priorityElement in mechanic.priorityIndex)
+                {
+                    List<GameObject> prioAoes = new List<GameObject>();
+
+                    foreach (int index in priorityElement.index)
+                    {
+                        if (index < aoes.Count)
+                        {
+                            prioAoes.Add(aoes[index]);
+                        }
+                    }
+
+                    //if (delay == -1f)
+                    //    delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+
+                    //if (targetedLogic.overrideDelay)
+                    //    delay = targetedLogic.overriddenDelay;
+
+                    AoeTurn aoeTurn = new AoeTurn(prioAoes);
+                    TurnEntity aoeEntity = new TurnEntity(aoeTurn);
+                    delay = battleManager.turnManager.ReturnDelayNeededForTurn(priorityElement.turnOffset);
+
+                    maxDelay = Mathf.Max(maxDelay, delay);
+                    aoeEntity.CalculateDirectDelay(delay);
+                    bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
+                    if (!added)
+                    {
+                        battleManager.turnManager.turnOrder.Add(aoeEntity);
+                    }
+                }
+
+                if (!mechanic.active)
+                {
+                    EntityStats stats = attacker.GetComponent<EntityStats>();
+                    stats.nextStaticDelay = maxDelay + 1;
+                }
+
+            }
+            else
+            {
+                AoeTurn aoeTurn = new AoeTurn(aoes);
+                TurnEntity aoeEntity = new TurnEntity(aoeTurn);
+                aoeEntity.CalculateDirectDelay(delay);
+                if (!mechanic.active)
+                {
+                    EntityStats stats = attacker.GetComponent<EntityStats>();
+                    stats.nextStaticDelay = delay + 1;
+                }
+                bool added = battleManager.turnManager.InsertUnitIntoTurn(aoeEntity);
+                if (!added)
+                {
+                    battleManager.turnManager.turnOrder.Add(aoeEntity);
+                }
             }
 
             battleManager.turnManager.DisplayTurnOrder();
@@ -121,6 +218,7 @@ public static class BossMechanicHandler
 
         if (mechanicAttack.targetType != EntityTargetType.NONE)
         {
+            Debug.Log(mechanicAttack.targetType);
             actualTarget = enemyAi.ChooseEntity(mechanicAttack.targetType);
         }
 
@@ -156,6 +254,9 @@ public static class BossMechanicHandler
 
         SkillInformation info = new SkillInformation();
 
+        if (mechanicAttack.directTarget != null)
+            actualTarget = mechanicAttack.directTarget;
+
         if (mechanicAttack.originIsSelf)
         {
             info.objectOrigin = attacker;
@@ -176,10 +277,13 @@ public static class BossMechanicHandler
         //TurnEntity aoeEntity = new TurnEntity(aoe);
         float delay = CustomMechanicLogicHelper.ExecuteMechanicDelay(mechanicAttack.attackKey, battleManager);
         if (delay == -1f)
+        {
             delay = turnManager.ReturnDelayNeededForTurn(mechanicAttack.turnOffset);
+        }
+            
 
-        if (targetedLogic.overrideDelay)
-            delay = targetedLogic.overriddenDelay;
+        //if (targetedLogic.overrideDelay)
+        //    delay = targetedLogic.overriddenDelay;
 
         //aoeEntity.CalculateDirectDelay(delay);
 
@@ -206,6 +310,8 @@ public static class BossMechanicHandler
     public static void ActivateAoeAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, BaseAoe aoe)
     {
         Dictionary<string, GameObject> targets = aoe.aoeData.TargetList;
+
+        Debug.Log("Target Count: " + targets.Count);
 
         CustomMechanicLogicHelper.ExecuteMechanic(mechanicAttack.attackKey + "_before", battleManager, new CustomLogicPassthrough(aoe, attacker, 0f, null, mechanic));
 
@@ -238,7 +344,18 @@ public static class BossMechanicHandler
                 }
             }
 
-            Debug.Log(mechanic);
+            if (mechanicAttack.isSoak)
+            {
+                if (aoe.aoeData.TargetList.Count == 0)
+                {
+                    List<GameObject> possibleCharacters = battleManager.GetAliveEntities();
+
+                    foreach (GameObject character in possibleCharacters)
+                    {
+                        battleManager.DealDamage(character, mechanicAttack.soakDamage, attacker);
+                    }
+                }
+            }
 
             if (aoe.particleEmitter != null)
             {
@@ -246,16 +363,19 @@ public static class BossMechanicHandler
                 aoe.particleEmitter = null;
             }
 
+            Debug.Log(mechanic);
+
             if (mechanic.containsTrigger)
                 ExcentraGame.Instance.triggers.ActivateTrigger(battleManager, mechanic, mechanicAttack.triggerKey);
-        } catch (InvalidOperationException) { }
+        } catch (InvalidOperationException ex) {
+            Debug.Log(ex);
+        }
 
         
     }
 
     public static void InitializeSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker)
     {
-        Debug.Log("TESTING AHAHHAHAHA");
         EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
         GameObject target = enemyAi.ChooseEntity(mechanicAttack.targetType);
         enemyAi.currTarget = target;
@@ -264,9 +384,10 @@ public static class BossMechanicHandler
         if (logic.overriddenTarget != null)
             enemyAi.currTarget = logic.overriddenTarget;
 
-        EntityController controller = attacker.GetComponent<EntityController>();
-        Debug.Log(mechanic.mechanicName);
-        controller.MoveTowards(enemyAi.currTarget, mechanic.animationTrigger);
+        HandleMechanicMovement(mechanic, attacker, battleManager);
+
+        //EntityController controller = attacker.GetComponent<EntityController>();
+        //controller.MoveTowards(enemyAi.currTarget, mechanic.animationTrigger);
 
     }
     public static void ActivateSingleTargetAttack(EnemyMechanic mechanic, MechanicAttack mechanicAttack, BattleManager battleManager, GameObject attacker, GameObject target)
