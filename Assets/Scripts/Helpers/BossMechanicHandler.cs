@@ -56,9 +56,9 @@ public static class BossMechanicHandler
             else
             {
                 EnemyAI enemyAi = attacker.GetComponent<EnemyAI>();
-                EntityController enemyController = attacker.GetComponent<EntityController>();
+                //EntityController enemyController = attacker.GetComponent<EntityController>();
 
-                enemyController.animator.SetTrigger(mechanic.animationTrigger);
+                //enemyController.animator.SetTrigger(mechanic.animationTrigger);
 
             }
                 

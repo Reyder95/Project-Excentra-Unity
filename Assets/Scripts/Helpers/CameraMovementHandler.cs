@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CameraMovementHandler : MonoBehaviour
+public class CameraMovementHandlera : MonoBehaviour
 {
     Vector3 targetPos;
     GameObject entity;

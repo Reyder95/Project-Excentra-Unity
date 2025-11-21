@@ -155,7 +155,6 @@ GameObject:
   - component: {fileID: 6221965226862297430}
   - component: {fileID: 4222274275464382404}
   - component: {fileID: 4160527486097252652}
-  - component: {fileID: 421529142559536925}
   - component: {fileID: 1719475619647554519}
   - component: {fileID: 138672604131897943}
   - component: {fileID: 5526834848732160393}
@@ -163,6 +162,9 @@ GameObject:
   - component: {fileID: 6677466724272875593}
   - component: {fileID: 5393262343277882581}
   - component: {fileID: 8219995647261763433}
+  - component: {fileID: 6329079079116191420}
+  - component: {fileID: 6240668471924500166}
+  - component: {fileID: 3877451780700165870}
   m_Layer: 0
   m_Name: Entity
   m_TagString: Untagged
@@ -225,6 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70df2b173aae04648b6f05c7e1e264ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mechanic: {fileID: 0}
+  attacker: {fileID: 0}
 --- !u!114 &4160527486097252652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,46 +264,6 @@ MonoBehaviour:
   basicAttackCount: 1
   particleEmitter: {fileID: 9201253995867558767}
   particleStatus: {fileID: 0}
---- !u!114 &421529142559536925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5483559697954615981}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d65c6aa36c01b841b6fce1aca3cefdd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 5
-  turnStartPos: {x: 0, y: 0, z: 0}
-  autoMove: 0
-  basicActive: 0
-  specialActive: 0
-  circleRange: {fileID: 8390718592877475064, guid: 47a241d8a4ab7354cb163eff501e4142, type: 3}
-  circleBasicRangeInstance: {fileID: 0}
-  circleBasicRangeRenderer: {fileID: 0}
-  animator: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  lineRenderer: {fileID: 0}
-  entityStats: {fileID: 0}
-  playerInput: {fileID: 0}
-  iconHeader: {fileID: 7340139192510420593}
-  lineThickness: 0.001
-  charGround: {fileID: 5462995217107779432}
-  inEnemyAoe: 0
-  aliveOffset: {x: 0, y: 0}
-  aliveSize: {x: 0, y: 0}
-  deadOffset: {x: 0, y: 0}
-  deadSize: {x: 0, y: 0}
-  collideableMask:
-    serializedVersion: 2
-    m_Bits: 8
-  modifyOpacity: 0
-  modifyOpacityTo: 0
-  markForDespawn: 0
-  damageParticles: {fileID: 165288991092002809}
 --- !u!114 &1719475619647554519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -468,9 +432,9 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 421529142559536925}
-        m_TargetAssemblyTypeName: EntityController, Assembly-CSharp
-        m_MethodName: OnMove
+      - m_Target: {fileID: 3877451780700165870}
+        m_TargetAssemblyTypeName: PlayerInputHandler, Assembly-CSharp
+        m_MethodName: Move
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -488,7 +452,7 @@ MonoBehaviour:
     m_ActionName: 'Player/Look[/Mouse/delta,/Pen/delta]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 421529142559536925}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: EntityController, Assembly-CSharp
         m_MethodName: OnSpecialAttack
         m_Mode: 0
@@ -536,7 +500,7 @@ MonoBehaviour:
     m_ActionName: 'UI/Submit[/Keyboard/enter]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 421529142559536925}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: EntityController, Assembly-CSharp
         m_MethodName: OnEscapePressed
         m_Mode: 0
@@ -560,7 +524,7 @@ MonoBehaviour:
     m_ActionName: UI/Click
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 421529142559536925}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: EntityController, Assembly-CSharp
         m_MethodName: OnRightClickPressed
         m_Mode: 0
@@ -639,7 +603,7 @@ LineRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_Positions:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 1}
@@ -712,6 +676,43 @@ MonoBehaviour:
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fce12c4e701a4b841a44ef4b3b5723f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6329079079116191420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5483559697954615981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e767fe5645e18e14abacd71ee3a3ac25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseSpeed: 7
+--- !u!114 &6240668471924500166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5483559697954615981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bced7e82d0872a458adcd2c7106e9e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3877451780700165870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5483559697954615981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 100c8f644d111f64fb10e97f63072f39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &7340139192510420593
@@ -5728,7 +5729,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Entity: {fileID: 5483559697954615981}
-  controller: {fileID: 0}
 --- !u!1 &9201253995867558767
 GameObject:
   m_ObjectHideFlags: 0

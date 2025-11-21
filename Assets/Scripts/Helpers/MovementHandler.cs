@@ -15,7 +15,7 @@ public class MovementHandler : MonoBehaviour
 
     private SpriteRenderer sr;
     private Rigidbody2D rb;
-    private EntityController controller;
+    //private EntityController controller;
     private Animator animator;
 
     // Data for event
@@ -28,7 +28,7 @@ public class MovementHandler : MonoBehaviour
     {
         sr = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-        controller = GetComponent<EntityController>();
+        //controller = GetComponent<EntityController>();
         animator = GetComponent<Animator>();
 
         localScale = gameObject.transform.localScale;
@@ -55,7 +55,7 @@ public class MovementHandler : MonoBehaviour
     private void HandleRun()
     {
         animator.SetBool(keyframe.animationTrigger, true);
-        Vector2 newPosition = Vector2.MoveTowards(transform.position, calculatedDestination, Time.deltaTime * controller.moveSpeed);
+        Vector2 newPosition = Vector2.MoveTowards(transform.position, calculatedDestination, Time.deltaTime * 0);
         Debug.Log(transform.position);
         Debug.Log(newPosition);
         if (newPosition.x > transform.position.x)

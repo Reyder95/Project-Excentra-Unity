@@ -27,7 +27,6 @@ public static class ExcentraDatabase
     {
         for (int i = 0; i < entities.Count; i++)
         {
-            Debug.Log(entities[i].key);
             entityDictionary.Add(entities[i].key, entities[i].prefab);
         }
     }

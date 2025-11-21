@@ -7,11 +7,11 @@ using UnityEngine;
 public class HandleDetection : MonoBehaviour
 {
     public GameObject Entity;
-    public EntityController controller;
+    //public EntityController controller;
 
     public void Start()
     {
-        controller = Entity.GetComponent<EntityController>();
+        //controller = Entity.GetComponent<EntityController>();
     }
 
     // Determines if you are even eligible to target the entity. Useful helper function for the triggers
@@ -65,14 +65,14 @@ public class HandleDetection : MonoBehaviour
             {
                 if (Entity.GetComponent<EntityStats>().isPlayer && Entity.GetComponent<EntityStats>().currentHP > 0)
                 {
-                    controller.inEnemyAoe = true;
+                    //controller.inEnemyAoe = true;
                     //controller.HandleTarget(true);
                     aoeData.HandleAddTarget(Entity);
                 }
             }
             else if (ExcentraGame.battleManager.TargetingEligible(aoeData.attackerObject, Entity)) 
             {
-                controller.HandleTarget(true);
+                //controller.HandleTarget(true);
                 aoeData.HandleAddTarget(Entity);
             }
 
@@ -87,10 +87,10 @@ public class HandleDetection : MonoBehaviour
         {
             BaseAoe aoeData = aoe.GetComponent<BaseAoe>();
 
-            controller.inEnemyAoe = true;
+            //controller.inEnemyAoe = true;
 
             if (aoeData.mechanicAttack == null)
-                controller.HandleTarget(false);
+                //controller.HandleTarget(false);
             aoeData.HandleRemoveTarget(Entity);
         }
     }

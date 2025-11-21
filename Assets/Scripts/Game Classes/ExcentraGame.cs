@@ -45,6 +45,8 @@ public class ExcentraGame : MonoBehaviour
 
     public static BattleManager battleManager;  // The battle manager that handles all battles
 
+    public 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -66,7 +68,7 @@ public class ExcentraGame : MonoBehaviour
         FindTriggers();
 
         // Initialize our battle manager (for the initial battle)
-        battleManager = new BattleManager((prefab, position) => Instantiate(prefab, position, Quaternion.identity));
+        //battleManager = new BattleManager((prefab, position) => Instantiate(prefab, position, Quaternion.identity));
 
         // Initialize the four player characters
         List<GameObject> playerCharacters = new List<GameObject>();
@@ -75,9 +77,11 @@ public class ExcentraGame : MonoBehaviour
         playerCharacters.Add(ExcentraDatabase.TryGetEntity("Penny"));
         playerCharacters.Add(ExcentraDatabase.TryGetEntity("Nono"));
 
-        GameObject boss = ExcentraDatabase.TryGetEntity("Orc");
+        //GameObject boss = ExcentraDatabase.TryGetEntity("Orc");
 
-        battleManager.InitializeBattle(playerCharacters, boss, new BattleArena(new Vector2(0.5f, 0), 23, 16));
+        //Debug.Log(battleManager);
+
+        //battleManager.InitializeBattle(playerCharacters, boss, new BattleArena(new Vector2(0.5f, 0), 23, 16));
 
 
         DontDestroyOnLoad(this.gameObject);

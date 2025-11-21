@@ -11,7 +11,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class EntityController : MonoBehaviour
+public class EntityControllera : MonoBehaviour
 {
     // Movement
     public float moveSpeed = 0f;
@@ -244,52 +244,52 @@ public class EntityController : MonoBehaviour
         }
         else if (!isSkillMoving && !autoMove)
         {
-            if (inputVector != Vector2.zero)
-            {
-                animator.SetBool("IsWalk", true);
-            }
-            else
-            {
-                animator.SetBool("IsWalk", false);
-            }
+            //if (inputVector != Vector2.zero)
+            //{
+            //    animator.SetBool("IsWalk", true);
+            //}
+            //else
+            //{
+            //    animator.SetBool("IsWalk", false);
+            //}
 
-            // Flip the sprite based on movement direction
-            if (inputVector.x > 0)
-            {
-                FaceDirection(false);
-            }
-            else if (inputVector.x < 0)
-            {
-                FaceDirection(true);
-            }
+            //// Flip the sprite based on movement direction
+            //if (inputVector.x > 0)
+            //{
+            //    FaceDirection(false);
+            //}
+            //else if (inputVector.x < 0)
+            //{
+            //    FaceDirection(true);
+            //}
 
-            // Calculates future movement. If entity will go beyond their "move" radius, prevent them from doing so.
-            Vector2 newPosition = rb.position + inputVector * (moveSpeed) * Time.deltaTime;
+            //// Calculates future movement. If entity will go beyond their "move" radius, prevent them from doing so.
+            //Vector2 newPosition = rb.position + inputVector * (moveSpeed) * Time.deltaTime;
 
-            newPosition.x = Mathf.Clamp(newPosition.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
-            newPosition.y = Mathf.Clamp(newPosition.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
+            //newPosition.x = Mathf.Clamp(newPosition.x, ExcentraGame.battleManager.arena.leftBound, ExcentraGame.battleManager.arena.rightBound);
+            //newPosition.y = Mathf.Clamp(newPosition.y, ExcentraGame.battleManager.arena.bottomBound, ExcentraGame.battleManager.arena.topBound);
 
-            // Check if the new position is within the movement radius
-            if (Vector2.Distance(newPosition, turnStartPos) < (entityStats.CalculateMovementRadius() / 2))
-            {
-                // Adjust the new position to account for the collider's offset
-                Vector2 colliderCenter = newPosition;
+            //// Check if the new position is within the movement radius
+            //if (Vector2.Distance(newPosition, turnStartPos) < (entityStats.CalculateMovementRadius() / 2))
+            //{
+            //    // Adjust the new position to account for the collider's offset
+            //    Vector2 colliderCenter = newPosition;
 
-                // Use the collider's size for the overlap check
-                Collider2D hitCollider = Physics2D.OverlapBox(newPosition, aliveSize, 0f, collideableMask);
+            //    // Use the collider's size for the overlap check
+            //    Collider2D hitCollider = Physics2D.OverlapBox(newPosition, aliveSize, 0f, collideableMask);
 
-                DrawColliderBounds(newPosition);
+            //    DrawColliderBounds(newPosition);
 
-                // If no collision is detected, move the entity
-                if (hitCollider == null || (hitCollider != null && hitCollider.gameObject.tag != "TESTTT" ))
-                {
-                    rb.MovePosition(newPosition);
-                }
-                else
-                {
-                    rb.MovePosition(transform.position);
-                }
-            }
+            //    // If no collision is detected, move the entity
+            //    if (hitCollider == null || (hitCollider != null && hitCollider.gameObject.tag != "TESTTT" ))
+            //    {
+            //        rb.MovePosition(newPosition);
+            //    }
+            //    else
+            //    {
+            //        rb.MovePosition(transform.position);
+            //    }
+            //}
         }
 
     }

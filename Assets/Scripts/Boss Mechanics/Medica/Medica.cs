@@ -226,7 +226,7 @@ public static class Medica
             possibleChars.RemoveAt(randomCharIndex);
 
             EntityStats charStats = character.GetComponent<EntityStats>();
-            EntityController charController = character.GetComponent<EntityController>();
+            //EntityController charController = character.GetComponent<EntityController>();
 
             int randomAcclimation = Random.Range(0, 2);
 
@@ -414,11 +414,11 @@ public static class Medica
         Debug.Log("??");
         List<GameObject> possibleTargets = battleManager.GetAliveEntities();
         EntityStats stats = passthrough.target.GetComponent<EntityStats>();
-        EntityController controller = passthrough.target.GetComponent<EntityController>();
+        //EntityController controller = passthrough.target.GetComponent<EntityController>();
 
         StatusBattle status = stats.effectHandler.GetEffectByKey("spirit_acclimation_blue");
 
-        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Spirit Acclimation Down!", false);
+        //ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Spirit Acclimation Down!", false);
 
         if (status != null)
         {
@@ -428,7 +428,7 @@ public static class Medica
         stats.ReduceStatusTurns(ExcentraDatabase.TryGetStatus("spirit_acclimation_blue"));
         stats.ReduceStatusTurns(ExcentraDatabase.TryGetStatus("spirit_acclimation_red"));
 
-        passthrough.attacker.GetComponent<EntityController>().ModifyOpacity(1f);
+        //passthrough.attacker.GetComponent<EntityController>().ModifyOpacity(1f);
 
         return new MechanicLogic();
     }
@@ -938,9 +938,9 @@ public static class Medica
 
         MechanicLogic logic = new MechanicLogic();
 
-        EntityController controller = passthrough.target.GetComponent<EntityController>();
+        //EntityController controller = passthrough.target.GetComponent<EntityController>();
 
-        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Acclimation Swapped!", false);
+        //ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Acclimation Swapped!", false);
 
         // Blue Acclimation should always have an AoE
 
@@ -974,8 +974,8 @@ public static class Medica
 
         MechanicLogic logic = new MechanicLogic();
 
-        EntityController controller = passthrough.target.GetComponent<EntityController>();
-        ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Acclimation Swapped!", false);
+        //EntityController controller = passthrough.target.GetComponent<EntityController>();
+        //ExcentraGame.Instance.damageNumberHandlerScript.SpawnPopupText(controller.iconHeader, null, "Acclimation Swapped!", false);
 
         // Blue Acclimation should always have an AoE
 
@@ -1050,9 +1050,9 @@ public static class Medica
     public static void SpawnAddsTrigger(EntityStats stats, BattleManager battleManager, EnemyMechanic mechanic)
     {
         GameObject owner = stats.addOwner;
-        EntityController controller = stats.gameObject.GetComponent<EntityController>();
-        controller.markForDespawn = true;
-        controller.ModifyOpacity(0f);
+        //EntityController controller = stats.gameObject.GetComponent<EntityController>();
+        /*controller.markForDespawn = true;
+        controller.ModifyOpacity(0f);*/
 
         foreach (var attack in mechanic.mechanicAttacks)
         {
